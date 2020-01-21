@@ -1,1 +1,0 @@
-const weedImg = require('../images/weed.jpg')
