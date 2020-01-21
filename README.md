@@ -1,6 +1,6 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
+## Getting Started
 
 In the project directory, you can run:
 
@@ -13,6 +13,8 @@ The page will reload if you make edits.<br />
 You will also see any lint errors in the console.
 
 ### `npm test`
+
+NOT IMPLEMENTED YET
 
 Launches the test runner in the interactive watch mode.<br />
 See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
@@ -27,42 +29,18 @@ Your app is ready to be deployed!
 
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-### `npm run eject`
+## Project Directory Structure 
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+`./TraceClient/` dir encapsulates everything, will become a module to be included anywhere in JS.
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+`./App.js` serves as testing env for module, currently culminating with `LotExplorer` component, which touches on all current progress.
 
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+`./TraceClient/TraceAPI.js` encapsulates all backend connectivity, GraphQL queries etc.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+`./TraceClient/MockLotData.js` has mock data to fill all Lot data. To switch `./TraceClient/components/LotExplorer` over to mock data just add `mock` prop to LotExplorer in `App.js`: `<LotExplorer mock />`
 
-## Learn More
+`./TraceClient/components` is home for UI components. Stateful containers get own directory with index.js + index.css, see `./TraceClient/components/LotExplorer` as example. Stateless functional component parts occupy a single file each, raising state (and styling) up to whatever container they are included in.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Backend Connectivity
 
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+Currently dev only, using endpoint: `http://trace-backend-dev-pr-204.herokuapp.com`
