@@ -31,15 +31,7 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
 
 ## Project Directory Structure 
 
-`./TraceClient/` dir encapsulates everything, will become a module to be included anywhere in JS.
-
-`./App.js` serves as testing env for module, currently culminating with `LotExplorer` component, which touches on all current progress.
-
-`./TraceClient/TraceAPI.js` encapsulates all backend connectivity, GraphQL queries etc.
-
-`./TraceClient/MockLotData.js` has mock data to fill all Lot data. To switch `./TraceClient/components/LotExplorer` over to mock data just add `mock` prop to LotExplorer in `App.js`: `<LotExplorer mock />`
-
-`./TraceClient/components` is home for UI components. Stateful containers get own directory with index.js + index.css, see `./TraceClient/components/LotExplorer` as example. Stateless functional component parts occupy a single file each, raising state (and styling) up to whatever container they are included in.
+IN PROGRESS
 
 ## Backend Connectivity
 
