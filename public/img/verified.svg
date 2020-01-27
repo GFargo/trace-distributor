@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 51.3 (57544) - http://www.bohemiancoding.com/sketch -->
+    <title>Icon/32/Verified</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Icon/32/Verified" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Group" transform="translate(3.000000, 3.000000)">
+            <polygon id="Rectangle-5" fill="#8BD8A1" transform="translate(13.000000, 13.000000) rotate(-315.000000) translate(-13.000000, -13.000000) " points="3.80761184 3.80761184 22.1923882 3.80761184 22.1923882 22.1923882 3.80761184 22.1923882"></polygon>
+            <polyline id="Path-2" stroke="#101520" stroke-width="3" points="8.66666667 11.5555556 13 15.8888889 20.5361667 8.35272217 23.1111111 5.77777778"></polyline>
+            <path d="M20.9440036,7.94543457 L26.4078369,2.48160129" id="Path-2" stroke="#FFFFFF" stroke-width="3"></path>
+        </g>
+    </g>
+</svg>

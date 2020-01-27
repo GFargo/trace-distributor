@@ -1,0 +1,16 @@
+.summary-row {
+  padding-left: 1em;
+}
+
+.sublots {
+  margin: 0;
+  padding: 0;
+}
+.sublots > li.SubLotRow {
+  list-style-type: none;
+  padding: 1em;
+}
+
+.sublots > li.SubLotRow:nth-of-type(odd) {
+  background: #f6f6f6;
+}

@@ -1,0 +1,54 @@
+html, body {
+  color: #101520;
+  height: 100%;
+}
+
+@font-face {
+  font-family: 'Rubik-Regular';
+  src: url('/fonts/Rubik-Regular.ttf')  format('truetype');
+}
+
+@font-face {
+  font-family: 'Rubik-Medium';
+  src: url('/fonts/Rubik-Medium.ttf')  format('truetype');
+}
+
+@font-face {
+  font-family: 'IBM-Plesk-Medium';
+  src: url('/fonts/IBMPlexSans-Medium.ttf')  format('truetype');
+}
+
+@font-face {
+  font-family: 'IBM-Plesk-Regular';
+  src: url('/fonts/IBMPlexSans-Regular.ttf')  format('truetype');
+}
+
+h1,h2,h3,h4,h5,h6 {
+  font-family: 'IBM-Plesk-Medium';
+}
+
+.uppercase {
+  text-transform: uppercase;
+}
+
+.capitalize {
+  text-transform: capitalize;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.no-pad {
+  padding: 0;
+}
+
+a:active, a:focus {
+  outline: 0;
+  border: none;
+  -moz-outline-style: none;
+}
