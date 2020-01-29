@@ -35,21 +35,33 @@ const App = () => {
 
   const renderLotIndex = (view) => 
     <LotIndex dispatch={dispatch} lots={
+      (view === 'distributor') ? state.myLots : 
       (view === 'cultivating') ? state.parentLots : 
       (view === 'processing') ? state.subLots : 
       state.allLots
     } /> 
 
+  const renderLoginPage = () => 
+    <div>LOGIN PAGE</div> //<LoginLayout><LoginForm http={http} user={state.user} dispatch={dispatch}/></LoginLayout>
+
+  const renderManifestCreator = () => 
+    <div>MANIFEST CREATOR</div>
+ 
   return (
     <Router>
-      <div className='replace-with-auth-layer'>
-        {!state.allLots ? <Route render={() => <Pending />} /> :
+      <div className='replace-with-main-layout-layer'>
+        {state.user.authToken === null ? <Route render={renderLoginPage} /> :
+        !state.allLots ? <Route render={() => <Pending />} /> :
         <Switch>
           <Route exact path="/" render={() => renderLotIndex()} />
-          <Route path="/processing/:address" render={renderLotDetails}/>
-          <Route exact path="/processing" render={() => renderLotIndex('processing')} />} />
-          <Route path="/cultivating/:address" render={renderLotDetails}/>
-          <Route exact path="/cultivating" render={() => renderLotIndex('cultivating')} />} />
+          <Route exact path="/login" render={renderLoginPage} />
+          {!state.user.authToken && <Route exact path="/distributor" render={renderLoginPage} />}
+          {!!state.user.authToken && <Route exact path="/distributor" render={() => renderLotIndex('distributor')} />}
+          {!!state.user.authToken && <Route exact path="/distributor/manifest-creator" render={renderManifestCreator} />}
+          <Route path="/processing/:address" render={renderLotDetails} />
+          <Route exact path="/processing" render={() => renderLotIndex('processing')} />
+          <Route path="/cultivating/:address" render={renderLotDetails} />
+          <Route exact path="/cultivating" render={() => renderLotIndex('cultivating')} />
           <Route render={() => <NotFound />} />
         </Switch>}
       </div>
