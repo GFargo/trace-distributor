@@ -1,5 +1,7 @@
 import 'whatwg-fetch'
 
+import { loginQuery, meOrganizationAll } from './trace-core/services/GraphqlQueries'
+
 //const DEV_SERVER_HOST = "https://trace-backend-dev.herokuapp.com"
 const DEV_SERVER_HOST = "http://trace-backend-dev-pr-204.herokuapp.com"
 
@@ -647,13 +649,15 @@ export const isExistingDevice = async (address, callback) => {
   return result
 }
 
-export const login = async ({email, password}, callback) => {
+export const loginUser = async (email, password, callback) => {
   //clean and validate email, password
-  const result = await fetchQuery(LOGIN(email, password))
-  //post-query processing
-
-  if(!!callback) callback(result)
-  return result
+  let result = await fetchQuery(loginQuery(email, password))
+  if (!result || !result.user || !result.user.authToken) return {authError: "Uh oh!"}
+  const { user } = result
+  result = await fetchQuery(meOrganizationAll)
+  user.orgs = result?.organizations?.map((org) => org.domain)
+  if(!!callback) callback(user)
+  return user
 }
 
 export const me = async (callback) => {
@@ -830,6 +834,7 @@ export const gasPrice = async (callback) => {
 
 export default {
   lotTypes,
+  loginUser,
   receiveAllLots,
   sendUploadPDF,
   isExistingDevice,
@@ -843,7 +848,6 @@ export default {
   retrieveStatePermitForm,
   statistics,
   regulatorAgency,
-  login,
   me,
   refreshToken,
   product,
