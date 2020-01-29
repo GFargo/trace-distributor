@@ -30,13 +30,14 @@ export const persistState = async (state) => { !!state && localStorage.setItem(L
 export const loadState = (state = localStorage.getItem(LOCAL_CACHE)) => 
   (!!state) ? {...JSON.parse(state), timestamp: undefined} : {...initialState}
 
-const lotsToState = (lots) => {
+const lotsToState = (lots, authOrgs) => {
   const state = {
     allLots: [],
     parentLots: [],
     subLots: [],
+    myLots: [],
     lotDir: {},
-    timestamp: null
+    timestamp: (!!lots) ? Date.now() : null //lots may be empty, but falsy is error
   }
   if (!!lots?.length) {
     lots.forEach((lot) => {
@@ -45,9 +46,12 @@ const lotsToState = (lots) => {
         state.allLots.push(lot)
         if (!lot.hasParent) state.parentLots.push(lot)
         else state.subLots.push(lot)
+        if (!!lot.organization?.domain && !!authOrgs?.length && 
+            authOrgs.includes(lot.organization.domain)) {
+          state.myLots.push(lot)
+        }
       }
     })
-    state.timestamp = Date.now()
   }
   return state
 }
