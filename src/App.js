@@ -4,7 +4,7 @@ import Pending from './trace-core/Components/Pending'
 import NotFound from './trace-core/Components/NotFound'
 import LotDetail from './trace-ext/LotDetail/Distributor-LotDetail'
 import LotIndex from './trace-ext/LotsIndex/Distributor-LotsIndex'
-import { receiveAllLots, sendUploadPDF} from './traceAPI'
+import { receiveAllLots, sendUploadPDF, loginUser} from './traceAPI'
 import { reducer, loadState, persistState } from './stateMachine'
 import './trace-core/App.css'
 
@@ -19,7 +19,13 @@ const App = () => {
 
   useEffect(() => {
     console.log('>>> state: ', state)
-    if(!!state.pdf) {
+    if(!!state.user.creds) {
+      const { email, password } = state.user.creds
+      dispatch({ type: 'awaitingAuth' })
+      loginUser(email, password, ({ username, authToken, authError, orgs }) => 
+        (!!authError || !authToken) ? dispatch({ type: 'requireAuth', authError }) : 
+          dispatch({ type: 'authUser', user: { username, authToken, orgs } }))
+    } else if(!!state.pdf) {
       const { result, file } = state.pdf
       dispatch({ type: 'uploadingPDF' })
       sendUploadPDF(result, file, () => dispatch({ type: 'uploadedPDF' }))
@@ -27,7 +33,7 @@ const App = () => {
       dispatch({ type: 'receivingLots' })
       receiveAllLots(({ lots }) => dispatch({ type: 'receivedLots', lots }))
     }
-    persistState(state)
+    if(!state.user.creds) persistState(state) //prevent user creds from ever being persisted
   }, [state])
 
   const renderLotDetails = (props) => (!!props?.match?.params?.address && !!state.lotDir[props.match.params.address]) ? 
