@@ -1,6 +1,6 @@
 import 'whatwg-fetch'
 
-import { loginQuery, meOrganizationAll } from './trace-core/services/GraphqlQueries'
+import { loginQuery, meQuery, meOrganizationAll } from '../trace-core/services/GraphqlQueries'
 
 //const DEV_SERVER_HOST = "https://trace-backend-dev.herokuapp.com"
 const DEV_SERVER_HOST = "http://trace-backend-dev-pr-204.herokuapp.com"
@@ -10,21 +10,24 @@ const JSON_HEADER = {
   "Content-Type": "application/json",
   "Accept": "application/json"
 }
+const JSON_AUTH_HEADER = (authToken) => ({
+  "Content-Type": "application/json",
+  "Accept": "application/json",
+  "Authorization": "Bearer " + authToken
+})
 
-const fetchQuery = async (query) => {
+const fetchQuery = async (query, authToken = '') => {
   try {
     const response = await fetch(DEV_GRAPHQL_PATH, {
       method: "POST",
-      headers: {...JSON_HEADER},
+      headers: (!!authToken) ? JSON_AUTH_HEADER(authToken) : {...JSON_HEADER},
       body: JSON.stringify({query})
     })
     const result = await response.json()
-    if (!!result?.errors) console.error('query errors: ', result.errors)
-    return (!!result?.data) ? result.data : null
-  } catch (error) {
-    console.error('fetch error: ', error)
-    return null
-  }
+    if (!!result?.errors?.length)
+      return { error: result.errors[0].message }
+    else return (!!result?.data) ? result.data : { error: "Query returned null data." }
+  } catch (error) { return {error} }
 }
 
 const lotTypes = {
@@ -629,52 +632,50 @@ const GAS_PRICE = `{
   }
 `
 
+export const meOrganizationLots = `{
+    me {
+      organization {
+        lots {
+          ...LotType
+        }
+      }
+    }
+  }
+  ${LOT_TYPE}
+`
+
 /* Query Controllers */
 
-export const isExistingUser = async (email, callback) => {
-  //clean and validate email
-  const result = await fetchQuery(IS_EXISTING_USER(email))
-  //post-query processing
-
-  if(!!callback) callback(result)
-  return result
-}
-
-export const isExistingDevice = async (address, callback) => {
-  //clean and validate address
-  const result = await fetchQuery(IS_EXISTING_DEVICE(address))
-  //post-query processing
-
-  if(!!callback) callback(result)
-  return result
-}
-
 export const loginUser = async (email, password, callback) => {
-  //clean and validate email, password
-  let result = await fetchQuery(loginQuery(email, password))
-  if (!result || !result.user || !result.user.authToken) return {authError: "Uh oh!"}
-  const { user } = result
-  result = await fetchQuery(meOrganizationAll)
-  user.orgs = result?.organizations?.map((org) => org.domain)
+  console.log('loginUser - creds: ', email, password)
+  const user = {}
+  const result = await fetchQuery(loginQuery(email, password))
+
+  if (!result.login || !result.login.authToken || !!result.error) {
+    user.authError = "Email or Password Incorrect"
+    console.error('traceAPI - loginUser auth error: ', (!!result.error) ? result.error : 'Uh oh! Unknown Error')
+  
+  } else { //valid auth
+    user.username = (result.login.firstName || '')+' '+(result.login.lastName || '')
+    user.authToken = result.login.authToken
+
+    const { me } = await fetchQuery(meOrganizationLots, user.authToken)
+    user.lots = (!!me?.organization?.lots) ? me.organization.lots : []
+    console.log('traceAPI - loginUser user: ', user)
+  }
+  
   if(!!callback) callback(user)
   return user
 }
 
-export const me = async (callback) => {
-  const result = await fetchQuery(ME)
-  //post-query processing
-
-  if(!!callback) callback(result)
-  return result
-}
-
-export const refreshToken = async (token, device, callback) => {
-  //clean and validate things
-  const result = await fetchQuery(REFRESH_TOKEN(token, device))
-  //post-query processing
-
-  if(!!callback) callback(result)
-  return result
+export const receiveUserLots = async (authToken, callback) => {
+  console.log('traceAPI - receiveUserLots authToken: ', authToken)
+  const result = await fetchQuery(meOrganizationLots, authToken)
+  const lots = (result.status !== 200) ? null : //force reload
+    (!!result?.me?.organization?.lots) ? result.me.organization.lots : []
+  console.log('traceAPI - receiveUserLots lots: ', lots)
+  if(!!callback) callback(lots)
+  return lots
 }
 
 export const receiveAllLots = async (callback) => {
@@ -704,6 +705,43 @@ export const sendUploadPDF = async (stateType, file, callback) => {
   console.log('traceAPI >>> Uploading PDF file for '+stateType+' result, file: ', file)
   const result = await sendPDFMutation(stateType, file)
   console.log('traceAPI >>> PDF file upload complete. ', result)
+  if(!!callback) callback(result)
+  return result
+}
+
+
+
+export const isExistingUser = async (email, callback) => {
+  //clean and validate email
+  const result = await fetchQuery(IS_EXISTING_USER(email))
+  //post-query processing
+
+  if(!!callback) callback(result)
+  return result
+}
+
+export const isExistingDevice = async (address, callback) => {
+  //clean and validate address
+  const result = await fetchQuery(IS_EXISTING_DEVICE(address))
+  //post-query processing
+
+  if(!!callback) callback(result)
+  return result
+}
+
+export const me = async (callback) => {
+  const result = await fetchQuery(ME)
+  //post-query processing
+
+  if(!!callback) callback(result)
+  return result
+}
+
+export const refreshToken = async (token, device, callback) => {
+  //clean and validate things
+  const result = await fetchQuery(REFRESH_TOKEN(token, device))
+  //post-query processing
+
   if(!!callback) callback(result)
   return result
 }
@@ -836,6 +874,7 @@ export default {
   lotTypes,
   loginUser,
   receiveAllLots,
+  receiveUserLots,
   sendUploadPDF,
   isExistingDevice,
   isExistingUser,
