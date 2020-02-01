@@ -24,9 +24,16 @@ const fetchQuery = async (query, authToken = '') => {
       body: JSON.stringify({query})
     })
     const result = await response.json()
-    if (!!result?.errors?.length)
-      return { error: result.errors[0].message }
-    else return (!!result?.data) ? result.data : { error: "Query returned null data." }
+    if (!!result?.errors?.length) {
+      return { 
+        error: result.errors[0].message, 
+        errorMsg: result.errors[0].message 
+      }
+    } else { 
+      return (!!result?.data) ? result.data : { 
+        error: "Query returned null data." 
+      } 
+    }
   } catch (error) { return {error} }
 }
 
@@ -652,7 +659,7 @@ export const loginUser = async (email, password, callback) => {
   const result = await fetchQuery(loginQuery(email, password))
 
   if (!result.login || !result.login.authToken || !!result.error) {
-    user.authError = "Email or Password Incorrect"
+    user.authError = (!!result.errorMsg) ? result.errorMsg : "Email or Password Incorrect"
     console.error('traceAPI - loginUser auth error: ', (!!result.error) ? result.error : 'Uh oh! Unknown Error')
   
   } else { //valid auth
@@ -671,7 +678,7 @@ export const loginUser = async (email, password, callback) => {
 export const receiveUserLots = async (authToken, callback) => {
   console.log('traceAPI - receiveUserLots authToken: ', authToken)
   const result = await fetchQuery(meOrganizationLots, authToken)
-  const lots = (result.status !== 200) ? null : //force reload
+  const lots = (!result.me || !!result.error) ? null : //force reload
     (!!result?.me?.organization?.lots) ? result.me.organization.lots : []
   console.log('traceAPI - receiveUserLots lots: ', lots)
   if(!!callback) callback(lots)
