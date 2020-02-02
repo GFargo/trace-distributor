@@ -6,7 +6,7 @@ import Header from './Header/Header'
 
 import { TracePattern } from '../core/src/components/Elements/Backgrounds/TracePattern'
 
-const LoginLayout = ({ invertColors = false, className, children }) => (
+const LandingLayout = ({ invertColors = false, className, children }) => (
   <TracePattern className="bg-gray-100" bgPosition="right -35%">
     <div className="ml-0">
       <div className="container mx-auto">
@@ -22,10 +22,10 @@ const LoginLayout = ({ invertColors = false, className, children }) => (
   </TracePattern>
 )
 
-LoginLayout.propTypes = {
+LandingLayout.propTypes = {
   className: PropTypes.string,
   invertColors: PropTypes.bool,
   children: PropTypes.object,
 }
 
-export default LoginLayout
+export default LandingLayout

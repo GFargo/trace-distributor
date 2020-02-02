@@ -1,11 +1,11 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import Pending from './PendingTrans'
+import Login from '../core/src/components/Forms/Login'
+import Title from '../core/src/components/Elements/Title'
+import Copy from '../core/src/components/Elements/Copy'
 
-import Login from '../../core/src/components/Forms/Login'
-import Title from '../../core/src/components/Elements/Title'
-import Copy from '../../core/src/components/Elements/Copy'
-
-const DistributorLoginForm = ({onLoginSubmit, loginError}) => {
+const DistributorLoginForm = ({onLoginSubmit, loginPending, loginError}) => {
 
   const handleSubmit = (event, form) => {
     event.preventDefault()
@@ -23,9 +23,11 @@ const DistributorLoginForm = ({onLoginSubmit, loginError}) => {
           <Copy className="mt-3"><p>Login using your iOS credentials</p></Copy>
         </div>
 
-        <div className="">
-          <Login handleSubmit={handleSubmit} loginResponse={loginError} submitBtnColor="green" displayForgotPassword={false}/>
-        </div>
+        {loginPending ? <Pending /> : ( 
+          <div className="">
+            <Login handleSubmit={handleSubmit} loginResponse={loginError} submitBtnColor="green" displayForgotPassword={false}/>
+          </div>
+        )}
 
       </div>
     </div>
