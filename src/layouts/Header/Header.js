@@ -3,9 +3,8 @@ import PropTypes from "prop-types"
 import { Link } from "react-router-dom"
 
 import Logo from '../../core/src/components/Elements/Logo'
-import NavLink from './Components/NavLink'
+import Button from '../../core/src/components/Elements/Button'
 
-/* TODO Make Bill of Goods link a btn */
 const Header = ({ username, displayLogos, containerClass = 'border-b-2' }) => (
   <div className="" id="Header">
     <div className={`flex flex-row justify-between items-center ${containerClass}`}>
@@ -16,7 +15,7 @@ const Header = ({ username, displayLogos, containerClass = 'border-b-2' }) => (
               <Logo 
                 color='black'
                 svgFill='black'
-                width="175px"
+                width="240px"
                 className="inline-block"
               />
             </div>
@@ -34,11 +33,14 @@ const Header = ({ username, displayLogos, containerClass = 'border-b-2' }) => (
 
           <div className="ml-auto">
             <ul className="flex flex items-center font-body">
-              <NavLink
-                className='text-gray-800'
+              <Button 
+                type="link"
+                color="green"
+                className="mb-2"
                 to="/distributor/manifest-creator/"
-                label="Create Bill Of Goods"
-              />
+              >
+                Create Bill Of Goods
+              </Button>
             </ul>
           </div>
         </>

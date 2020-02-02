@@ -24,5 +24,4 @@ Footer.propTypes = {
   invertColors: PropTypes.bool,
 }
 
-
 export default Footer

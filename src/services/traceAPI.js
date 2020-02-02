@@ -300,6 +300,7 @@ const allLotsQuery = `{
   }
   ${LOT_TYPE}
 `
+
 const meOrgLotsQuery = `{
     me {
       organization {
