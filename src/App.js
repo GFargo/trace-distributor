@@ -20,53 +20,90 @@ const App = () => {
   //useEffect(() => appEffects(state, dispatch), []) //Use effect as app mounted and unmounted - triggers warning though...?
   useEffect(() => userEffects(state, dispatch), [state])
 
-  const renderLandingPage = () => <LandingLayout><LandingPage /></LandingLayout>
+  /* State Dispatch */
+  const dispatchLogin = (email, password) => dispatch({ 
+    type: 'loginUser', 
+    creds: { email, password } 
+  })
+
+  const dispatchLogout = () => dispatch({ 
+    type: 'releaseAuth' 
+  })
+
+  const dispatchAddLot = ({address}) => dispatch({ 
+    type: 'addLotToManifest', 
+    address 
+  })
+
+  const dispatchRemvoeLot = ({address}) => dispatch({ 
+    type: 'removeLotFromManifest', 
+    address 
+  })
+
+  /* Page Renderers */
+  const renderLandingPage = () => 
+    <LandingLayout>
+      <LandingPage />
+    </LandingLayout>
 
   const renderLoginPage = () => 
-    <LoginLayout><LoginPage 
-      onLoginSubmit={(email, password) => dispatch({ type: 'loginUser', creds: { email, password } })} 
-      loginError={state.authError || ''} 
-      loginPending={(state.type === 'awaitingAuth')} 
-    /></LoginLayout>
+    <LoginLayout>
+      <LoginPage 
+        onLoginSubmit={dispatchLogin} 
+        loginError={state.authError || ''} 
+        loginPending={(state.type === 'awaitingAuth')} 
+      />
+    </LoginLayout>
 
-  const renderLotIndex = () => (!state.allLots) ? <Pending /> : 
+  const renderLotIndex = () => (!state.allLots) ? 
+    <Pending /> : 
     <LotsIndex 
       lots={state.allLots} 
       manifest={state.manifest}
-      onAddLot={({address}) => dispatch({ type: 'addLotToManifest', address })} 
-      onRemoveLot={({address}) => dispatch({ type: 'removeLotFromManifest', address })}
+      onAddLot={dispatchAddLot} 
+      onRemoveLot={dispatchRemvoeLot}
     />
 
   const renderLotDetails = (props) => (!!props?.match?.params?.address && !!state.lotDir[props.match.params.address]) ? 
-    <LotDetail lot={state.lotDir[props.match.params.address]} /> : <NotFound />
+    <LotDetail lot={state.lotDir[props.match.params.address]} /> : 
+    <NotFound />
 
-  const renderManifestCreator = () => <ManifestPage />
+  const renderManifestCreator = () => 
+    <ManifestPage />
 
-  const renderSettings = () => <SettingsPage />
+  const renderSettings = () => 
+    <SettingsPage />
+
+  const GuestRouter = () => 
+    <Router>
+      <Switch>
+        <Route exact path="/" render={renderLandingPage} />
+        <Route exact path="/login" render={renderLoginPage} />
+        <Route render={() => (state.type === 'requireAuth') ? 
+          <Redirect to="/login" /> : 
+          <Redirect to="/" />} />
+      </Switch>
+    </Router>
+
+  const UserRouter = () => 
+    <Router>
+      <UserLayout username={state.username} onLogout={dispatchLogout}>
+        <Switch>
+          <Route exact path="/" render={() => <Redirect to="/distributor/products" />} />
+          <Route exact path="/distributor/products" render={renderLotIndex} />
+          <Route path="/cultivating/:address" render={renderLotDetails} />
+          <Route path="/processing/:address" render={renderLotDetails} />
+          <Route exact path="/distributor/manifest-creator" render={renderManifestCreator} />
+          <Route exact path="/distributor/settings" render={renderSettings} />
+          <Route render={() => <Redirect to="/distributor/products" />} />
+        </Switch>
+      </UserLayout>
+    </Router>
 
   return (
-    <Router>
-      {(!state) ? <Pending /> : (!state.authToken) ? (
-        <Switch>
-          <Route exact path="/" render={renderLandingPage} />
-          <Route exact path="/login" render={renderLoginPage} />
-          <Route render={() => (state.type === 'requireAuth') ? 
-            <Redirect to="/login" /> : <Redirect to="/" />} />
-        </Switch>
-      ) : (
-        <UserLayout username={state.username} onLogout={() => dispatch({ type: 'releaseAuth' })}>
-          <Switch>
-            <Route exact path="/" render={() => <Redirect to="/distributor/products" />} />
-            <Route exact path="/distributor/products" render={renderLotIndex} />
-            <Route path="/cultivating/:address" render={renderLotDetails} />
-            <Route path="/processing/:address" render={renderLotDetails} />
-            <Route exact path="/distributor/manifest-creator" render={renderManifestCreator} />
-            <Route exact path="/distributor/settings" render={renderSettings} />
-            <Route render={() => <Redirect to="/distributor/products" />} />
-          </Switch>
-        </UserLayout>
-      )}
-    </Router>
+    (!state) ? <Pending /> : 
+      (!state.authToken) ? <GuestRouter /> : 
+        <UserRouter />
   )
 }
 
