@@ -7,7 +7,7 @@ import Header from './Header/Header'
 const LandingLayout = ({ invertColors = false, className, children }) => (
   <div className="">
     <div className="container-fluid">
-      <div className="flex flex-col min-h-screen min-w-screen px-12">
+      <div className="flex flex-col min-h-screen min-w-screen px-2">
         <Header containerClass="pt-6" displayLogos={true} />
         <div className="flex-auto flex items-center">
           {children}

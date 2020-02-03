@@ -1,6 +1,6 @@
 import React, { useReducer, useEffect } from 'react'
 import { BrowserRouter as Router, Route, Switch, Redirect } from "react-router-dom"
-import { reducer, loadState, appEffects, userEffects } from './services/stateMachine'
+import { reducer, loadState, userEffects } from './services/stateMachine'
 import LandingLayout from './layouts/LandingLayout'
 import LoginLayout from './layouts/LoginLayout'
 import UserLayout from './layouts/DistributorLayout'
@@ -17,11 +17,10 @@ import './core/src/styles/icons.css'
 
 const App = () => {
   const [state, dispatch] = useReducer(reducer, loadState())
-  useEffect(() => appEffects(state, dispatch), [])
+  //useEffect(() => appEffects(state, dispatch), []) //Use effect as app mounted and unmounted - triggers warning though...?
   useEffect(() => userEffects(state, dispatch), [state])
 
-  const renderLandingPage = () => 
-    <LandingLayout><LandingPage /></LandingLayout>
+  const renderLandingPage = () => <LandingLayout><LandingPage /></LandingLayout>
 
   const renderLoginPage = () => 
     <LoginLayout><LoginPage 
@@ -30,11 +29,16 @@ const App = () => {
       loginPending={(state.type === 'awaitingAuth')} 
     /></LoginLayout>
 
-  const renderLotIndex = () => (!state.org.allLots) ? <Pending /> : 
-    <LotsIndex lots={state.org.allLots || []} />
+  const renderLotIndex = () => (!state.allLots) ? <Pending /> : 
+    <LotsIndex 
+      lots={state.allLots} 
+      manifest={state.manifest}
+      onAddLot={({address}) => dispatch({ type: 'addLotToManifest', address })} 
+      onRemoveLot={({address}) => dispatch({ type: 'removeLotFromManifest', address })}
+    />
 
-  const renderLotDetails = (props) => (!!props?.match?.params?.address && !!state.org.lotDir[props.match.params.address]) ? 
-    <LotDetail lot={state.org.lotDir[props.match.params.address]} /> : <NotFound />
+  const renderLotDetails = (props) => (!!props?.match?.params?.address && !!state.lotDir[props.match.params.address]) ? 
+    <LotDetail lot={state.lotDir[props.match.params.address]} /> : <NotFound />
 
   const renderManifestCreator = () => <ManifestPage />
 
@@ -66,4 +70,4 @@ const App = () => {
   )
 }
 
-export default App //line number ftw (:
+export default App

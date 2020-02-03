@@ -7,12 +7,16 @@ import Copy from '../core/src/components/Elements/Copy'
 
 const DistributorLoginForm = ({onLoginSubmit, loginPending, loginError}) => {
 
+  let locked = false
   const handleSubmit = (event, form) => {
-    event.preventDefault()
-    onLoginSubmit(
-      form.email,
-      form.password
-    )
+    if (!locked) {
+      event.preventDefault()
+      onLoginSubmit(
+        form.email,
+        form.password
+      )
+    }
+    locked = true
   }
   
   return (

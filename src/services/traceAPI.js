@@ -326,7 +326,7 @@ const loginQuery = (email, password) => {
 /* Query Controllers */
 
 const receiveAllLots = async () => {
-  console.log('traceAPI >>> receiving All Lots... ')
+  //console.log('traceAPI >>> receiving All Lots... ')
   const result = await fetchQuery(allLotsQuery)
 
   /* TODO No access to org owner name - injecting temp data to prevent core component error  */
@@ -344,20 +344,20 @@ const receiveAllLots = async () => {
 
 const receiveMeOrgLots = async (authToken) => {
   const result = await fetchQuery(meOrgLotsQuery, authToken)
-  console.log('traceAPI - receiveMeOrgLots result: ', result)
+  //console.log('traceAPI - receiveMeOrgLots result: ', result)
   let lots = (!!result.error) ? null : (!!result?.me?.organization?.lots) ? result.me.organization.lots : []
 
   /* TODO Failsafe data for testing - Remove after dev server setup */
   if (!!lots && !lots.length) {//empty lots, fill with test data
     const allLots = await receiveAllLots()
-    lots = allLots.filter((lot) => lot?.organization?.domain === 'test3.tracevt.com')
-    console.log('traceAPI - receiveUserLots test Lot empty, so POPULATING lots: ', lots)
+    lots = allLots.filter((lot) => lot?.organization?.domain === 'decatur.com')
+    console.log('traceAPI - receiveMeOrgLots test Lot empty, so POPULATING lots: ', lots)
   }
   return lots
 }
 
 export const loginUser = async (email, password, callback) => {
-  console.log('loginUser - creds: ', email, password)
+  //console.log('loginUser - creds: ', email, password)
   const user = {}
   const result = await fetchQuery(loginQuery(email, password))
 
@@ -370,7 +370,7 @@ export const loginUser = async (email, password, callback) => {
     user.authToken = result.login.authToken
     user.lots = await receiveMeOrgLots(result.login.authToken)
 
-    console.log('traceAPI - loginUser user: ', user)
+    //console.log('traceAPI - loginUser user: ', user)
   }
   
   if(!!callback) callback(user) 
@@ -378,12 +378,10 @@ export const loginUser = async (email, password, callback) => {
 }
 
 export const receiveUserLots = async (authToken, callback) => {
-  console.log('traceAPI - receiveUserLots authToken: ', authToken)
+  //console.log('traceAPI - receiveUserLots authToken: ', authToken)
   const lots = await receiveMeOrgLots(authToken)
-  if (!lots) {
 
-  }
-  console.log('traceAPI - receiveUserLots lots: ', lots)
+  //console.log('traceAPI - receiveUserLots lots: ', lots)
 
   if(!!callback) callback(lots)
   return {lots}

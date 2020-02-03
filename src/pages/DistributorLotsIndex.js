@@ -6,7 +6,7 @@ import SortableTable from '../core/src/components/SortableTable'
 import { localizeDateFromString } from '../core/src/utils/date-time/utils'
 
 
-const LotsIndex = ({ lots }) => {
+const LotsIndex = ({ lots, manifest, onAddLot, onRemoveLot }) => {
 
   const targetInfoLink = (lot) => (
     <Button color="black" variant="outline" to={"/" + (!lot.parentLot ? "cultivating" : "processing") + "/" + lot.address}>
@@ -27,12 +27,21 @@ const LotsIndex = ({ lots }) => {
       getValue: (lot) => lot.state,
       size: 'base'
     },
+    /*
+    {
+      name: 'manifest',
+      displayName: 'Manifest',
+      getValue: (lot) => (manifest.includes(lot.address)) ? "Yes" : "No",
+      size: 'base'
+    }
+    */
     {
       name: 'verified',
       displayName: 'Verified',
       getValue: (lot) => (lot.verified) ? "Yes" : "No",
       size: 'base'
     }
+    
   ])
 
   const tableColumns = () => ([
@@ -82,22 +91,32 @@ const LotsIndex = ({ lots }) => {
           {lot.address.substr(0, 20) + " …"}
         </Link>),
       sortable: (lot) => lot.address
+    },
+    /*
+    {
+      name: 'manifest',
+      displayName: 'Manifest',
+      displayValue: (lot) => (manifest.includes(lot.address)) ? 
+        (<i className="icon-check verified-mark" aria-hidden="true" onClick={() => onRemoveLot(lot)}></i>) : 
+        (<i className="icon-plus" aria-hidden="true" onClick={() => onAddLot(lot)}></i>),
+      sortable: (lot) => (manifest.includes(lot.address)) ? "yes" : "no"
     }
+    */
   ])
 
   return (
     <SortableTable
       columns={tableColumns()}
       filters={tableFilters()}
-      data={lots || []}
+      data={lots}
       defaultSort='name'
-      filterFn={(lot) => !!lot && lot.name + lot.state + lot.address}
+      filterFn={(lot) => lot.name + lot.state + lot.address}
       filterPlaceholder='Filter by Lot name, state or blockchain address...'
       targetLink={targetInfoLink}
       noSearch={false}
       maxRows={0}
       noFilter={false}
-      keyFn={(lot) => !!lot && lot.address}
+      keyFn={(lot) => lot.address}
       pagination={true}
       pageSize={10}
     />
@@ -105,7 +124,10 @@ const LotsIndex = ({ lots }) => {
 }
 
 LotsIndex.propTypes = {
-  lots: PropTypes.array
+  lots: PropTypes.array.isRequired,
+  manifest: PropTypes.array.isRequired,
+  onAddLot: PropTypes.func.isRequired, 
+  onRemoveLot: PropTypes.func.isRequired
 }
 
 export default LotsIndex

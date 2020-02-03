@@ -9,7 +9,7 @@ import { TracePattern } from '../core/src/components/Elements/Backgrounds/TraceP
 const LoginLayout = ({ invertColors = false, className, children }) => (
   <TracePattern className="bg-gray-100" bgPosition="right -35%">
     <div className="ml-0">
-      <div className="container mx-auto">
+      <div className="container ml-12 mr-auto">
         <div className="flex flex-col min-h-screen">
           <Header containerClass="pt-6" displayLogos={true} />
           <div className="flex-auto flex items-center">
