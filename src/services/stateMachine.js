@@ -106,13 +106,13 @@ export const reducer = (state = loadState(), action = {}) => {
       return { ...state, type: action.type,
         manifest: (!state.manifest.includes(action.address)) ? 
           [...state.manifest, action.address] : state.manifest,
-        allLots: [...state.allLots]//trying to get the table to rerender
+        allLots: [...state.allLots]//trying to get the LotsIndex to rerender
       }
     case 'removeLotFromManifest':
       return { ...state, type: action.type,
         manifest: (state.manifest.includes(action.address)) ? 
           state.manifest.filter((lot) => lot !== action.address) : state.manifest,
-        allLots: [...state.allLots] //trying to get the table to rerender
+        allLots: [...state.allLots] //trying to get the LotsIndex to rerender
       }
     default: return state
   }
@@ -141,7 +141,7 @@ export const userEffects = (state, dispatch) => {
         (!!authError || !authToken) ? dispatch({ type: 'requireAuth', authError }) : 
           dispatch({ type: 'authUser', user: { username, authToken, lots } })
     )
-  } else if (!state.timestamp && !!state.authToken) {//user refreshed browser
+  } else if (!state.timestamp && !!state.authToken) {//auth'd user refreshed browser
     console.info('^^^ trigger effect lots refresh')
     dispatch({ type: 'receivingLots' })
     receiveUserLots(
