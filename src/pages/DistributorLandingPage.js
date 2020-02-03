@@ -5,7 +5,7 @@ import Copy from '../core/src/components/Elements/Copy'
 
 /* TODO Fix this css */
 const DistributorLandingPage = () => (
-  <div style={{maxWidth: "973px"}} className="flex ml-auto mr-auto">
+  <div className="flex max-w-5xl ml-auto mr-auto">
     <div className="w-5/12 self-center">
       <Title fontSize="3xl" className="font-black leading-tighter">
         Welcome to the Trace Distributor Pilot
