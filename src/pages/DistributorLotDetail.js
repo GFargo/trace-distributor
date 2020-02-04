@@ -1,13 +1,17 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import Pending from './PendingTrans'
+import Pending from '../core/src/components/Elements/Loader'
 import Lot from '../core/src/components/Lots/Lot'
 
-const fixImages = (images) => (
+const translateImagesToAnchors = (images) => (
   (!!images?.length) ? images.map((each) => 
     !!each?.image && <a key={each.image.hash} href={each.image.url} target="_blank" rel="noopener noreferrer">
       {each.caption || 'image'}
     </a>) : null
+)
+
+const translateImagesToUrl = (images) => (
+  (!!images?.length) ? images.map((each) => !!each?.image && each.image.url) : null
 )
 
 const fixStateImages = (lot) => (!!lot?.stateDetails?.data?.images?.length) ? ({
@@ -16,14 +20,14 @@ const fixStateImages = (lot) => (!!lot?.stateDetails?.data?.images?.length) ? ({
     ...lot.stateDetails,
     data: {
       ...lot.stateDetails.data,
-      images: fixImages(lot.stateDetails.data.images)
+      images: translateImagesToUrl(lot.stateDetails.data.images)
     }
   },
   details: lot.details.map((state) => (!!state?.data?.images?.length) ? ({
     ...state,
     data: {
       ...state.data,
-      images: fixImages(state.data.images)
+      images: translateImagesToUrl(state.data.images)
     }
   }) : state)
 }) : lot

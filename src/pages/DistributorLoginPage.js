@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import Pending from './PendingTrans'
+import Pending from '../core/src/components/Elements/Loader/PageLoader'
 import Login from '../core/src/components/Forms/Login'
 import Title from '../core/src/components/Elements/Title'
 import Copy from '../core/src/components/Elements/Copy'
