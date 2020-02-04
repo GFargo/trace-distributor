@@ -9,25 +9,25 @@ const translateImagesToAnchors = (images) => (
       {each.caption || 'image'}
     </a>) : null
 )
-
+/*
 const translateImagesToUrl = (images) => (
   (!!images?.length) ? images.map((each) => !!each?.image && each.image.url) : null
 )
-
+*/
 const fixStateImages = (lot) => (!!lot?.stateDetails?.data?.images?.length) ? ({
   ...lot,
   stateDetails: {
     ...lot.stateDetails,
     data: {
       ...lot.stateDetails.data,
-      images: translateImagesToUrl(lot.stateDetails.data.images)
+      images: translateImagesToAnchors(lot.stateDetails.data.images)
     }
   },
   details: lot.details.map((state) => (!!state?.data?.images?.length) ? ({
     ...state,
     data: {
       ...state.data,
-      images: translateImagesToUrl(state.data.images)
+      images: translateImagesToAnchors(state.data.images)
     }
   }) : state)
 }) : lot
