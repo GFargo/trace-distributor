@@ -1,38 +1,43 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Trace Distributor Portal
 
 ## Getting Started
 
-In the project directory, you can run:
+### `yarn install`
+### `yarn start`
 
-### `npm start`
+### `yarn test`
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
-
-### `npm test`
-
-NOT IMPLEMENTED YET
-
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### `yarn build`
 
 ## Project Directory Structure 
 
-IN PROGRESS
+- `src/core`: Trace Core Submodule
+- `src/layouts`: Trace Distributor Portal Layouts
+- `src/pages`: Trace Distributor Portal Pages
+- `src/services`: Trace Distributor Portal State Machine and API
+- `src/styles`: Trace Distributor Portal Styles
+- `src/tests`: Trace Distributor Portal Unit Tests
 
 ## Backend Connectivity
 
-Currently dev only, using endpoint: `http://trace-backend-dev-pr-204.herokuapp.com`
+Dev endpoint: `http://trace-backend-dev-pr-204.herokuapp.com`
+
+## Using funky new ES/Babel lexicals
+
+	- `?` in `thing?.prop` is a short circuit operator, which returns null when it hits the `?` if previous variable is null/undefined.
+
+	- `!!` is shorthand for return truthy boolean. Combined with above - `!!thing?.prop` will return falsy even if thing is undefined.
+
+  - `const thing = (conditionMet) ? <componentA /> : <componentB />` is fast way to conditonal component render and can be waterfalled infintely as a state switch, in one line of code.
+
+  - `const newObject = ({thing1, thing2}) => ({
+  	...staticDefault,
+  	thing1,
+  	thing2
+  })` is fast way to generate/copy over to a new object with given params and/or static default object state.
+
+	- `useReducer` in App.js is how how react hooks connects the app to the state machine in `services/stateMachine.js`, very similar to how redux works. In console, you'll see state machine logs grouped by state type, tracing value changes from state to state.
+
+	- Pure function all the things: With react hooks, there is really no reason to use classes at all anymore, all components can be purely funtional and reactive. Encapsulate state in components with `useState`, and bind/raise all app level / biz code state functionality up to state machine via dispatch. We can break out state and reducer encap'd functionality per component, and then combine state/reducers in App.js, however it will be much more intuitive using existing proven patterns in redux to do that with higher order functions, as opposed to passing down state and dispatch to every component that needs them. With redux, `connect(() => stateToProps(state, dispatch))`, both state and dispatch are attached automatically to each wrapped component, with both automatically passed in as props to the component, making component development seamless to the state machine entirely.
+
+	- If I missed anything / you see something wierd tha I'm doing, please give me a shout about it on slack, and I'll undate this readme to explain better.
