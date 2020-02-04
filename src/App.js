@@ -20,7 +20,7 @@ const App = () => {
   //useEffect(() => appEffects(state, dispatch), []) //Use effect as app mounted and unmounted - triggers warning though...?
   useEffect(() => userEffects(state, dispatch), [state])
 
-  /* State Dispatch */
+  /* State Action Dispatch */
   const dispatchLogin = (email, password) => dispatch({ 
     type: 'loginUser', 
     creds: { email, password } 
@@ -41,12 +41,13 @@ const App = () => {
   })
 
   /* Page Renderers */
-  const renderLandingPage = () => 
+  const renderLandingPage = () => (
     <LandingLayout>
       <LandingPage />
     </LandingLayout>
+  )
 
-  const renderLoginPage = () => 
+  const renderLoginPage = () => (
     <LoginLayout>
       <LoginPage 
         onLoginSubmit={dispatchLogin} 
@@ -54,27 +55,34 @@ const App = () => {
         loginPending={(state.type === 'awaitingAuth')} 
       />
     </LoginLayout>
+  )
 
-  const renderLotIndex = () => (!state.allLots) ? 
-    <Pending /> : 
+  const renderLotIndex = () => (!state.allLots) ? (
+    <Pending />
+  ) : (
     <LotsIndex 
       lots={state.allLots} 
       manifest={state.manifest}
       onAddLot={dispatchAddLot} 
       onRemoveLot={dispatchRemvoeLot}
     />
+  )
 
-  const renderLotDetails = (props) => (!!props?.match?.params?.address && !!state.lotDir[props.match.params.address]) ? 
-    <LotDetail lot={state.lotDir[props.match.params.address]} /> : 
+  const renderLotDetails = (props) => (!!props?.match?.params?.address && !!state.lotDir[props.match.params.address]) ? (
+    <LotDetail lot={state.lotDir[props.match.params.address]} />
+  ) : (
     <NotFound />
+  )
 
-  const renderManifestCreator = () => 
+  const renderManifestCreator = () => (
     <ManifestPage />
-
-  const renderSettings = () => 
+  )
+    
+  const renderSettings = () => (
     <SettingsPage />
+  )
 
-  const GuestRouter = () => 
+  const GuestRouter = () => (
     <Router>
       <Switch>
         <Route exact path="/" render={renderLandingPage} />
@@ -84,8 +92,9 @@ const App = () => {
           <Redirect to="/" />} />
       </Switch>
     </Router>
+  )
 
-  const UserRouter = () => 
+  const UserRouter = () => (
     <Router>
       <UserLayout username={state.username} onLogout={dispatchLogout}>
         <Switch>
@@ -99,6 +108,7 @@ const App = () => {
         </Switch>
       </UserLayout>
     </Router>
+  )
 
   return (
     (!state) ? <Pending /> : 
