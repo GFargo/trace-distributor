@@ -304,6 +304,7 @@ const allLotsQuery = `{
 const meOrgLotsQuery = `{
     me {
       organization {
+        domain
         lots {
           ...LotType
         }
