@@ -35,10 +35,6 @@ const App = () => {
     address, cat, entry, value
   })
 
-  const dispatchClearBoG = () => dispatch({ 
-    type: 'clearBoG'
-  })
-
   const dispatchUploadBoG = ({ bog }) => dispatch({ 
     type: 'uploadBoG',
     bog

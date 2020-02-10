@@ -68,6 +68,7 @@ const toggleLotDataSelection = (selection, address, cat, entry, value) => {
 
 const exportBoG = (bog) => {
   const exp = {}
+  const data = {}
   Object.keys(bog).filter((each) => !!each && each.split('-').length === 3).forEach((key) => {
     const keyParts = key.split('-')
     const [ address, cat, entry ] = keyParts
@@ -75,21 +76,24 @@ const exportBoG = (bog) => {
     if (!value || !address || !bog[address]) return
 
     if (cat === 'lot' && !!bog[address+'-lot']) {
-      if (!exp[address]) exp[address] = {}
-      exp[address][entry] = value
+      if (!data[address]) data[address] = {}
+      data[address][entry] = value
 
     } else if (cat === 'org' && !!bog[address+'-org']) {
-      if (!exp[address]) exp[address] = {}
-      if (!exp[address].organization) exp[address].organization = {}
-      exp[address].organization[entry] = value
+      if (!data[address]) data[address] = {}
+      if (!data[address].organization) data[address].organization = {}
+      data[address].organization[entry] = value
 
     } else if (!!bog[address+'-'+cat]) {
-      if (!exp[address]) exp[address] = {}
-      if (!exp[address][cat]) exp[address][cat] = {}
-      exp[address][cat][entry] = value
+      if (!data[address]) data[address] = {}
+      if (!data[address][cat]) data[address][cat] = {}
+      data[address][cat][entry] = value
     }
   })
-  return JSON.stringify(Object.values(exp))
+  exp.created = Date.now()
+  exp.lots = Object.values(data)
+  exp.lotCount = exp.lots.length
+  return (!!exp.lotCount) ? JSON.stringify(exp) : null
 }
 
 export const reducer = (state = loadState(), action = {}) => {
