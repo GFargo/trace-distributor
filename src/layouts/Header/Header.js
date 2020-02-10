@@ -1,11 +1,11 @@
 import React from 'react'
 import PropTypes from "prop-types"
 import { Link } from "react-router-dom"
-
+import { withRouter } from "react-router"
 import Logo from '../../core/src/components/Elements/Logo'
 import Button from '../../core/src/components/Elements/Button'
 
-const Header = ({ username, displayLogos, containerClass = 'border-b-2' }) => (
+const Header = ({ username, displayLogos, containerClass = 'border-b-2', location }) => (
   <div className="" id="Header">
     <div className={`flex flex-row justify-between items-center ${containerClass}`}>
       {!!displayLogos && (
@@ -24,26 +24,26 @@ const Header = ({ username, displayLogos, containerClass = 'border-b-2' }) => (
       )}
 
       {!!username && (
-        <>
-          <div className="w-3/12">
-            <p>
-              Hello, <Link className="text-gold-800" to="/distributor/settings/"><strong>{username}</strong></Link>
-            </p>
-          </div>
+        <div className="w-3/12">
+          <p>
+            Hello, <Link className="text-gold-800" to="/distributor/settings/"><strong>{username}</strong></Link>
+          </p>
+        </div>
+      )}
 
-          <div className="ml-auto">
-            <ul className="flex flex items-center font-body">
-              <Button 
-                type="link"
-                color="green"
-                className="mb-2"
-                to="/distributor/manifest-creator/"
-              >
-                Create Bill Of Goods
-              </Button>
-            </ul>
-          </div>
-        </>
+      {!!username && location.pathname !== "/distributor/manifest-creator/" && (
+        <div className="ml-auto">
+          <ul className="flex flex items-center font-body">
+            <Button 
+              type="link"
+              color="green"
+              className="mb-2"
+              to="/distributor/manifest-creator/"
+            >
+              Create Bill Of Goods
+            </Button>
+          </ul>
+        </div>
       )}
 
     </div>
@@ -54,6 +54,7 @@ Header.propTypes = {
   username: PropTypes.string, //TODO define shape
   displayLogos: PropTypes.bool,
   containerClass: PropTypes.string,
+  location: PropTypes.object.isRequired,
 }
 
-export default Header
+export default withRouter(Header)

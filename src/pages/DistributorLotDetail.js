@@ -20,14 +20,14 @@ const fixStateImages = (lot) => (!!lot?.stateDetails?.data?.images?.length) ? ({
     ...lot.stateDetails,
     data: {
       ...lot.stateDetails.data,
-      images: translateImagesToAnchors(lot.stateDetails.data.images)
+      images: undefined//translateImagesToAnchors(lot.stateDetails.data.images)
     }
   },
   details: lot.details.map((state) => (!!state?.data?.images?.length) ? ({
     ...state,
     data: {
       ...state.data,
-      images: translateImagesToAnchors(state.data.images)
+      images: undefined//translateImagesToAnchors(state.data.images)
     }
   }) : state)
 }) : lot

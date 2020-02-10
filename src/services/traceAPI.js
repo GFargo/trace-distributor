@@ -304,6 +304,7 @@ const allLotsQuery = `{
 const meOrgLotsQuery = `{
     me {
       organization {
+        domain
         lots {
           ...LotType
         }
@@ -350,7 +351,7 @@ const receiveMeOrgLots = async (authToken) => {
   /* TODO Failsafe data for testing - Remove after dev server setup */
   if (!!lots && !lots.length) {//empty lots, fill with test data
     const allLots = await receiveAllLots()
-    lots = allLots.filter((lot) => lot?.organization?.domain === 'decatur.com')
+    lots = allLots.filter((lot) => lot?.organization?.domain === 'iostesthemp.com')
     console.log('traceAPI - receiveMeOrgLots test Lot empty, so POPULATING lots: ', lots)
   }
   return lots
