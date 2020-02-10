@@ -6,7 +6,7 @@ import SortableTable from '../core/src/components/SortableTable'
 import { localizeDateFromString } from '../core/src/utils/date-time/utils'
 
 
-const LotsIndex = ({ lots, manifest, onAddLot, onRemoveLot }) => {
+const LotsIndex = ({ lots, bog, onToggleSelection }) => {
 
   const targetInfoLink = (lot) => (
     <Button color="black" variant="outline" to={"/" + (!lot.parentLot ? "cultivating" : "processing") + "/" + lot.address}>
@@ -27,21 +27,20 @@ const LotsIndex = ({ lots, manifest, onAddLot, onRemoveLot }) => {
       getValue: (lot) => lot.state,
       size: 'base'
     },
-    /*
     {
-      name: 'manifest',
-      displayName: 'Manifest',
-      getValue: (lot) => (manifest.includes(lot.address)) ? "Yes" : "No",
+      name: 'bog',
+      displayName: 'BoG',
+      getValue: (lot) => (!!bog[lot.address]) ? "Included" : "Not Included",
       size: 'base'
     }
-    */
+    /*
     {
       name: 'verified',
       displayName: 'Verified',
       getValue: (lot) => (lot.verified) ? "Yes" : "No",
       size: 'base'
     }
-    
+    */
   ])
 
   const tableColumns = () => ([
@@ -69,6 +68,7 @@ const LotsIndex = ({ lots, manifest, onAddLot, onRemoveLot }) => {
       displayValue: (lot) => lot.state,
       sortable: (lot) => lot.state
     },
+    /*
     {
       name: 'verified',
       displayName: 'Verified',
@@ -83,6 +83,7 @@ const LotsIndex = ({ lots, manifest, onAddLot, onRemoveLot }) => {
       displayValue: (lot) => lot.subLots.length,
       sortable: (lot) => lot.subLots.length
     },
+    */
     {
       name: 'address',
       displayName: 'Blockchain Address',
@@ -92,16 +93,23 @@ const LotsIndex = ({ lots, manifest, onAddLot, onRemoveLot }) => {
         </Link>),
       sortable: (lot) => lot.address
     },
-    /*
     {
-      name: 'manifest',
-      displayName: 'Manifest',
-      displayValue: (lot) => (manifest.includes(lot.address)) ? 
-        (<i className="icon-check verified-mark" aria-hidden="true" onClick={() => onRemoveLot(lot)}></i>) : 
-        (<i className="icon-plus" aria-hidden="true" onClick={() => onAddLot(lot)}></i>),
-      sortable: (lot) => (manifest.includes(lot.address)) ? "yes" : "no"
+      name: 'bog',
+      displayName: 'Include in BoG',
+      displayValue: (lot) => 
+        <div className="custom-control custom-checkbox ml-6">
+          <input 
+            type="checkbox" 
+            className="custom-control-input text-warning" 
+            id={lot.address} 
+            checked={bog[lot.address]} 
+            onChange={() => onToggleSelection({address: lot.address})}
+          />
+          <label className="custom-control-label" htmlFor={lot.address}>
+          </label>
+        </div>,
+      sortable: (lot) => (!!bog[lot.address]) ? "Included" : "Not Included"
     }
-    */
   ])
 
   return (
@@ -125,9 +133,8 @@ const LotsIndex = ({ lots, manifest, onAddLot, onRemoveLot }) => {
 
 LotsIndex.propTypes = {
   lots: PropTypes.array.isRequired,
-  manifest: PropTypes.array.isRequired,
-  onAddLot: PropTypes.func.isRequired, 
-  onRemoveLot: PropTypes.func.isRequired
+  bog: PropTypes.object.isRequired,
+  onToggleSelection: PropTypes.func.isRequired
 }
 
 export default LotsIndex
