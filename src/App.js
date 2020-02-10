@@ -30,15 +30,20 @@ const App = () => {
     type: 'releaseAuth' 
   })
 
-  const dispatchAddLot = ({address}) => dispatch({ 
-    type: 'addLotToManifest', 
-    address 
+  const dispatchToggleBoGSelection = ({ address, cat, entry, value }) => dispatch({ 
+    type: 'toggleBoGSelection', 
+    address, cat, entry, value
   })
 
-  const dispatchRemvoeLot = ({address}) => dispatch({ 
-    type: 'removeLotFromManifest', 
-    address 
+  const dispatchClearBoG = () => dispatch({ 
+    type: 'clearBoG'
   })
+
+  const dispatchUploadBoG = ({ bog }) => dispatch({ 
+    type: 'uploadBoG',
+    bog
+  })
+
 
   /* Page Renderers */
   const renderLandingPage = () => (
@@ -62,9 +67,8 @@ const App = () => {
   ) : (
     <LotsIndex 
       lots={state.allLots} 
-      manifest={state.manifest}
-      onAddLot={dispatchAddLot} 
-      onRemoveLot={dispatchRemvoeLot}
+      bog={state.bog}
+      onToggleSelection={dispatchToggleBoGSelection} 
     />
   )
 
@@ -75,7 +79,13 @@ const App = () => {
   )
 
   const renderManifestCreator = () => (
-    <ManifestPage />
+    <ManifestPage
+      manifest={state.manifest} 
+      lots={state.allLots} 
+      bog={state.bog}
+      onToggleSelection={dispatchToggleBoGSelection} 
+      onCreateBoG={dispatchUploadBoG} 
+    />
   )
     
   const renderSettings = () => (
@@ -111,9 +121,7 @@ const App = () => {
   )
 
   return (
-    (!state) ? <Pending /> : 
-      (!state.authToken) ? <GuestRouter /> : 
-        <UserRouter />
+    (!state) ? <Pending /> : (!state.authToken) ? <GuestRouter /> : <UserRouter />
   )
 }
 
