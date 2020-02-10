@@ -1,6 +1,6 @@
 import { receiveUserLots, loginUser } from './traceAPI'
 
-const LOCAL_CACHE = 'trace-distributor'
+const APP_CACHE = 'trace-app'
 
 const initGuestState = () => ({
   username: 'guest',
@@ -10,7 +10,7 @@ const initGuestState = () => ({
   allLots: undefined,
   parentLots: undefined,
   subLots: undefined,
-  manifest: undefined,
+  bog: undefined,
   timestamp: undefined
 })
 
@@ -22,7 +22,7 @@ const initUserState = (username = '', authToken = null) => ({
   allLots: [],
   parentLots: [],
   subLots: [],
-  manifest: [],
+  bog: {},
   timestamp: undefined
 })
 
@@ -45,12 +45,52 @@ const userToState = ({ username, authToken, lots }) => {
 }
 
 const persistState = async (state) => { 
-  !!state && localStorage.setItem(LOCAL_CACHE, JSON.stringify(state)) 
+  !!state && localStorage.setItem(APP_CACHE, JSON.stringify(state)) 
 }
 
-export const loadState = (state = localStorage.getItem(LOCAL_CACHE)) => (!!state) ? 
+export const loadState = (state = localStorage.getItem(APP_CACHE)) => (!!state) ? 
   {...JSON.parse(state), timestamp: undefined, type: undefined} : 
   {...initGuestState()}
+
+const toggleLotDataSelection = (selection, address, cat, entry, value) => {
+  const selected = (!selection) ? {} : { ...selection }
+  if (!!address && !!cat && !!entry && !!value) {
+    selected[address+'-'+cat+'-'+entry] = (!selection[address+'-'+cat+'-'+entry]) ? value : undefined
+  } else if (!!address && !!cat && !!entry) {
+    selected[address+'-'+cat+'-'+entry] = (!selection[address+'-'+cat+'-'+entry]) ? true : undefined
+  } else if (!!address && !!cat) {
+    selected[address+'-'+cat] = (!selection[address+'-'+cat]) ? true : undefined
+  } else if (!!address) {
+    selected[address] = (!selection[address]) ? true : undefined
+  }
+  return selected
+}
+
+const exportBoG = (bog) => {
+  const exp = {}
+  Object.keys(bog).filter((each) => !!each && each.split('-').length === 3).forEach((key) => {
+    const keyParts = key.split('-')
+    const [ address, cat, entry ] = keyParts
+    const value = bog[key]
+    if (!value || !address || !bog[address]) return
+
+    if (cat === 'lot' && !!bog[address+'-lot']) {
+      if (!exp[address]) exp[address] = {}
+      exp[address][entry] = value
+
+    } else if (cat === 'org' && !!bog[address+'-org']) {
+      if (!exp[address]) exp[address] = {}
+      if (!exp[address].organization) exp[address].organization = {}
+      exp[address].organization[entry] = value
+
+    } else if (!!bog[address+'-'+cat]) {
+      if (!exp[address]) exp[address] = {}
+      if (!exp[address][cat]) exp[address][cat] = {}
+      exp[address][cat][entry] = value
+    }
+  })
+  return JSON.stringify(Object.values(exp))
+}
 
 export const reducer = (state = loadState(), action = {}) => {
 
@@ -99,20 +139,28 @@ export const reducer = (state = loadState(), action = {}) => {
           authToken: state.authToken,
           lots: action.lots || []
         }),
-        manifest: state.manifest,
+        bog: state.bog,
         timestamp: Date.now()
       }
-    case 'addLotToManifest':
+    case 'toggleBoGSelection':
       return { ...state, type: action.type,
-        manifest: (!state.manifest.includes(action.address)) ? 
-          [...state.manifest, action.address] : state.manifest,
-        allLots: [...state.allLots]//trying to get the LotsIndex to rerender
+        bog: toggleLotDataSelection(state.bog, action.address, action.cat, action.entry, action.value)
       }
-    case 'removeLotFromManifest':
+    case 'clearBoG':
       return { ...state, type: action.type,
-        manifest: (state.manifest.includes(action.address)) ? 
-          state.manifest.filter((lot) => lot !== action.address) : state.manifest,
-        allLots: [...state.allLots] //trying to get the LotsIndex to rerender
+        bog: {}
+      }
+    case 'uploadBoG':
+      return { ...state, type: action.type,
+        bogExport: exportBoG(state.bog)
+      }
+    case 'uploadingBoG':
+      return { ...state, type: action.type,
+        bogExport: null
+      }
+    case 'uploadedBoG':
+      return { ...state, type: action.type,
+        bogExport: undefined
       }
     default: return state
   }
@@ -149,6 +197,11 @@ export const userEffects = (state, dispatch) => {
       (lots) => (!lots) ? dispatch({ type: 'requireAuth', authError: '' }) : 
         dispatch({ type: 'receivedLots', lots })
     )
+  } else if (!!state.bogExport) {//create bog
+    console.info('^^^ trigger effect upload BoG')
+    const { bogExport } = state
+    dispatch({ type: 'uploadingBoG' })
+    console.log('Uploading BoG: ', bogExport)
   }
   if (!state.creds) persistState(state)
 }
