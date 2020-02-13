@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { Link } from "react-router-dom"
 import { LotSectionKeys, transformValues, formatDateString } from '../core/src/components/Lots/LotStateSection/LotSectionHelpers'
 import Button from '../core/src/components/Elements/Button'
 
@@ -137,18 +138,18 @@ const CheckboxListItem = ({ id, label, isChecked, isMeta, onChange, indent }) =>
   </li>
 )
 
-const SelectionItems = ({ lots, bog, onToggleSelection }) => {
+const SelectionItems = ({ lots, selection, onToggleSelection }) => {
   const SelectionItems = []
   if (!!lots?.length) {
     lots.forEach((lot) => { 
-      if (!!bog[lot.address]) {
+      if (!!selection[lot.address]) {
         SelectionItems.push(
           <CheckboxListItem 
             key={lot.address} 
             id={lot.address}
             label={lot.name}
             indent={4}
-            isChecked={bog[lot.address]}
+            isChecked={selection[lot.address]}
             isMeta={true}
             onChange={() => onToggleSelection({address: lot.address})}
           />
@@ -159,12 +160,12 @@ const SelectionItems = ({ lots, bog, onToggleSelection }) => {
             id={lot.address+'-lot'}
             label={'Lot Information'}
             indent={12}
-            isChecked={bog[lot.address+'-lot']}
+            isChecked={selection[lot.address+'-lot']}
             isMeta={true}
             onChange={() => onToggleSelection({address: lot.address, cat: 'lot'})}
           />
         )
-        if (!!bog[lot.address+'-lot']) {
+        if (!!selection[lot.address+'-lot']) {
           LOT_ENTRIES.forEach((entry) => { 
             const key = lot.address+'-lot-'+entry
             const value = !!entry && extTransformValues(entry, lot[entry])
@@ -175,7 +176,7 @@ const SelectionItems = ({ lots, bog, onToggleSelection }) => {
                   id={key}
                   label={extLotSectionKeys(entry)+': '+value}
                   indent={20}
-                  isChecked={bog[key]}
+                  isChecked={selection[key]}
                   isMeta={false}
                   onChange={() => onToggleSelection({address: lot.address, cat: 'lot', entry, value })}
                 />
@@ -189,12 +190,12 @@ const SelectionItems = ({ lots, bog, onToggleSelection }) => {
             id={lot.address+'-org'}
             label={'Organization'}
             indent={12}
-            isChecked={bog[lot.address+'-org']}
+            isChecked={selection[lot.address+'-org']}
             isMeta={true}
             onChange={() => onToggleSelection({address: lot.address, cat: 'org'})}
           />
         )
-        if (!!bog[lot.address+'-org']) {
+        if (!!selection[lot.address+'-org']) {
           ORG_ENTRIES.forEach((entry) => { 
             const key = lot.address+'-org-'+entry
             const value = !!entry && extTransformValues(entry, lot.organization[entry])
@@ -205,7 +206,7 @@ const SelectionItems = ({ lots, bog, onToggleSelection }) => {
                   id={key}
                   label={extLotSectionKeys(entry)+': '+value}
                   indent={20}
-                  isChecked={bog[key]}
+                  isChecked={selection[key]}
                   isMeta={false}
                   onChange={() => onToggleSelection({address: lot.address, cat: 'org', entry, value })}
                 />
@@ -220,12 +221,12 @@ const SelectionItems = ({ lots, bog, onToggleSelection }) => {
               id={lot.address+'-'+lotState.state}
               label={transformStateValue(lotState.state)}
               indent={12}
-              isChecked={bog[lot.address+'-'+lotState.state]}
+              isChecked={selection[lot.address+'-'+lotState.state]}
               isMeta={true}
               onChange={() => onToggleSelection({address: lot.address, cat: lotState.state})}
             />
           )
-          if (!!bog[lot.address] && !!bog[lot.address+'-'+lotState.state]) {
+          if (!!selection[lot.address] && !!selection[lot.address+'-'+lotState.state]) {
             Object.keys(lotState.data).forEach((entry) => {
               const key = lot.address+'-'+lotState.state+'-'+entry
               const value = !!entry && extTransformValues(entry, lotState.data[entry])
@@ -236,7 +237,7 @@ const SelectionItems = ({ lots, bog, onToggleSelection }) => {
                     id={key} 
                     label={extLotSectionKeys(entry)+': '+value}       
                     indent={20}
-                    isChecked={bog[key]}          
+                    isChecked={selection[key]}          
                     isMeta={false}
                     onChange={() => onToggleSelection({address: lot.address, cat: lotState.state, entry, value })}
                   />
@@ -251,32 +252,40 @@ const SelectionItems = ({ lots, bog, onToggleSelection }) => {
   return SelectionItems
 }
 
-const ManifestView = ({ lots, bog, onToggleSelection, onCreateBoG }) => (
+const ManifestView = ({ lots, selection, onToggleSelection, onExportLotDataSelection }) => (
   <div className="container">
-    <div className="row row-sm p-4">
-      <p className="h5 mt-2 ml-3">Create Bill of Goods</p>
-      {!!Object.keys(bog).filter((each) => !!bog[each] && each.split('-').length === 3).length && (
+    <div className="row row-sm p-4 mt-2 ml-3">
+      <p className="h5">Create Bill of Goods</p>
+      {!!Object.keys(selection).filter((each) => !!selection[each] && each.split('-').length === 3).length && (
         <Button 
           type="link"
           color="green"
-          className="ml-12"
-          onClickHandler={onCreateBoG}
+          className="ml-6"
+          onClickHandler={onExportLotDataSelection}
         >
           Create
         </Button>
       )}
-   </div>
+      <Button 
+        type="link"
+        color="gold"
+        className="ml-6"
+        to={'/product-page/'+'3'}
+      >
+        Mock Product Page
+      </Button>
+    </div>
     <ul className="list-group">
-      <SelectionItems lots={lots} bog={bog} onToggleSelection={onToggleSelection} />
+      <SelectionItems lots={lots} selection={selection} onToggleSelection={onToggleSelection} />
     </ul>
   </div>
 )
 
 ManifestView.propTypes = {
   lots: PropTypes.array.isRequired,
-  bog: PropTypes.object.isRequired,
+  selection: PropTypes.object.isRequired,
   onToggleSelection: PropTypes.func.isRequired,
-  onCreateBoG: PropTypes.func.isRequired
+  onExportLotDataSelection: PropTypes.func.isRequired
 }
 
 export default ManifestView

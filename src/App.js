@@ -12,6 +12,7 @@ import LotDetail from './pages/DistributorLotDetail'
 import LotsIndex from './pages/DistributorLotsIndex'
 import ManifestPage from './pages/DistributorManifestCreator'
 import SettingsPage from './pages/DistributorSettings'
+import ProductPage from './ProductPage'
 import './styles/tailwind.css'
 import './core/src/styles/icons.css'
 
@@ -30,16 +31,15 @@ const App = () => {
     type: 'releaseAuth' 
   })
 
-  const dispatchToggleBoGSelection = ({ address, cat, entry, value }) => dispatch({ 
-    type: 'toggleBoGSelection', 
+  const dispatchToggleLotDataSelection = ({ address, cat, entry, value }) => dispatch({ 
+    type: 'toggleLotDataSelection', 
     address, cat, entry, value
   })
 
-  const dispatchUploadBoG = ({ bog }) => dispatch({ 
-    type: 'uploadBoG',
-    bog
+  const dispatchUploadLotDataSelection = ({ selection }) => dispatch({ 
+    type: 'uploadLotDataSelection',
+    selection
   })
-
 
   /* Page Renderers */
   const renderLandingPage = () => (
@@ -61,31 +61,38 @@ const App = () => {
   const renderLotIndex = () => (!state.allLots) ? (
     <Pending />
   ) : (
-    <LotsIndex 
-      lots={state.allLots} 
-      bog={state.bog}
-      onToggleSelection={dispatchToggleBoGSelection} 
-    />
+    <UserLayout username={state.username} onLogout={dispatchLogout}>
+      <LotsIndex 
+        lots={state.allLots} 
+        selection={state.selection}
+        onToggleSelection={dispatchToggleLotDataSelection} 
+      />
+    </UserLayout>
   )
 
   const renderLotDetails = (props) => (!!props?.match?.params?.address && !!state.lotDir[props.match.params.address]) ? (
-    <LotDetail lot={state.lotDir[props.match.params.address]} />
+    <UserLayout username={state.username} onLogout={dispatchLogout}>
+      <LotDetail lot={state.lotDir[props.match.params.address]} />
+    </UserLayout>
   ) : (
     <NotFound />
   )
 
   const renderManifestCreator = () => (
-    <ManifestPage
-      manifest={state.manifest} 
-      lots={state.allLots} 
-      bog={state.bog}
-      onToggleSelection={dispatchToggleBoGSelection} 
-      onCreateBoG={dispatchUploadBoG} 
-    />
+    <UserLayout username={state.username} onLogout={dispatchLogout}>
+      <ManifestPage
+        lots={state.allLots} 
+        selection={state.selection}
+        onToggleSelection={dispatchToggleLotDataSelection} 
+        onExportLotDataSelection={dispatchUploadLotDataSelection}
+      />
+    </UserLayout>
   )
     
   const renderSettings = () => (
-    <SettingsPage />
+    <UserLayout username={state.username} onLogout={dispatchLogout}>
+      <SettingsPage />
+    </UserLayout>
   )
 
   const GuestRouter = () => (
@@ -100,19 +107,24 @@ const App = () => {
     </Router>
   )
 
+  const renderProductPage = (props) => (!!props?.match?.params?.address) ? (
+    <ProductPage address={props.match.params.address} />
+  ) : (
+    <NotFound />
+  )
+
   const UserRouter = () => (
     <Router>
-      <UserLayout username={state.username} onLogout={dispatchLogout}>
-        <Switch>
-          <Route exact path="/" render={() => <Redirect to="/distributor/products" />} />
-          <Route exact path="/distributor/products" render={renderLotIndex} />
-          <Route path="/cultivating/:address" render={renderLotDetails} />
-          <Route path="/processing/:address" render={renderLotDetails} />
-          <Route exact path="/distributor/manifest-creator" render={renderManifestCreator} />
-          <Route exact path="/distributor/settings" render={renderSettings} />
-          <Route render={() => <Redirect to="/distributor/products" />} />
-        </Switch>
-      </UserLayout>
+      <Switch>
+        <Route exact path="/" render={() => <Redirect to="/distributor/products" />} />
+        <Route exact path="/distributor/products" render={renderLotIndex} />
+        <Route path="/cultivating/:address" render={renderLotDetails} />
+        <Route path="/processing/:address" render={renderLotDetails} />
+        <Route exact path="/distributor/manifest-creator" render={renderManifestCreator} />
+        <Route exact path="/distributor/settings" render={renderSettings} />
+        <Route path="/product-page/:address" render={renderProductPage} />
+        <Route render={() => <Redirect to="/distributor/products" />} />
+      </Switch>
     </Router>
   )
 
