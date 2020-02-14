@@ -37,30 +37,10 @@ export const LotTypes = {
   ]
 }
 
-const fillLotStateHistory = (lotState) => {
-  const history = []
-  if (!lotState || lotState === 'new' || !LotTypes.LotState.includes(lotState)) return history
-  let state = lotState
-  while (state !== 'new') {
-    history.push(LotStateDetails(state))
-    if (state === 'initial') state = 'new'
-    else if (state === 'grow') state = 'initial'
-    else if (state === 'harvest') state = 'grow'
-    else if (state === 'extracting') state = 'harvest'
-    else if (state === 'extracted') state = 'extracting'
-    else if (state === 'testing') state = 'extracted'
-    else if (state === 'tested') state = 'testing'
-    else if (state === 'product') state = 'tested'
-    else if (state === 'complete') state = 'product'
-    else state = 'new'
-  }
-  return history
-}
-
 const LotStateData = {
   new: {},
   initial: {
-    strain: 'SuperTrooper Kush',
+    strain: 'Supertrooper Kush',
     strainType: 'hemp', 
     datePlanted: '2019-05-21', 
     location: '420 Dank Lane, Randolph, VT',
@@ -160,7 +140,20 @@ const LotStateData = {
   },
   complete: {
     product: {
-
+      id: 22222,
+      title: 'Hemp Product',
+      image: { url: placeholderImage },
+      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+      company: {
+        name: 'Minnesota Hemp Company',
+        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+        logo: { url: placeholderImage, hash: '' },
+        location: { state: 'Minnesota', country: 'USA' }
+      },
+      created: '2019-4-20',
+      dnaReportUrl: [
+        {name: 'Document Name A', url: ''}, {name: 'Document Name B', url: ''}, {name: 'Document Name C', url: ''}
+      ]
     }
   }
 }
@@ -169,145 +162,21 @@ const LotStateDetails = (state) => ({
   state,
   infoFileHash: 'QmT9qk3CRYbFDWpDFYeAv8T8H1gnongwKhh5J68NLkLir6', 
   data: { ...LotStateData[state] },
-  created: 1579040207,
-  creator: {
-    firstName: 'Andy',
-    lastName: 'Anderson',
-    organization: 'Mind Kontrol Inc',
-    role: 'owner',
-    authToken: ''
-  }
-})
-/*
-const User = () => ({
-  firstName: 'The',//String!, First name of user
-  lastName: 'Dude',//String!, Last name of user
-  organization: {
-  role: 'owner',//String
-  authToken: 'QmT9qk3CRYbFDWpDFYeAv8T8H1gnongwKhh5J68NLkLir6'//String!
+  created: 1579040207
 })
 
-const Device = () => ({
-  name: 'MobileDude',//String
-  address: '0x3fe6a3B093487462e90AEBDb5680e06D1990D602',//AccountAddress!
-  owner: User()//User
-})
-
-const Organization = () => ({
-  id: 'QmT9qk3CRYbFDWpDFYeAv8T8H1gnongwKhh5J68NLkLir6',//ID!
-  name: 'Mind Kontrol Inc',//String!, Name of organization
-  infoHash: 'QmT9qk3CRYbFDWpDFYeAv8T8H1gnongwKhh5J68NLkLir6',//String, IPFS info hash for off chain stored data
-  address: '0x3fe6a3B093487462e90AEBDb5680e06D1990D602',//AccountAddress, Address of organization on blockchain
-  owner: User(),//User!, Owner of organization
-  domain: 'mindkontrol.com',//Domain!, Domain associated with organization
-  location: '420 Dank Lane, Randolph, VT',//Location, Location of organization
-  roles: [{//[OrganizationRole], Organization roles
-    identifier: 'owner',
-    label: 'owner'
-  }],
-  verified: true,//Boolean, If Organization has been verified by Trace
-  lots: [
-  users: [//[User]
-    User()
-  ],
-  devices: [//[Device]
-    Device()
-  ],
-  deviceAccessRequests: [//[Device]
-    Device()
-  ],
-  lotFactory: {//LotFactory
-    address: '0x3fe6a3B093487462e90AEBDb5680e06D1990D602',
-    version: '1.0'
-  },
-  permit: {//PermitInfo
-    photoID: '',//URI!
-    licenseNumber: '223452345',//String!
-    permitHolderName: 'The Dude'//String!
-  },
-  statistics: {//OrganizationStatistics
-    lots: [{//[LotStateCount]
-      state: randomType(LotTypes.LotState),
-      count: 1//Int
-    }],
-    users: 1,//Int
-    devices: 1//Int
-  }
-})
-
-const Lot = (name, state = randomType(LotTypes.LotState)) => ({
-  infoFileHash: 'QmT9qk3CRYbFDWpDFYeAv8T8H1gnongwKhh5J68NLkLir6',
-  name,//String! Name of lot
-  address: randomInt(111111111, 999999999),//Lot contract address
-  organization: Organization(),
-  nextPermitted: Organization(),//Next permitted organization to persist state
-  state,//LotState!, State of the lot in string
-  stateDetails: LotStateDetails(state),//LotStateDetails, current state details of lot
-  details: fillLotStateHistory(state),//[LotStateDetails], all state details of lot
-  totalSupply: randomFloat(500, 2000),//Float, Total supply
-  forSale: randomBoolean(),//Boolean
-  factory: {//LotFactory
-    address: '0x3fe6a3B093487462e90AEBDb5680e06D1990D602',
-    version: '1.0'
-  },
-  subLots: [],//[
-  parentLot: null,//Lot, Parent lot info
-  hasParent: false,//Boolean!, Simple boolean check if sublot has parent
-  currentUserPermissions: randomType(LotTypes.UserPermType),//[LotPermission], Returns current users access
-  url: '',//URI, The URL where the info is presented
-  created: 1579040207, //DateTime, When created aka blockchain block timestamp
-  image: placeholderImage
-})
-
-const SelectionLot = (name, state) => ({
-  name,//String! Name of lot
-  address: '0x3fe6a3B093487462e90AEBDb5680e06D1990D602',//Lot contract address
-  totalSupply: randomInt(500, 10000),//Float, Total supply
-  organization:{
-    name: 'Mind Kontrol Inc',
-    domain: 'mindkontrol.com',
-    location: { address1: '420 Dank Lane, Randolph', state: 'VT', zipcode: '010101' }
-  },
-  state,//LotState!, State of the lot in string
-  states: {...LotStateData},
-  subLots: [],//[
-  parentLot: null,//Lot, Parent lot info
-  hasParent: true,//Boolean!, Simple boolean check if sublot has parent
-  created: 1579040207 //DateTime, When created aka blockchain block timestamp
-})
-
-export mockLots = () => {
-  let parentLots = ['Lotsa Hemp A', 'Lotsa Hemp B', 'Lotsa Hemp C', 'Lotsa Hemp D', 'Lotsa Hemp E'].map((name) => Lot(name, 'complete'))
-  let subLots = ['Lotsa Oil A', 'Lotsa Oil B', 'Lotsa Oil C', 'Lotsa Oil D', 'Lotsa Oil E'].map((name) => Lot(name))
-  subLots = subLots.map((lot, index) => ({...lot, parentLot: parentLots[index], hasParent: true}))
-  parentLots = parentLots.map((lot, index) => ({...lot, subLots: [subLots[index]] }))
-  return [...parentLots, ...subLots]
-}
-
-export mockLotSelections = () => {
-  let parentLot = SelectionLot('Lotsa Hemp', 'harvest')
-  const subLots = ['Lotsa Oil A', 'Lotsa Oil B'].map((name) => ({
-    ...SelectionLot(name, 'complete'), 
-    parentLot: parentLot, 
-    hasParent: true
-  }))
-  parentLot = {...parentLot, subLots }
-  return [...subLots, parentLot]
-}
-*/
-
-const MockCultivatingLot = () => ({
-  name: 'Mock Hemp Lot',
-  address: 'QmT9qk3CRYbFDWpDFYeAv8T8H1gnongwKhh5J68NLkLir6',
+const MockCultivatingLot = (name, address) => ({
+  name: 'Mock Hemp Lot '+name,
+  address: address,
   totalSupply: 423456,
   organization: {
-    name: 'Mock Hemp Company',
+    name: 'Mock Company '+name,
     domain: 'dank.com',
     location: { address1: '420 Mock Lane, Randolph', state: 'VT', zipcode: '010101' }
   },
   state: 'harvest',
   stateDetails: LotStateDetails('harvest'),
-  details: ['initial', 'grow', 'harvest'].map((state) => LotStateDetails(state)),
+  details: ['initial', 'grow', 'harvest', 'product', 'complete'].map((state) => LotStateDetails(state)),
   forSale: true,
   parentLot: null,
   hasParent: false,
@@ -315,93 +184,28 @@ const MockCultivatingLot = () => ({
   created: '2019-4-20'
 })
 
-const MockProcessingLot = () => ({
-  name: 'Mock Oil Lot',
-  address: 'QmT9qk3CRYbFDWpDFYeAv8T8H1gnongwKhh5J68NLkLir6',
+const MockProcessingLot = (name, address) => ({
+  name: 'Mock Oil Lot '+name,
+  address: address,
   totalSupply: 5858,
   organization: {
-    name: 'Mock Hemp Company',
+    name: 'Mock Company '+name,
     domain: 'dank.com',
     location: { address1: '420 Mock Lane, Randolph', state: 'VT', zipcode: '010101' }
   },
   state: 'complete',
-  stateDetails: LotStateDetails('tested'),
+  stateDetails: LotStateDetails('complete'),
   details:  ['extracting', 'extracted', 'testing', 'tested', 'product', 'complete'].map((state) => LotStateDetails(state)),
   forSale: true,
-  parentLot: MockCultivatingLot(),
+  parentLot: MockCultivatingLot('A', '0x0084Dfd7202E5F5C0C8Be83503a492837ca3E95E'),
   hasParent: true,
   subLots: [],
-  created: '2019-4-20'
+  created: 'November 28, 2019'
 })
 
-const MockProductLot = () => ({
-  name: 'Mock Soap Lot',
-  address: 'QmT9qk3CRYbFDWpDFYeAv8T8H1gnongwKhh5J68NLkLir6',
-  totalSupply: 2200,
-  organization: {
-    name: 'Mock Hemp Company',
-    domain: 'dank.com',
-    location: { address1: '420 Mock Lane, Randolph', state: 'VT', zipcode: '010101' }
-  },
-  state: 'complete',
-  stateDetails: LotStateDetails('product'),
-  details:  ['extracting', 'extracted', 'testing', 'tested', 'product', 'complete'].map((state) => LotStateDetails(state)),
-  forSale: true,
-  parentLot: MockProcessingLot(),
-  hasParent: true,
-  subLots: [],
-  created: '2019-4-20'
-})
+export const getMockLots = () => [ 
+  MockProcessingLot('B', '0x03599A2429871E6be1B154Fb9c24691F9D301865'), 
+  MockCultivatingLot('C', '0x22Cb9826B15148c88b4F53B13d91a1187A157f69') 
+]
 
-const MockHempProduct = () => ({
-  id: 11111,
-  title: 'Mock Hemp Product',
-  supplyLot: MockCultivatingLot(),
-  image: { url: placeholderImage },
-  description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-  company: {
-    name: 'Mock Hemp Company',
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-    logo: { url: placeholderImage, hash: '' },
-    location: { state: 'Minnesota', country: 'USA' }
-  },
-  created: '2019-4-20',
-  dnaReportUrl: 'What is this?'
-})
-
-const MockOilProduct = () => ({
-  id: 22222,
-  title: 'Mock Oil Product',
-  supplyLot: MockProcessingLot(),
-  image: { url: placeholderImage },
-  description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-  company: {
-    name: 'Mock Hemp Company',
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-    logo: { url: placeholderImage, hash: '' },
-    location: { state: 'Minnesota', country: 'USA' }
-  },
-  created: '2019-4-20',
-  dnaReportUrl: 'What is this?'
-})
-
-const MockSoapProduct = () => ({
-  id: 22222,
-  title: 'Mock Soap Product',
-  supplyLot: MockProductLot(),
-  image: { url: placeholderImage },
-  description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-  company: {
-    name: 'Mock Hemp Company',
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-    logo: { url: placeholderImage, hash: '' },
-    location: { state: 'Minnesota', country: 'USA' }
-  },
-  created: '2019-4-20',
-  dnaReportUrl: 'What is this?'
-})
-
-export const getMockProductLotData = (type) => 
-  (type === 'hemp') ? MockHempProduct() : (type === 'oil') ? MockOilProduct() : MockSoapProduct()
-
-export default getMockProductLotData
+export default getMockLots
