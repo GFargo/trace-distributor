@@ -1,25 +1,13 @@
-import React from 'react'
-
-const traceProductToLots = (product) => {
-  const lots = []
-  let parent = (!!product?.supplyLot) ? product.supplyLot : null
-  while (!!parent) {
-    lots.unshift(parent)
-    parent = parent.parentLot
-  }
-  return lots
-}
+import React, { useState } from 'react'
+import PropTypes from 'prop-types'
+import styled from 'styled-components'
+import graySvgPattern from '../core/src/images/svg/backgrounds/logo-pattern-gray.svg'
+import TraceLogo from '../core/src/components/Elements/Logo'
 
 const getLotStateData = (lot, state) => {
   const data = lot.details.find((one) => one.state === state).data
   return data
 }
-
-const ProductImage = ({ url }) => (
-  <div className="img-container w-100">
-    <img src={url} alt="product" className="img-fluid" />
-  </div>
-)
 
 const PrimaryTitle = ({ text }) => (
   <div className="row m-6">
@@ -48,12 +36,6 @@ const DescriptionFootnote = ({ title, text }) => (
 const LogoImage = ({ url }) => (
   <div className="row mt-6">
     <img src={url} alt="logo" className="w-25 mx-auto d-block rounded-circle img-fluid"/>
-  </div>
-)
-
-const Dot = () => (
-  <div className="mt-12">
-    <p className="h3 text-center">DOT</p>
   </div>
 )
 
@@ -110,15 +92,8 @@ const SupplyDescription = ({ count }) => (
   </div>
 )
 
-const TestingResults = ({ lot }) => (
-  <div className="mx-12 mb-2 mt-6">
-    <p className="h5 text-center">{'PDF...'}</p>
-  </div>
-)
-
 const CultivationLotDetail = ({ lot }) => (
   <div className="mb-2">
-    <Dot />
     <PrimaryTitle text={lot.name} />
     <VerticalDetail title={'Cultivator Name:'} value={lot.organization.name} />
     <VerticalDetail title={'Blockchain Address:'} value={lot.address} />
@@ -138,7 +113,6 @@ const CultivationLotDetail = ({ lot }) => (
 
 const ProcessingLotDetail = ({ lot }) => (
   <div className="mb-2">
-    <Dot />
     <PrimaryTitle text={lot.name} />
     <VerticalDetail title={'Extractor Name:'} value={lot.organization.name} />
     <VerticalDetail title={'Blockchain Address:'} value={lot.address} />
@@ -146,38 +120,78 @@ const ProcessingLotDetail = ({ lot }) => (
       title={['Extraction Type:', 'Extraction Date:']} 
       value={[getLotStateData(lot, 'extracted').extractionType, getLotStateData(lot, 'extracted').extractionDate]} 
     />
-    <SecondaryTitle text={'Testing Documentation For This Lot'} />
-    <TestingResults lot={lot} />
   </div>
 )
 
-const SupplyLotDetails = ({ supplyLots }) => (
-  supplyLots.map((lot, index) => (!lot.parentLot) ? 
-    <CultivationLotDetail key={index} lot={lot} /> :
-    <ProcessingLotDetail key={index} lot={lot} />
-  )
+const Dots = ({ lots, lotSelected, setLotSelected }) => (
+  <div className="mt-6 text-center">
+    {lots.map((lot, index) => (lotSelected === index) ? 
+      <i key={index} className="fas fa-circle fa-3x btn pr-2"></i> :
+      <i key={index} className="far fa-circle fa-3x btn pr-2" onClick={() => setLotSelected(index)}></i>
+    )}
+  </div>
 )
 
-const Footer = () => (
-  <footer className="footer full-height">
-    <div className="row m-12">
-      <p className="col h1 text-center">{'TRACE FOOTER IMAGE'}</p>
+const TestingResults = ({ dnaReportLinks }) => (
+  <div  className="row">
+    <div className="col-xs-12 mx-auto btn" onClick={() => {/*pdfLink.url*/}}>
+      {dnaReportLinks.map((pdfLink, index) => 
+        <div key={index} className="row">
+          <i className="fa fa-file-pdf fa-3x p-3"></i>
+          <p className="h3 pt-4">{pdfLink.name}</p>
+        </div>
+      )}
     </div>
-  </footer>
+  </div>
 )
 
+const TraceHeaderPattern = styled.div`
+  width: 100%;
+  background-size: 142%;
+  background-image: url('${graySvgPattern}');
+  background-repeat: repeat;
+  background-position: bottom;
+`
 
-export const ProductView = ({ product }) => {
+const TraceProductImage = ({ imageUrl }) => (
+  <TraceHeaderPattern className="bg col-xs-12">
+    <div className="row pt-24 pb-32">
+      <img src={imageUrl} alt="product" className="w-75 mx-auto d-block rounded-circle img-fluid"/>
+    </div>
+  </TraceHeaderPattern>
+)
 
-  const supplyLots = traceProductToLots(product)
-  console.log('supplyLots: '+supplyLots)
+const PrimaryProductTitle = ({ text }) => (
+  <div className="row m-6">
+    <p className="col h1 text-center">{text}</p>
+  </div>
+)
+
+const TraceProductFooter = () => (
+
+    <div className="row bg-light mt-12">
+      <div className="w-5/12 pl-4 py-2 text-justiy-left">
+        <SecondaryTitle className="text-justiy-left" text='All data recorded and tracked by:' />
+      </div>
+      <div className="w-6/12 pl-4 pt-8 p">
+        <TraceLogo className="" width="360px" svgFill="black" color="black" />
+      </div>
+    </div>
+)
+
+export const ProductView = ({ productLots }) => {
+  const [ lotSelected, setLotSelected ] = useState(0)
+  const lot = productLots[lotSelected]
+  console.log('productLots: ', productLots)
+  const product = getLotStateData(productLots[0], 'complete').product
+  console.log('product: ', product)
 
   return (
     <div className="container-fluid max-w-5xl">
       <div className="row pl-3">
         <div className="col-xs-12"> 
-          <ProductImage url={product.image.url} />
-          <PrimaryTitle text={product.title} />
+          <TraceProductImage imageUrl={product.image?.url || ''} />
+          <PrimaryProductTitle text={product.title} />
           <Description text={product.description} />
           <DescriptionFootnote 
             title={'Packaging Date'} 
@@ -185,27 +199,36 @@ export const ProductView = ({ product }) => {
           />
           <div className="row bg-light">
             <div className="col">
-              <LogoImage url={product.company.logo.url} />
-              <PrimaryTitle text={product.company.name} />
-              <Description text={product.company.description} />
+              <LogoImage url={product.company?.logo?.url || ''} />
+              <PrimaryTitle text={product.company?.name || ''} />
+              <Description text={product.company?.description || ''} />
               <DescriptionFootnote 
                 title={'Distributor Location'} 
-                text={product.company.location.state+', '+product.company.location.country} 
+                text={(product.company?.location?.state || '')+', '+(product.company?.location?.country || '')} 
               />
             </div>
           </div>
           <PrimaryTitle text={'Lot Information'} />
-          {!!supplyLots.length && 
-            <SupplyDescription count={supplyLots.length} /> 
-          }
-          {!!supplyLots.length && 
-            <SupplyLotDetails supplyLots={supplyLots} /> 
-          }
-          <Footer /> 
+          {!!productLots.length && <SupplyDescription count={productLots.length} />}
+          <Dots 
+            lots={productLots} 
+            lotSelected={lotSelected} 
+            setLotSelected={setLotSelected} 
+          />
+          {!lot.parentLot && <CultivationLotDetail lot={lot} />}
+          {!!lot.parentLot && <CultivationLotDetail lot={lot.parentLot} />}
+          {!!lot.parentLot && <ProcessingLotDetail lot={lot} />}
+          {!!product.dnaReportUrl?.length && <SecondaryTitle text={'Testing Documentation For This Lot'} />}
+          {!!product.dnaReportUrl?.length && <TestingResults dnaReportLinks={product.dnaReportUrl} />}
+          <TraceProductFooter /> 
         </div>
       </div>
     </div>
   )
+}
+
+ProductView.propTypes = {
+  productLots: PropTypes.array.isRequired
 }
 
 export default ProductView
