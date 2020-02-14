@@ -1,13 +1,18 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import ProductView from './ProductView'
-import getMockProductLotData from './mockLotData'
+import getMockLots from './mockLotData'
 
 export const ProductPage = ({ address }) => {
-  const product = getMockProductLotData('oil')
-  console.log("ProductView >>>>> ", product)
+  const productLots = getMockLots()
+  console.log("productLots >>>>> ", productLots)
   return (
-    <ProductView product={product} />
+    <ProductView productLots={productLots} />
   )
+}
+
+ProductPage.propTypes = {
+  address: PropTypes.string.isRequired
 }
 
 export default ProductPage
