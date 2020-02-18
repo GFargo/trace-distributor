@@ -1,6 +1,5 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Link } from "react-router-dom"
 import { LotSectionKeys, transformValues, formatDateString } from '../core/src/components/Lots/LotStateSection/LotSectionHelpers'
 import Button from '../core/src/components/Elements/Button'
 
@@ -270,7 +269,7 @@ const ManifestView = ({ lots, selection, onToggleSelection, onExportLotDataSelec
         type="link"
         color="gold"
         className="ml-6"
-        to={'/product-page/'+'3'}
+        to={'/product-page/3'}
       >
         Mock Product Page
       </Button>

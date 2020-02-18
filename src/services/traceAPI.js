@@ -323,7 +323,7 @@ const loginQuery = (email, password) => {
     }
   }`)
 }
-
+/*
 const PRODUCT_TYPE = `
   fragment ProductType on Product {
     id
@@ -367,6 +367,7 @@ const productQuery = (id) => `{
   }
   ${PRODUCT_TYPE}
 `
+*/
 
 /* Query Controllers */
 
@@ -387,23 +388,6 @@ const receiveAllLots = async () => {
   return lots
 }
 
-const receiveAllProducts = async () => {
-  //console.log('traceAPI >>> receiving All Lots... ')
-  const result = await fetchQuery(allLotsQuery)
-
-  /* TODO No access to org owner name - injecting temp data to prevent core component error  */
-  const products = !(!!result?.products?.length) ? [] : 
-    result.products.filter((each) => !!each)/*.map((lot) => ({
-      ...lot, 
-      organization: {
-        ...lot.organization,
-        owner: { firstName: 'NO ACCESS TO ORG OWNER NAME', lastName: 'TEST DATA' }
-      }
-    }))*/
-
-  return products
-}
-
 const receiveMeOrgLots = async (authToken) => {
   const result = await fetchQuery(meOrgLotsQuery, authToken)
   console.log('traceAPI - receiveMeOrgLots result: ', result)
@@ -412,7 +396,7 @@ const receiveMeOrgLots = async (authToken) => {
   /* TODO Failsafe data for testing - Remove after dev server setup */
   if (!!lots && !lots.length) {//empty lots, fill with test data
     const allLots = await receiveAllLots()
-    lots = allLots//.filter((lot) => lot?.organization?.domain === 'iostesthemp.com')
+    lots = allLots.filter((lot) => lot?.organization?.domain === 'iostesthemp.com')
     console.log('traceAPI - receiveMeOrgLots test Lot empty, so POPULATING lots: ', lots)
   }
   return lots
@@ -450,6 +434,17 @@ export const receiveUserLots = async (authToken, callback) => {
   return {lots}
 }
 
+/*
+const receiveAllProducts = async () => {
+  //console.log('traceAPI >>> receiving All Lots... ')
+  const result = await fetchQuery(allLotsQuery)
+
+  const products = !(!!result?.products?.length) ? [] : 
+    result.products.filter((each) => !!each)
+
+  return products
+}
+
 
 export const receiveProductLot = async (address, callback) => {
   //console.log('traceAPI >>> receiving All Lots... ')
@@ -457,11 +452,11 @@ export const receiveProductLot = async (address, callback) => {
 
   //const result = await fetchQuery(productQuery(address))
 
-  /* TODO No access to org owner name - injecting temp data to prevent core component error  */
   const lot = !(!!result?.lot) ? {} : result.lot
 
   return lot
 }
+*/
 
 const traceAPI = {
   loginUser,

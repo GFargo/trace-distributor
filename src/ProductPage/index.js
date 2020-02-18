@@ -5,7 +5,7 @@ import getMockLots from './mockLotData'
 
 export const ProductPage = ({ address }) => {
   const productLots = getMockLots()
-  console.log("productLots >>>>> ", productLots)
+  //console.log("productLots >>>>> ", productLots)
   return (
     <ProductView productLots={productLots} />
   )

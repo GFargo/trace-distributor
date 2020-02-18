@@ -1,4 +1,3 @@
-import ReactDOMServer from 'react-dom/server';
 import { receiveUserLots, loginUser } from './traceAPI'
 
 const APP_CACHE = 'trace-app'
@@ -193,13 +192,11 @@ export const userEffects = (state, dispatch) => {
   } else if (!state.timestamp && !!state.authToken) {//auth'd user refreshed browser
     console.info('^^^ trigger effect lots refresh')
     dispatch({ type: 'receivingLots' })
-    /*
     receiveUserLots(
       state.authToken, 
       (lots) => (!lots) ? dispatch({ type: 'requireAuth', authError: '' }) : 
         dispatch({ type: 'receivedLots', lots })
     )
-    */
   } else if (!!state.selectionExport) {//create selection
     console.info('^^^ trigger effect upload LotDataSelection')
     const { selectionExport } = state

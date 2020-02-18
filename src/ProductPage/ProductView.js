@@ -182,9 +182,9 @@ const TraceProductFooter = () => (
 export const ProductView = ({ productLots }) => {
   const [ lotSelected, setLotSelected ] = useState(0)
   const lot = productLots[lotSelected]
-  console.log('productLots: ', productLots)
+  //console.log('productLots: ', productLots)
   const product = getLotStateData(productLots[0], 'complete').product
-  console.log('product: ', product)
+  //console.log('product: ', product)
 
   return (
     <div className="container-fluid max-w-5xl">
