@@ -40,6 +40,15 @@
   "eslintConfig": {
     "extends": "react-app"
   },
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.{js,jsx}",
+      "!/node_modules/",
+      "!src/core/",
+      "!src/registerServiceWorker.js"
+    ],
+    "coveragePathIgnorePatterns": ["**/core/**"]
+  },
   "browserslist": {
     "production": [
       ">0.2%",
