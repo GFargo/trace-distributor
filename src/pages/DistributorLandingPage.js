@@ -18,6 +18,7 @@ const DistributorLandingPage = () => (
       </Copy>
 
       <Button 
+        type="link"
         to="/login/" 
         color="green"
         size="xl"

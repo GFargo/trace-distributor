@@ -6,7 +6,7 @@ import SortableTable from '../core/src/components/SortableTable'
 import { localizeDateFromString } from '../core/src/utils/date-time/utils'
 
 
-const LotsIndex = ({ lots, bog, onToggleSelection }) => {
+const LotsIndex = ({ lots, selection, onToggleSelection }) => {
 
   const targetInfoLink = (lot) => (
     <Button color="black" variant="outline" to={"/" + (!lot.parentLot ? "cultivating" : "processing") + "/" + lot.address}>
@@ -28,9 +28,9 @@ const LotsIndex = ({ lots, bog, onToggleSelection }) => {
       size: 'base'
     },
     {
-      name: 'bog',
+      name: 'selection',
       displayName: 'BoG',
-      getValue: (lot) => (!!bog[lot.address]) ? "Included" : "Not Included",
+      getValue: (lot) => (!!selection[lot.address]) ? "Included" : "Not Included",
       size: 'base'
     }
     /*
@@ -94,7 +94,7 @@ const LotsIndex = ({ lots, bog, onToggleSelection }) => {
       sortable: (lot) => lot.address
     },
     {
-      name: 'bog',
+      name: 'selection',
       displayName: 'Include in BoG',
       displayValue: (lot) => 
         <div className="custom-control custom-checkbox ml-6">
@@ -102,13 +102,13 @@ const LotsIndex = ({ lots, bog, onToggleSelection }) => {
             type="checkbox" 
             className="custom-control-input text-warning" 
             id={lot.address} 
-            checked={bog[lot.address]} 
+            checked={selection[lot.address]} 
             onChange={() => onToggleSelection({address: lot.address})}
           />
           <label className="custom-control-label" htmlFor={lot.address}>
           </label>
         </div>,
-      sortable: (lot) => (!!bog[lot.address]) ? "Included" : "Not Included"
+      sortable: (lot) => (!!selection[lot.address]) ? "Included" : "Not Included"
     }
   ])
 
@@ -133,7 +133,7 @@ const LotsIndex = ({ lots, bog, onToggleSelection }) => {
 
 LotsIndex.propTypes = {
   lots: PropTypes.array.isRequired,
-  bog: PropTypes.object.isRequired,
+  selection: PropTypes.object.isRequired,
   onToggleSelection: PropTypes.func.isRequired
 }
 

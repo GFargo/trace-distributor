@@ -323,6 +323,51 @@ const loginQuery = (email, password) => {
     }
   }`)
 }
+/*
+const PRODUCT_TYPE = `
+  fragment ProductType on Product {
+    id
+    title
+    company { 
+      name 
+      logo { 
+        url 
+        hash 
+      } 
+    }
+    image {
+      url 
+    }
+    created
+    dnaReportUrl
+  }
+`
+
+const allProductsQuery = `{
+    products {
+      ...ProductType
+    }
+  }
+  ${PRODUCT_TYPE}
+`
+
+const lotQuery = (address) => `{
+    lot() {
+      ...LotType
+    }
+    
+  }
+  ${LOT_TYPE}
+`
+
+const productQuery = (id) => `{
+    product() {
+      ...ProductType
+    }
+  }
+  ${PRODUCT_TYPE}
+`
+*/
 
 /* Query Controllers */
 
@@ -345,7 +390,7 @@ const receiveAllLots = async () => {
 
 const receiveMeOrgLots = async (authToken) => {
   const result = await fetchQuery(meOrgLotsQuery, authToken)
-  //console.log('traceAPI - receiveMeOrgLots result: ', result)
+  console.log('traceAPI - receiveMeOrgLots result: ', result)
   let lots = (!!result.error) ? null : (!!result?.me?.organization?.lots) ? result.me.organization.lots : []
 
   /* TODO Failsafe data for testing - Remove after dev server setup */
@@ -370,7 +415,6 @@ export const loginUser = async (email, password, callback) => {
     user.username = (result.login.firstName || '')+' '+(result.login.lastName || '')
     user.authToken = result.login.authToken
     user.lots = await receiveMeOrgLots(result.login.authToken)
-
     //console.log('traceAPI - loginUser user: ', user)
   }
   
@@ -381,12 +425,38 @@ export const loginUser = async (email, password, callback) => {
 export const receiveUserLots = async (authToken, callback) => {
   //console.log('traceAPI - receiveUserLots authToken: ', authToken)
   const lots = await receiveMeOrgLots(authToken)
-
+  //const products = await receiveAllProducts()
   //console.log('traceAPI - receiveUserLots lots: ', lots)
+
+  //console.log('traceAPI - receiveUserLots products: ', products)
 
   if(!!callback) callback(lots)
   return {lots}
 }
+
+/*
+const receiveAllProducts = async () => {
+  //console.log('traceAPI >>> receiving All Lots... ')
+  const result = await fetchQuery(allLotsQuery)
+
+  const products = !(!!result?.products?.length) ? [] : 
+    result.products.filter((each) => !!each)
+
+  return products
+}
+
+
+export const receiveProductLot = async (address, callback) => {
+  //console.log('traceAPI >>> receiving All Lots... ')
+  const result = await fetchQuery(lotQuery(address))
+
+  //const result = await fetchQuery(productQuery(address))
+
+  const lot = !(!!result?.lot) ? {} : result.lot
+
+  return lot
+}
+*/
 
 const traceAPI = {
   loginUser,
