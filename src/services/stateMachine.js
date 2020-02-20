@@ -3,7 +3,8 @@ import { receiveUserLots, loginUser } from './traceAPI'
 const APP_CACHE = 'trace-app'
 
 const initGuestState = () => ({
-  username: 'guest'
+  username: 'guest',
+  authToken: undefined
 })
 
 const initUserState = (username = '', authToken = null) => ({
