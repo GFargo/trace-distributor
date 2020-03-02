@@ -10,9 +10,9 @@ import LandingPage from './pages/DistributorLandingPage'
 import LoginPage from './pages/DistributorLoginPage'
 import LotDetail from './pages/DistributorLotDetail'
 import LotsIndex from './pages/DistributorLotsIndex'
-import ManifestPage from './pages/DistributorManifestCreator'
+import ProductProfilesPage from './pages/DistributorProductProfiles'
 import SettingsPage from './pages/DistributorSettings'
-import ProductPage from './ProductPage'
+import ProductPage from './templates/product'
 import './styles/tailwind.css'
 import './core/src/styles/icons.css'
 
@@ -22,7 +22,7 @@ const App = () => {
   useEffect(() => userEffects(state, dispatch), [state])
 
   /* State Action Dispatch */
-  const dispatchLogin = (email, password) => dispatch({ 
+  const dispatchLogin = (email, password) => dispatch({
     type: 'loginUser', 
     creds: { email, password } 
   })
@@ -31,14 +31,18 @@ const App = () => {
     type: 'releaseAuth' 
   })
 
-  const dispatchToggleLotDataSelection = ({ address, cat, entry, value }) => dispatch({ 
-    type: 'toggleLotDataSelection', 
+  const dispatchToggleProductProfile = ({ address, cat, entry, value }) => dispatch({ 
+    type: 'toggleProductProfile', 
     address, cat, entry, value
   })
 
-  const dispatchUploadLotDataSelection = ({ selection }) => dispatch({ 
-    type: 'uploadLotDataSelection',
-    selection
+  const dispatchClearProductProfile = () => dispatch({ 
+    type: 'clearProductProfile'
+  })
+
+  const dispatchExportProductProfile = (product) => dispatch({ 
+    type: 'exportProductProfile',
+    product
   })
 
   /* Page Renderers */
@@ -65,7 +69,7 @@ const App = () => {
       <LotsIndex 
         lots={state.allLots} 
         selection={state.selection}
-        onToggleSelection={dispatchToggleLotDataSelection} 
+        onToggleSelection={dispatchToggleProductProfile} 
       />
     </UserLayout>
   )
@@ -78,13 +82,18 @@ const App = () => {
     <NotFound />
   )
 
-  const renderManifestCreator = () => (
+  const renderProductProfiles = () => (
     <UserLayout username={state.username} onLogout={dispatchLogout}>
-      <ManifestPage
-        lots={state.allLots} 
+      <ProductProfilesPage
+        email={state.email}
+        lots={state.allLots.map(lot => ({
+          ...lot,
+          parentLot: (!lot.parentLot) ? null : state.lotDir[lot.parentLot.address],
+        }))}
         selection={state.selection}
-        onToggleSelection={dispatchToggleLotDataSelection} 
-        onExportLotDataSelection={dispatchUploadLotDataSelection}
+        onToggleSelection={dispatchToggleProductProfile}
+        onClearProductProfile={dispatchClearProductProfile}
+        onExportProductProfile={dispatchExportProductProfile}
       />
     </UserLayout>
   )
@@ -120,9 +129,9 @@ const App = () => {
         <Route exact path="/distributor/products" render={renderLotIndex} />
         <Route path="/cultivating/:address" render={renderLotDetails} />
         <Route path="/processing/:address" render={renderLotDetails} />
-        <Route exact path="/distributor/manifest-creator" render={renderManifestCreator} />
+        <Route exact path="/distributor/product-profiles" render={renderProductProfiles} />
         <Route exact path="/distributor/settings" render={renderSettings} />
-        <Route path="/product-page/:address" render={renderProductPage} />
+        <Route path="/product/:address" render={renderProductPage} />
         <Route render={() => <Redirect to="/distributor/products" />} />
       </Switch>
     </Router>
