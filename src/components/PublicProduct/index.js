@@ -28,16 +28,16 @@ const ProductHeader = ({
     title,
     description,
     packagingDate,
-    image: { url },
+    image
   },
 }) => (
   <header>
     {!!title && (
       <TraceHeaderPattern className="bg grid-col-12">
         <div className="py-16">
-          {!!url && (
+          {!!image?.url && (
             <img
-              src={url}
+              src={image.url}
               alt="product"
               className="w-7/12 rounded-full mx-auto"
             />
@@ -66,15 +66,26 @@ const ProductHeader = ({
   </header>
 );
 
+ProductHeader.defaultProps = {
+  product: {
+    title: '',
+    description: '',
+    packagingDate: '',
+    image: {
+      url: '',
+    },
+  },
+};
+
 ProductHeader.propTypes = {
   product: PropTypes.shape({
-    title: PropTypes.string.isRequired,
-    description: PropTypes.string.isRequired,
-    packagingDate: PropTypes.string.isRequired,
+    title: PropTypes.string,
+    description: PropTypes.string,
+    packagingDate: PropTypes.string,
     image: PropTypes.shape({
-      url: PropTypes.string.isRequired,
-    }).isRequired,
-  }).isRequired,
+      url: PropTypes.string,
+    }),
+  }),
 };
 
 const ProductCertifications = ({ certifications }) => (
@@ -96,24 +107,28 @@ const ProductCertifications = ({ certifications }) => (
   )
 );
 
+ProductCertifications.defaultProps = {
+  certifications: [],
+};
+
 ProductCertifications.propTypes = {
-  certifications: PropTypes.arrayOf(PropTypes.string).isRequired,
+  certifications: PropTypes.arrayOf(PropTypes.string),
 };
 
 const ProductCompany = ({
   company: {
     name,
     description,
-    location: { state },
-    logo: { url },
+    location,
+    logo
   },
 }) => (
   <div className="grid-row bg-gray-100 text-center">
     <div className="grid-col text-center">
-      {!!url && (
+      {!!logo?.url && (
         <div className="grid-row pt-16 text-center">
           <img
-            src={url}
+            src={logo.url}
             alt="logo"
             className="w-5/12 rounded-full mx-auto"
           />
@@ -129,28 +144,37 @@ const ProductCompany = ({
           <p className="text-lg text-left">{description}</p>
         </div>
       )}
-      {!!state && (
+      {!!location?.state && (
         <div className="flex flex-row items-center text-lg mx-4 pb-12 text-left">
           <span className="icon icon-map-marker text-gold-500 text-2xl mr-2 -mb-2"></span>
           <strong>Distributor Location:&nbsp;</strong>
-          {`${state}, USA`}
+          {`${location.state}, USA`}
         </div>
       )}
     </div>
   </div>
 );
 
+ProductCompany.defaultProps = {
+  company: {
+    name: '',
+    description: '',
+    location: { state: '' },
+    logo: { url: '' }
+  },
+};
+
 ProductCompany.propTypes = {
   company: PropTypes.shape({
-    name: PropTypes.string.isRequired,
-    description: PropTypes.string.isRequired,
+    name: PropTypes.string,
+    description: PropTypes.string,
     location: PropTypes.shape({
-      state: PropTypes.string.isRequired,
-    }).isRequired,
+      state: PropTypes.string,
+    }),
     logo: PropTypes.shape({
-      url: PropTypes.string.isRequired,
-    }).isRequired,
-  }).isRequired,
+      url: PropTypes.string,
+    }),
+  }),
 };
 
 const VerticalDetail = ({ title, value }) => (
@@ -469,8 +493,8 @@ LotDotButtons.propTypes = {
 
 const LotDetailSwitch = ({ lots }) => {
   const [ lotSelected, setLotSelected ] = useState(0);
-  const lot = lots[lotSelected];
-  const parentLot = (!!lot?.parentLot?.address) ? lot.parentLot : null;
+  const lot = (!!lots?.length) ? lots[lotSelected] : null;
+  const parentLot = (!!lot?.parentLot) ? lot.parentLot : null;
 
   return (
     !!lots?.length && (
@@ -507,8 +531,12 @@ const LotDetailSwitch = ({ lots }) => {
   );
 }
 
+LotDetailSwitch.defaultProps = {
+  lots: [],
+};
+
 LotDetailSwitch.propTypes = {
-  lots: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  lots: PropTypes.arrayOf(PropTypes.shape({})),
 };
 
 const ProductFooter = () => (
@@ -558,22 +586,7 @@ Product.defaultProps = {
     },
     packagingDate: '',
     certifications: [],
-    lots: [{
-      name: '',
-      address: '',
-      organization: {
-        name: '',
-      },
-      details: [],
-      parentLot: {
-        name: '',
-        address: '',
-        organization: {
-          name: '',
-        },
-        details: [],
-      },
-    },],
+    lots: [],
   },
 };
 
