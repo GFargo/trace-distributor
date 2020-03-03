@@ -45,11 +45,9 @@ export const useProducts = (email) => {
 
 export const useProduct = (id) => {
   const [value, loading, error] = useDocument(productRef(id)); 
-  const product = (!value) ? null : {
-    ...value.data(),
-    id: value.id,
-  }
-  //console.log('ProductPage, product: ', product);
+  const product = (!value || !value.data) ? null : value.data();
+  if (!!product && !product.id) product.id = value.id;
+  console.log('ProductPage, product: ', product);
 
   return [
   	product,
@@ -114,27 +112,29 @@ const addQRCodeDataURL = async (id, qrcodeDataURL) => {
 	return url;
 }
 
-const cleanProductFields = (obj) => {
+const cleanObjectProps = (obj) => {
   console.log('firebase cleanProductFields, object: ', obj);
   if (!obj) return;
   Object.keys(obj).forEach((key) => {
     if (!obj[key]) {
       delete obj[key]
     } else if (typeof obj[key] === 'object') {
-      cleanProductFields(obj[key])
+      cleanObjectProps(obj[key])
       if (!Object.keys(obj[key]).length) {
         delete obj[key]
       }
-    } else if (typeof obj[key] === 'array') {
-      if (!obj[key].length) {
-        delete obj[key]
-      }
+    } else if (typeof obj[key] === 'array' && !obj[key].length) {
+      delete obj[key]
     }
   })
 }
 
+export const genProductID = () => productsRef.doc().id;
 export const setProduct = async (product, calback) => {
-	if (!product) return;
+	if (!product || !product.id) {
+    console.error('firebase setProduct NO PRODUCT ID, product: ', product);
+    return;
+  } 
 	const productImage = product.productImage;
 	delete product.productImage;
 	const companyLogo = product.companyLogo;
@@ -145,20 +145,18 @@ export const setProduct = async (product, calback) => {
   delete product.existingQRCode;
 
 	console.log('firebase setProduct starting, product: ', product);
-  cleanProductFields(product)
+  cleanObjectProps(product)
   console.log('firebase setProduct cleaned, product: ', product);
 
-	const snapshot = await lotProductsRef(product.productLot).get()
-	//console.log('firebase setProduct lotProductsRef, snapshot: ', snapshot);
-  let doc = (!!snapshot?.docs?.length) ? snapshot.docs[0].ref : null
-  //console.log('firebase setProduct lotProductsRef, doc: ', doc);
+  const doc = await productRef(product.id);
+  await doc.set(product);
+  console.log('firebase setProduct set doc: ', doc);
 
 	if (!doc){
 		doc = await productsRef.add(product);
 		console.log('firebase setProduct created, doc: ', doc);
 	} else {
-		await doc.set(product);
-		console.log('firebase setProduct updated, doc: ', doc);
+		
 	}
 
 	if (!doc || !doc.id) return;

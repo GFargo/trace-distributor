@@ -28,7 +28,7 @@ const ProductProfiles = ({
       <Link 
         className=""
         target="_blank"
-        to={'/product/0x22Cb9826B15148c88b4F53B13d91a1187A157f69'}
+        to={'/product/0AgsqOf9Kz0Fb4EZe6S2'}
       >
         Example Product Profile
       </Link>

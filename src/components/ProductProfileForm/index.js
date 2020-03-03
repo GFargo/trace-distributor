@@ -10,12 +10,13 @@ import InputWrapper from '../../core/src/components/MultiForm/parts/InputWrapper
 import FileUpload from '../../components/FileUpload'
 import { transformValues } from '../../core/src/components/Lots/LotStateSection/LotSectionHelpers';
 import PublicProduct from '../../components/PublicProduct';
+import { genProductID } from '../../services/traceFirebase';
 
 
 const LOCAL_SERVER_ADDRESS = 'http://localhost:3000';
 const SERVER_ADDRESS = LOCAL_SERVER_ADDRESS; // TODO Add real server address
 const PRODUCT_NODE = SERVER_ADDRESS+'/product/';
-const productProfileAddress = (address) => PRODUCT_NODE+address;
+const productProfileAddress = (id) => PRODUCT_NODE+id;
 
 const getProductQRImageURL = (id) => {
   if (!id) return;
@@ -273,6 +274,7 @@ const ProductProfile = ({
   invertColor,
 }) => {
   const [state, setState] = useState({ 
+    productID: '',
     name: '', 
     description: '',
     productImage: null,
@@ -302,6 +304,7 @@ const ProductProfile = ({
     }
   });
   const { 
+    productID,
     name, 
     description,
     productImage,
@@ -335,6 +338,7 @@ const ProductProfile = ({
   }
 
   const stateToProduct = (translateImages) => ({
+    id: productID,
     title: name, 
     description,
     productImage,
@@ -355,8 +359,8 @@ const ProductProfile = ({
     productLot,
     additionalLot,
     lots: inflateLots(),
-    url: (!!productLot) ? productProfileAddress(productLot) : '',
-    qrcode: (!!productLot && !!getProductQRImageURL("productQRCode")) 
+    url: (!!productID) ? productProfileAddress(productID) : '',
+    qrcode: (!!productID && !!getProductQRImageURL("productQRCode")) 
       ? getProductQRImageURL("productQRCode")
       : '',
   })
@@ -364,7 +368,7 @@ const ProductProfile = ({
   const isDisabled = (!name || !productLot || !Object.values(errors).every((one) => !one))
 
   const product = isDisabled ? null : stateToProduct(true);
-  //console.log('PRODUCT ', product)
+  console.log('PRODUCT ', product)
 
   return (
     <form>
@@ -516,7 +520,7 @@ const ProductProfile = ({
           value={productLot}
           label="Product Lot"
           error={errors.productLot}
-          updateValueAndError={(name, value) => setState({ ...state, productLot: value })} 
+          updateValueAndError={(name, value) => setState({ ...state, productLot: value, productID: genProductID() })} 
           options={lots.map( lot => ({
             label: lot.name,
             value: lot.address,

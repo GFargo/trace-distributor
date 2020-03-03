@@ -2,14 +2,14 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Pending from '../core/src/components/Elements/Loader'
 import PublicProduct from '../components/PublicProduct';
-import { useLatestLotProduct } from '../services/traceFirebase';
+import { useProduct } from '../services/traceFirebase';
 
-const ProductPage = ({ address }) => {
-  const [product, loading, error] = useLatestLotProduct(address); 
+const ProductPage = ({ id }) => {
+  const [product, loading, error] = useProduct(id); 
   //console.log('ProductPage, product: ', product);
 
   const ErrorView = () => (
-    <h3>{`Error Loading Product Lot ${address}: ${error || ''}`}</h3>
+    <h3>{`Error Loading Product Lot ${id}: ${error || ''}`}</h3>
   );
 
   return (
@@ -20,7 +20,7 @@ const ProductPage = ({ address }) => {
 };
 
 ProductPage.propTypes = {
-  address: PropTypes.string.isRequired,
+  id: PropTypes.string.isRequired,
 };
 
 export default ProductPage;

@@ -109,8 +109,8 @@ const App = () => {
     </Router>
   )
 
-  const renderProductPage = (props) => (!!props?.match?.params?.address) ? (
-    <ProductPage address={props.match.params.address} />
+  const renderProductPage = (props) => (!!props?.match?.params?.id) ? (
+    <ProductPage id={props.match.params.id} />
   ) : (
     <NotFound />
   )
@@ -124,7 +124,7 @@ const App = () => {
         <Route path="/processing/:address" render={renderLotDetails} />
         <Route exact path="/distributor/product-profiles" render={renderProductProfiles} />
         <Route exact path="/distributor/settings" render={renderSettings} />
-        <Route path="/product/:address" render={renderProductPage} />
+        <Route path="/product/:id" render={renderProductPage} />
         <Route render={() => <Redirect to="/distributor/products" />} />
       </Switch>
     </Router>
