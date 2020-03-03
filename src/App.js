@@ -36,10 +36,6 @@ const App = () => {
     address, cat, entry, value
   })
 
-  const dispatchClearProductProfile = () => dispatch({ 
-    type: 'clearProductProfile'
-  })
-
   const dispatchExportProductProfile = (product) => dispatch({ 
     type: 'exportProductProfile',
     product
@@ -90,9 +86,6 @@ const App = () => {
           ...lot,
           parentLot: (!lot.parentLot) ? null : state.lotDir[lot.parentLot.address],
         }))}
-        selection={state.selection}
-        onToggleSelection={dispatchToggleProductProfile}
-        onClearProductProfile={dispatchClearProductProfile}
         onExportProductProfile={dispatchExportProductProfile}
       />
     </UserLayout>

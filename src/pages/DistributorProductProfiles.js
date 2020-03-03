@@ -7,10 +7,7 @@ import ProductProfilesTable from '../components/ProductProfilesTable';
 
 const ProductProfiles = ({ 
   email, 
-  lots, 
-  selection, 
-  onToggleSelection, 
-  onClearProductProfile, 
+  lots,
   onExportProductProfile 
 }) => (
   <div className="container">
@@ -50,9 +47,6 @@ const ProductProfiles = ({
 ProductProfiles.propTypes = {
   email: PropTypes.string.isRequired,
   lots: PropTypes.array.isRequired,
-  selection: PropTypes.object.isRequired,
-  onToggleSelection: PropTypes.func.isRequired,
-  onClearProductProfile: PropTypes.func.isRequired,
   onExportProductProfile: PropTypes.func.isRequired,
 }
 
