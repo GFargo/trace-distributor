@@ -1,6 +1,7 @@
 import React, { useReducer, useEffect } from 'react'
-import { BrowserRouter as Router, Route, Switch, Redirect } from "react-router-dom"
+import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom'
 import { reducer, loadState, userEffects } from './services/stateMachine'
+
 import LandingLayout from './layouts/LandingLayout'
 import LoginLayout from './layouts/LoginLayout'
 import UserLayout from './layouts/DistributorLayout'
@@ -13,6 +14,7 @@ import LotsIndex from './pages/DistributorLotsIndex'
 import ManifestPage from './pages/DistributorManifestCreator'
 import SettingsPage from './pages/DistributorSettings'
 import ProductPage from './ProductPage'
+
 import './styles/tailwind.css'
 import './core/src/styles/icons.css'
 

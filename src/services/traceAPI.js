@@ -8,6 +8,7 @@ const JSON_HEADER = {
   "Content-Type": "application/json",
   "Accept": "application/json"
 }
+
 const JSON_AUTH_HEADER = (authToken) => ({
   "Content-Type": "application/json",
   "Accept": "application/json",

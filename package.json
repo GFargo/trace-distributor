@@ -47,7 +47,9 @@
       "!src/core/",
       "!src/registerServiceWorker.js"
     ],
-    "coveragePathIgnorePatterns": ["**/core/**"]
+    "coveragePathIgnorePatterns": [
+      "**/core/**"
+    ]
   },
   "browserslist": {
     "production": [
