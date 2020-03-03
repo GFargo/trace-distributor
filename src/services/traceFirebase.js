@@ -114,6 +114,25 @@ const addQRCodeDataURL = async (id, qrcodeDataURL) => {
 	return url;
 }
 
+const cleanProductFields = (obj) => {
+  console.log('firebase cleanProductFields, object: ', obj);
+  if (!obj) return;
+  Object.keys(obj).forEach((key) => {
+    if (!obj[key]) {
+      delete obj[key]
+    } else if (typeof obj[key] === 'object') {
+      cleanProductFields(obj[key])
+      if (!Object.keys(obj[key]).length) {
+        delete obj[key]
+      }
+    } else if (typeof obj[key] === 'array') {
+      if (!obj[key].length) {
+        delete obj[key]
+      }
+    }
+  })
+}
+
 export const setProduct = async (product, calback) => {
 	if (!product) return;
 	const productImage = product.productImage;
@@ -125,7 +144,9 @@ export const setProduct = async (product, calback) => {
   const existingQRCode = product.existingQRCode;
   delete product.existingQRCode;
 
-	//console.log('firebase setProduct starting, product: ', product);
+	console.log('firebase setProduct starting, product: ', product);
+  cleanProductFields(product)
+  console.log('firebase setProduct cleaned, product: ', product);
 
 	const snapshot = await lotProductsRef(product.productLot).get()
 	//console.log('firebase setProduct lotProductsRef, snapshot: ', snapshot);
