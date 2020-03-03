@@ -38,20 +38,23 @@ export const useProducts = (email) => {
 
   return [
   	products,
-    error,
     loading,
+    error,
   ]
 }
 
 export const useProduct = (id) => {
   const [value, loading, error] = useDocument(productRef(id)); 
-  const product = (!value) ? null : value.data();
+  const product = (!value) ? null : {
+    ...value.data(),
+    id: value.id,
+  }
   //console.log('ProductPage, product: ', product);
 
   return [
   	product,
-    error,
     loading,
+    error,
   ]
 }
 
@@ -72,8 +75,8 @@ export const useLatestLotProduct = (address) => {
 
   return [
   	product,
-    error,
     loading,
+    error,
   ]
 }
 
@@ -107,7 +110,7 @@ const addQRCodeDataURL = async (id, qrcodeDataURL) => {
 	const uploadTask = await store.child(id+'/qrcode.png').putString(qrcodeDataURL, 'data_url');
 	//console.log('firebase addQRCodeImageURL, uploadTask: ', uploadTask);
 	const url = await uploadTask.ref.getDownloadURL();
-	console.log('firebase addCompanyLogo, url: ', url);
+	console.log('firebase addQRCodeDataURL, url: ', url);
 	return url;
 }
 
@@ -119,6 +122,8 @@ export const setProduct = async (product, calback) => {
 	delete product.companyLogo;
 	const qrcodeDataURL = product.qrcode;
 	delete product.qrcode;
+  const existingQRCode = product.existingQRCode;
+  delete product.existingQRCode;
 
 	//console.log('firebase setProduct starting, product: ', product);
 
@@ -138,19 +143,28 @@ export const setProduct = async (product, calback) => {
 	if (!doc || !doc.id) return;
 	const { id } = doc; 
 
-	if (!!productImage) {
+	if (!!productImage && typeof productImage === "string") {//existing
+    await doc.update({image: {url: productImage}});
+    //console.log('firebase setProduct, exsting productImage: ', productImage);
+  } else if (!!productImage) {
 		const productImageURL = await addProductImage(id, productImage);
 		//console.log('firebase setProduct, productImageURL: ', productImageURL);
 		await doc.update({image: {url: productImageURL}});
 	}
 
-	if (!!companyLogo) {
+	if (!!companyLogo && typeof companyLogo === "string") {//existing
+    await doc.update({company: { ...product.company, logo: {url: companyLogo}}});
+    //console.log('firebase setProduct, exsting companyLogo: ', companyLogo);
+  } else if (!!companyLogo) {
 		const companyLogoURL = await addCompanyLogo(id, companyLogo);
 		//console.log('firebase setProduct, addCompanyLogo: ', companyLogoURL);
 		await doc.update({company: { ...product.company, logo: {url: companyLogoURL}}});
 	}
 
-	if (!!qrcodeDataURL) {
+	if (!!existingQRCode) {//existing
+    await doc.update({qrcode: {url: existingQRCode}});
+    //console.log('firebase setProduct, exsting QRCode: ', existingQRCode);
+  } else if (!!qrcodeDataURL) {
 		const qrcodeImageURL = await addQRCodeDataURL(id, qrcodeDataURL);
 		//console.log('firebase setProduct, qrcodeImageURL: ', qrcodeImageURL);
 		await doc.update({qrcode: {url: qrcodeImageURL}});
