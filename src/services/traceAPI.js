@@ -1,7 +1,5 @@
 import 'whatwg-fetch'
 
-// const ENDPOINT_HOST = "http://trace-backend-dev-pr-204.herokuapp.com"
-
 const {
   REACT_APP_API_ENDPOINT: ENDPOINT_HOST = 'https://trace-backend-dev-pr-204.herokuapp.com',
 } = process.env;
