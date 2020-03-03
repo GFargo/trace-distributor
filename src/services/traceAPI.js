@@ -1,9 +1,13 @@
 import 'whatwg-fetch'
 
-//const DEV_SERVER_HOST = "https://trace-backend-dev.herokuapp.com"
-const DEV_SERVER_HOST = "http://trace-backend-dev-pr-204.herokuapp.com"
+// const ENDPOINT_HOST = "http://trace-backend-dev-pr-204.herokuapp.com"
 
-const DEV_GRAPHQL_PATH = DEV_SERVER_HOST + "/graphql/"
+const {
+  REACT_APP_API_ENDPOINT: ENDPOINT_HOST = 'https://trace-backend-dev-pr-204.herokuapp.com',
+} = process.env;
+
+const GRAPHQL_PATH = ENDPOINT_HOST + "/graphql/"
+
 const JSON_HEADER = {
   "Content-Type": "application/json",
   "Accept": "application/json"
@@ -17,7 +21,7 @@ const JSON_AUTH_HEADER = (authToken) => ({
 
 const fetchQuery = async (query, authToken = '') => {
   try {
-    const response = await fetch(DEV_GRAPHQL_PATH, {
+    const response = await fetch(GRAPHQL_PATH, {
       method: "POST",
       headers: (!!authToken) ? JSON_AUTH_HEADER(authToken) : {...JSON_HEADER},
       body: JSON.stringify({query})
