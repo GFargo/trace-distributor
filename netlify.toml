@@ -1,7 +1,7 @@
 [build]
   functions = "functions-build"
   command = "yarn build"
-  publish = "public"
+  publish = "build"
   
   REACT_APP_API_ENDPOINT='https://trace-backend-dev-pr-204.herokuapp.com'
 
