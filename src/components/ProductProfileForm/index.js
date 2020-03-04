@@ -63,7 +63,7 @@ const LotDetailSelector = ({ lot, selection, onToggleSelection }) => {
   const lotRef = !!lot?.parentLot ? 'parentLot' : 'lot';
 
   const CheckboxListItem = ({ name, label, value }) => (
-    <div className={"py-2 pl-6"} >
+    <div className={"py-2"} >
       <div className="flex flex-row items-center">
         <input
           type="checkbox"
@@ -84,7 +84,7 @@ const LotDetailSelector = ({ lot, selection, onToggleSelection }) => {
   );
 
   const SectionTitle = ({ title }) => (
-    <div className={"row row-sm w-100 pl-3 my-2"} >
+    <div className={"row row-sm w-100 my-2"} >
       <h4 className="text-md font-bold text-gold-500">
         {title}
       </h4>
@@ -470,7 +470,7 @@ const ProductProfile = ({
     <div className="container mb-24 w-128 text-left">
       <form>
         <div className="mb-4">
-          <h3 className="text-xl font-bold text-left -ml-4 mb-4">
+          <h3 className="text-xl font-bold text-left mb-4">
             Create Product Profile
         </h3>
           <p className="text-sm text-left mb-2 pr-10">
