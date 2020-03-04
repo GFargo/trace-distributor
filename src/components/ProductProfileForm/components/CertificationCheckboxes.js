@@ -48,11 +48,11 @@ const CertificationCheckboxes = ({ certifications, onToggleCertification }) => (
 );
 
 CertificationCheckboxes.defaultProps = {
-  certifications: [],
+  certifications: {},
 };
 
 CertificationCheckboxes.propTypes = {
-  certifications: PropTypes.arrayOf(PropTypes.string),
+  certifications: PropTypes.shape({}),
   onToggleCertification: PropTypes.func.isRequired,
 };
 
