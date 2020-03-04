@@ -43,7 +43,7 @@ const ProductProfilesTable = ({ email }) => {
               View
             </a>
             <Link to={"/distributor/product-profile-form/"+product.id}>
-              Clone
+              Edit
             </Link>
           </span>
         )
