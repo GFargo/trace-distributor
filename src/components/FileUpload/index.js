@@ -6,8 +6,7 @@ const FileUpload = ({ id, title, placeholder, typesAccepted, onUploadFile }) => 
 
   const onChooseFile = (e) => {
     const f = (!!e.target.files[0]?.name) ? e.target.files[0] : undefined
-    console.log('onChooseFile: ', f?.name || 'canceled.. f in chat') 
-    //if (f?.name?.substring(f?.name?.lastIndexOf('.'))?.toLowerCase() === '.pdf')
+    //console.log('onChooseFile: ', f?.name || 'canceled.. f in chat') 
     setFile(f)
   }
 
