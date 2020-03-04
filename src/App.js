@@ -97,7 +97,6 @@ const App = () => {
         }))}
         handleSubmit={dispatchExportProductProfile}
         buttonLabel={'Create Product Profile'}
-        errorMessage={''}
       />
     </UserLayout>
   )

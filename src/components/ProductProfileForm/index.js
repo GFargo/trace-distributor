@@ -831,6 +831,7 @@ const ProductProfile = ({
 ProductProfile.defaultProps = {
   cloneFromID: '',
   invertColor: false,
+  errorMessage: '',
 };
 
 ProductProfile.propTypes = {
@@ -838,7 +839,7 @@ ProductProfile.propTypes = {
   lots: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   buttonLabel: PropTypes.string.isRequired,
   handleSubmit: PropTypes.func.isRequired,
-  errorMessage: PropTypes.string.isRequired,
+  errorMessage: PropTypes.string,
   invertColor: PropTypes.bool,
 }
 
