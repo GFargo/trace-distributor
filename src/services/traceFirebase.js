@@ -113,14 +113,15 @@ const cleanObjectProps = (obj) => {
   console.log('firebase cleanProductFields, object: ', obj);
   if (!obj) return;
   Object.keys(obj).forEach((key) => {
+    const objType = typeof obj[key];
     if (!obj[key]) {
       delete obj[key]
-    } else if (typeof obj[key] === 'object') {
+    } else if (objType === 'object') {
       cleanObjectProps(obj[key])
       if (!Object.keys(obj[key]).length) {
         delete obj[key]
       }
-    } else if (typeof obj[key] === 'array' && !obj[key].length) {
+    } else if (objType === 'array' && !obj[key].length) {
       delete obj[key]
     }
   })

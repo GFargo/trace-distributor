@@ -58,4 +58,4 @@ FileUpload.propTypes = {
   onUploadFile: PropTypes.func.isRequired
 }
 
-export default FileUpload
+export default FileUpload;
