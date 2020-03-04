@@ -19,7 +19,7 @@ const CreateProductProfilePage = ({
         processing and manufacturing process of your product.
       </p>
       <Link
-        className=""
+        className="text-gold-700"
         target="_blank"
         to={'/product/0AgsqOf9Kz0Fb4EZe6S2'}
       >
