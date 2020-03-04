@@ -63,7 +63,7 @@ const LotDetailSelector = ({ lot, selection, onToggleSelection }) => {
 
   const CheckboxListItem = ({ name, label, value }) => (
     <div className={"py-2"} >
-      <div className="flex flex-row">
+      <div className="flex flex-row items-center">
         <input 
           type="checkbox" 
           className="w-auto mr-2"
