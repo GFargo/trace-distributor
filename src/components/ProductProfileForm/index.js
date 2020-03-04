@@ -458,7 +458,7 @@ const ProductProfile = ({
   console.log('PRODUCT ', product)
 
   return (
-    <div className="container mb-24 w-128 text-left">
+    <div className="container mb-24 w-160 text-left">
     <form>
       <div className="mb-4">
         <h3 className="text-xl font-bold text-left -ml-4 mb-4">
