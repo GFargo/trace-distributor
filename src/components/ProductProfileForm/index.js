@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import QRCode from 'qrcode.react';
+
 import Button from '../../core/src/components/Elements/Button';
 import TextInput from '../../core/src/components/MultiForm/parts/TextInput';
 import TextAreaInput from '../../core/src/components/MultiForm/parts/TextAreaInput';
@@ -92,11 +93,11 @@ const LotDetailSelector = ({ lot, selection, onToggleSelection }) => {
   const lotRef = !!lot?.parentLot ? 'parentLot' : 'lot';
 
   const CheckboxListItem = ({ name, label, value }) => (
-    <div className={"row row-sm w-100 py-2 pl-8"} >
-      <div className="custom-control custom-checkbox">
+    <div className={"py-2 pl-6"} >
+      <div className="flex flex-row custom-checkbox">
         <input 
           type="checkbox" 
-          className="custom-control-input"
+          className="w-auto mr-2"
           id={lot.address+name} 
           checked={!!selection[name]} 
           onChange={() => onToggleSelection(name, value)}
@@ -230,10 +231,10 @@ const CertificationCheckboxes = ({ certifications, onToggleCertification }) => (
   <InputWrapper name="productCertifications" label="Product Certifications">
     <div className={"row row-sm w-100 pl-3"} >
       {CERTIFICATIONS.map( cert => 
-        <div key={cert} className="custom-control custom-checkbox pr-8">
+        <div key={cert} className="flex flex-row custom-checkbox pr-8">
           <input 
             type="checkbox" 
-            className="custom-control-input"
+            className="w-auto mr-2"
             id={'certifications_'+cert} 
             checked={!!certifications[cert]} 
             onChange={() => onToggleCertification(cert)}
