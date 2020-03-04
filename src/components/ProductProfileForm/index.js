@@ -83,7 +83,7 @@ const LotDetailSelector = ({ lot, selection, onToggleSelection }) => {
   );
 
   const SectionTitle = ({ title }) => (
-    <div className={"row row-sm w-100 pl-3 my-2"} >
+    <div className={"row row-sm w-100 my-2"} >
       <h4 className="text-md font-bold text-gold-500">
         {title}
       </h4>
