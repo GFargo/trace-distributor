@@ -86,33 +86,23 @@ export const useLatestLotProduct = (address) => {
 }
 
 const addProductImage = async (id, productImage) => {
-	const uploadTask = await store.child(id+'/productImage').put(productImage);
+	const uploadTask = await store.child(`${id}/productImage`).put(productImage);
 	//console.log('firebase addProductImage, uploadTask: ', uploadTask);
 	const url = await uploadTask.ref.getDownloadURL();
 	console.log('firebase addProductImage, url: ', url);
 	return url;
 }
-/*
-const deleteProductImage = async (id, productImage) => {
-	const deleteTask = await store.child(id+'/productImage').delete();
-	console.log('firebase deleteProductImage, deleteTask: ', deleteTask);
-}
-*/
+
 const addCompanyLogo = async (id, companyLogo) => {
-	const uploadTask = await store.child(id+'/companyLogo').put(companyLogo);
+	const uploadTask = await store.child(`${id}/companyLogo`).put(companyLogo);
 	//console.log('firebase addCompanyLogo, uploadTask: ', uploadTask);
 	const url = await uploadTask.ref.getDownloadURL();
 	console.log('firebase addCompanyLogo, url: ', url);
 	return url;
 }
-/*
-const deleteCompanyLogo = async (id, companyLogo) => {
-	const deleteTask = await store.child(id+'/companyLogo').delete();
-	console.log('firebase deleteCompanyLogo, deleteTask: ', deleteTask);
-}
-*/
+
 const addQRCodeDataURL = async (id, qrcodeDataURL) => {
-	const uploadTask = await store.child(id+'/qrcode.png').putString(qrcodeDataURL, 'data_url');
+	const uploadTask = await store.child(`${id}/qrcode.png`).putString(qrcodeDataURL, 'data_url');
 	//console.log('firebase addQRCodeImageURL, uploadTask: ', uploadTask);
 	const url = await uploadTask.ref.getDownloadURL();
 	console.log('firebase addQRCodeDataURL, url: ', url);

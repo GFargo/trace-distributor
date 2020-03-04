@@ -29,7 +29,7 @@ const ProductProfilesTable = ({ email }) => {
       displayName: 'Blockchain Address',
       displayValue: (product) => (
         <Link to={"/processing/"+product.productLot}>
-          {product.productLot.substr(0, 20) + " …"}
+          {`${product.productLot.substr(0, 20)}...`}
         </Link>),
       sortable: (product) => product.productLot
     },

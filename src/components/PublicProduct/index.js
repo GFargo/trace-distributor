@@ -324,7 +324,7 @@ const BlockchainAddress = ({ address }) => (
           </h4>
         </span>
         <div className="text-xl text-gold-500 underline">
-          {address.substr(0,32)+'...'}
+          {`${address.substr(0,32)}...`}
         </div>
       </div>
     </div>

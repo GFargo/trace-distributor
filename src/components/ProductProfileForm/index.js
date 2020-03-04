@@ -16,8 +16,8 @@ import { genProductID, getProduct } from '../../services/traceFirebase';
 
 const LOCAL_SERVER_ADDRESS = 'http://localhost:3000';
 const SERVER_ADDRESS = LOCAL_SERVER_ADDRESS; // TODO Add real server address
-const PRODUCT_NODE = SERVER_ADDRESS + '/product/';
-const productProfileAddress = (id) => PRODUCT_NODE + id;
+const PRODUCT_NODE = `${SERVER_ADDRESS}/product/`;
+const productProfileAddress = (id) => `${PRODUCT_NODE}${id}`;
 
 const getProductQRImageURL = (id) => {
   if (!id) return;
@@ -29,7 +29,7 @@ const getProductQRImageURL = (id) => {
 const dlProductQRImageURL = (id, url) => {
   let downloadLink = document.createElement("a");
   downloadLink.href = url;
-  downloadLink.download = id + ".png";
+  downloadLink.download = `${id}.png`;
   document.body.appendChild(downloadLink);
   downloadLink.click();
   document.body.removeChild(downloadLink);
@@ -101,61 +101,61 @@ const LotDetailSelector = ({ lot, selection, onToggleSelection }) => {
       <SectionTitle title="CULTIVATION INFORMATION (ATTRIBUTES, GROW, HARVEST)" />
       {!!cultLot.name &&
         <CheckboxListItem
-          name={lotRef + "-lot-name"}
+          name={`${lotRef}-lot-name`}
           label="Lot Name:"
           value={cultLot.name}
         />}
       {!!cultLot.address &&
         <CheckboxListItem
-          name={lotRef + "-lot-address"}
+          name={`${lotRef}-lot-address`}
           label="Blockchain Address:"
           value={cultLot.address}
         />}
       {!!cultLot.organization?.name &&
         <CheckboxListItem
-          name={lotRef + "-org-name"}
+          name={`${lotRef}-org-name`}
           label="Organization Name:"
           value={cultLot.organization.name}
         />}
       {!!getLotStateField(cultLot, 'initial', 'strain') &&
         <CheckboxListItem
-          name={lotRef + "-initial-strain"}
+          name={`${lotRef}-initial-strain`}
           label="Genetics:"
           value={getLotStateField(cultLot, 'initial', 'strain')}
         />}
       {!!getLotStateField(cultLot, 'initial', 'growType') &&
         <CheckboxListItem
-          name={lotRef + "-initial-growType"}
+          name={`${lotRef}-initial-growType`}
           label="Grow Type:"
           value={getLotStateField(cultLot, 'initial', 'growType')}
         />}
       {!!getLotStateField(cultLot, 'initial', 'growMedium') &&
         <CheckboxListItem
-          name={lotRef + "-initial-growMedium"}
+          name={`${lotRef}-initial-growMedium`}
           label="Grow Medium:"
           value={getLotStateField(cultLot, 'initial', 'growMedium')}
         />}
       {!!getLotStateField(cultLot, 'harvest', 'lastMaturityDate') &&
         <CheckboxListItem
-          name={lotRef + "-harvest-lastMaturityDate"}
+          name={`${lotRef}-initial-lastMaturityDate`}
           label="Harvest Date:"
           value={getLotStateField(cultLot, 'harvest', 'lastMaturityDate')}
         />}
       {!!getLotStateField(cultLot, 'initial', 'cloned') &&
         <CheckboxListItem
-          name={lotRef + "-initial-cloned"}
+          name={`${lotRef}-initial-cloned`}
           label="Seed Source:"
           value={getLotStateField(cultLot, 'initial', 'cloned')}
         />}
       {!!getLotStateField(cultLot, 'grow', 'notes') &&
         <CheckboxListItem
-          name={lotRef + "-grow-notes"}
+          name={`${lotRef}-grow-notes`}
           label="Farming Practice Notes:"
           value={getLotStateField(cultLot, 'grow', 'notes')}
         />}
       {!!getLotStateField(cultLot, 'grow', 'nutrientCycle') &&
         <CheckboxListItem
-          name={lotRef + "-grow-nutrientCycle"}
+          name={`${lotRef}-grow-nutrientCycle`}
           label="Nutrient Cycle Notes:"
           value={getLotStateField(cultLot, 'grow', 'nutrientCycle')}
         />}
@@ -197,19 +197,18 @@ const LotDetailSelector = ({ lot, selection, onToggleSelection }) => {
 
 const CERTIFICATIONS = ['ORGANIC', 'KOSHER', 'NONGMO', 'AOSCA', 'GF'];
 const certFileSwitch = (cert) => {
-  const path = '/img/';
   switch (cert) {
     case 'ORGANIC':
-      return path + 'organic.png';
+      return '/img/organic.png';
     case 'KOSHER':
-      return path + 'kosher.png';
+      return '/img/kosher.png';
     case 'NONGMO':
-      return path + 'nongmo.jpg';
+      return '/img/nongmo.jpg';
     case 'AOSCA':
-      return path + 'aosca.png';
+      return '/img/aosca.png';
     default:
     case 'GF':
-      return path + 'gf.png';
+      return '/img/gf.png';
   }
 }
 const CertificationCheckboxes = ({ certifications, onToggleCertification }) => (
@@ -399,7 +398,7 @@ const ProductProfile = ({
       lot.details.forEach((detail) => {
         if (!detail.state || !detail.data) return;
         Object.keys(detail.data).forEach((key) => {
-          if (!!detail.data[key]) parts['lot-' + detail.state + '-' + key] = detail.data[key];
+          if (!!detail.data[key]) parts[`lot-${detail.state}-${key}`] = detail.data[key];
         })
       })
     }
@@ -411,7 +410,7 @@ const ProductProfile = ({
       lot.parentLot.details.forEach((detail) => {
         if (!detail.state || !detail.data) return;
         Object.keys(detail.data).forEach((key) => {
-          if (!!detail.data[key]) parts['parentLot-' + detail.state + '-' + key] = detail.data[key];
+          if (!!detail.data[key]) parts[`parentLot-${detail.state}-${key}`] = detail.data[key];
         })
       })
     }
