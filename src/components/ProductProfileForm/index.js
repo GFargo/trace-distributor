@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Link }  from 'react-router-dom';
 import PropTypes from 'prop-types';
 import QRCode from 'qrcode.react';
 
@@ -11,7 +12,7 @@ import InputWrapper from '../../core/src/components/MultiForm/parts/InputWrapper
 import FileUpload from '../../components/FileUpload'
 import { transformValues } from '../../core/src/components/Lots/LotStateSection/LotSectionHelpers';
 import PublicProduct from '../../components/PublicProduct';
-import { genProductID } from '../../services/traceFirebase';
+import { genProductID, getProduct } from '../../services/traceFirebase';
 
 
 const LOCAL_SERVER_ADDRESS = 'http://localhost:3000';
@@ -56,37 +57,6 @@ const ProductQRCodeView = ({ url }) => (
     </a>
   </div>
 );
-
-const inflateLotSelection = (selection) => {
-  const lot = {}
-  Object.keys(selection).filter((each) => !!each && !!selection[each]).forEach((key) => {
-    const keyParts = key.split('-')
-    const [ lotField, cat, entry ] = keyParts
-    const value = selection[key]
-    if (!value || !lotField || !cat || !entry) return
-    if (lotField === 'parentLot' && !lot.parentLot) lot.parentLot = {};
-    const lotRef = (lotField === 'lot') ? lot : lot.parentLot
-
-    if (cat === 'lot') {
-      lotRef[entry] = value
-    
-    } else if (cat === 'org') {
-      if (!lotRef.organization) lotRef.organization = {}
-      lotRef.organization[entry] = value
-
-    } else {
-      const state = cat;
-      if (!lotRef.details) lotRef.details = {}
-      if (!lotRef.details[state]) lotRef.details[state] = { state, data: {} }
-      lotRef.details[state].data[entry] = value
-    }
-  })
-
-  if (!!lot.details) lot.details = Object.values(lot.details);
-  if (!!lot.parentLot?.details) lot.parentLot.details = Object.values(lot.parentLot.details)
-
-  return (Object.keys(lot).length > 0) ? lot : null;
-}
 
 const LotDetailSelector = ({ lot, selection, onToggleSelection }) => {
   const cultLot = !!lot?.parentLot ? lot.parentLot : lot;
@@ -226,25 +196,42 @@ const LotDetailSelector = ({ lot, selection, onToggleSelection }) => {
   )
 }
 
-const CERTIFICATIONS = ['ORGANIC', 'KOSHER', 'NONGMO', 'ADSCA'];
+const CERTIFICATIONS = ['ORGANIC', 'KOSHER', 'NONGMO', 'AOSCA', 'GF'];
+const certFileSwitch = (cert) => {
+  const path = '/img/';
+  switch (cert) {
+    case 'ORGANIC': 
+       return path+'organic.png';
+    case 'KOSHER': 
+      return path+'kosher.png';
+    case 'NONGMO': 
+      return path+'nongmo.jpg';
+    case 'AOSCA': 
+      return path+'aosca.png';
+    default:
+    case 'GF': 
+      return path+'gf.png';
+  }
+}
 const CertificationCheckboxes = ({ certifications, onToggleCertification }) => (
   <InputWrapper name="productCertifications" label="Product Certifications">
-    <div className={"row row-sm w-100 pl-3"} >
+    <div className={"flex flex-row pl-3"} >
       {CERTIFICATIONS.map( cert => 
-        <div key={cert} className="flex flex-row custom-checkbox pr-8">
+        <div key={cert} className="flex flex-row pr-8">
           <input 
             type="checkbox" 
             className="w-auto mr-2"
-            id={'certifications_'+cert} 
+            id={'certifications'+cert} 
             checked={!!certifications[cert]} 
             onChange={() => onToggleCertification(cert)}
           />
-          <label 
-            className={"custom-control-label "+(!!certifications[cert] ? "text-body" : "text-muted")} 
-            htmlFor={'certifications_'+cert}
-          >
-            {cert}
-          </label>
+          <img 
+            className=""
+            width="72"
+            src={certFileSwitch(cert)}
+            alt={cert}
+            forHtml={'certifications'+cert}
+          />
         </div>
       )}
     </div>
@@ -267,12 +254,12 @@ const PackagingDatePicker = ({ packagingDate, onChangePackagingDate }) => (
 
 
 const ProductProfile = ({
+  cloneFromID,
   lots,
   buttonLabel,
+  invertColor,
   handleSubmit,
   errorMessage,
-  isSubmitPending,
-  invertColor,
 }) => {
   const [state, setState] = useState({ 
     productID: '',
@@ -304,6 +291,7 @@ const ProductProfile = ({
       additionalLot: '',
     }
   });
+
   const { 
     productID,
     name, 
@@ -322,13 +310,70 @@ const ProductProfile = ({
     previewProduct,
     errors
   } = state;
-  /*
-  const addError = (name, msg) => {
-    if (!!name) {
-      setState({ ...state, errors: { [name]: msg } });
+
+  const productToState = (product) => ({
+    productID: genProductID(), 
+    name: !!product?.title ? product.title : '', 
+    description: !!product?.description ? product.description : '', 
+    productImage: !!product?.image?.url ? product.image.url : null, 
+    packagingDate: !!product?.packagingDate ? product.packagingDate : '', 
+    certifications: !!product?.certifications ? deflateCerts(product.certifications) : {}, 
+    companyName: !!product?.company?.name ? product.company.name : '', 
+    companyDescription: !!product?.company?.description ? product.company.description : '', 
+    companyLogo: !!product?.company?.logo?.url ? product.company.logo.url : null,
+    manufacturerLocation: (!!product?.company?.location?.state && !!USStates) ? 
+      USStates.find(one => one.label === product.company.location.state).value : '',
+    productLot: !!product?.productLot ? product.productLot : null,
+    productLotParts: (!!product?.productLot && !!product?.lots?.length) ? 
+      deflateLotSelection(product.lots.find(one => one.address === product.productLot)) : {},
+    additionalLot: !!product?.additionalLot ? product.additionalLot : null,
+    additionalLotParts: (!!product?.additionalLot && !!product?.lots?.length) ? 
+      deflateLotSelection(product.lots.find(one => one.address === product.additionalLot)) : {},
+  })
+  
+  useEffect(() => {
+    if (!!cloneFromID) {
+      console.log('Cloning from Product ID: ', cloneFromID)
+      getProduct(cloneFromID, (product) => setState({ ...state, ...productToState(product) }));
+    } else {
+      const newID = genProductID();
+      setState({ ...state, productID: newID })
+      console.log('New Product ID: ', newID)
     }
+    return () => {}//no op to prevent error on dismount
+  }, []);
+
+  const inflateLotSelection = (selection) => {
+    const lot = {}
+    Object.keys(selection).filter((each) => !!each && !!selection[each]).forEach((key) => {
+      const keyParts = key.split('-')
+      const [ lotField, cat, entry ] = keyParts
+      const value = selection[key]
+      if (!value || !lotField || !cat || !entry) return
+      if (lotField === 'parentLot' && !lot.parentLot) lot.parentLot = {};
+      const lotRef = (lotField === 'lot') ? lot : lot.parentLot
+
+      if (cat === 'lot') {
+        lotRef[entry] = value
+      
+      } else if (cat === 'org') {
+        if (!lotRef.organization) lotRef.organization = {}
+        lotRef.organization[entry] = value
+
+      } else {
+        const state = cat;
+        if (!lotRef.details) lotRef.details = {}
+        if (!lotRef.details[state]) lotRef.details[state] = { state, data: {} }
+        lotRef.details[state].data[entry] = value
+      }
+    })
+
+    if (!!lot.details) lot.details = Object.values(lot.details);
+    if (!!lot.parentLot?.details) lot.parentLot.details = Object.values(lot.parentLot.details)
+
+    return (Object.keys(lot).length > 0) ? lot : null;
   }
-  */
+
   const inflateLots = () => {
     const lots = [];
     const pLot = inflateLotSelection(productLotParts);
@@ -338,25 +383,66 @@ const ProductProfile = ({
     return lots;
   }
 
+  const inflateCerts = () => Object.keys(certifications).filter(key => certifications[key])
+
+  const deflateLotSelection = (lot) => {
+    const parts = {};
+    if (!lot) return parts;
+
+    if (!!lot.name) parts['lot-lot-name'] = lot.name;
+    if (!!lot.address) parts['lot-lot-address'] = lot.address;
+    if (!!lot.organization?.name) parts['lot-org-name'] = lot.organization.name;
+    if (!!lot.details?.length) {
+      lot.details.forEach((detail) => {
+        if (!detail.state || !detail.data) return;
+        Object.keys(detail.data).forEach((key) => {
+          if (!!detail.data[key]) parts['lot-'+detail.state+'-'+key] = detail.data[key];
+        })
+      })
+    }
+
+    if (!!lot.parentLot?.name) parts['parentLot-lot-name'] = lot.parentLot.name;
+    if (!!lot.parentLot?.address) parts['parentLot-lot-address'] = lot.parentLot.address;
+    if (!!lot.parentLot?.organization?.name) parts['parentLot-org-name'] = lot.parentLot.organization.name;
+    if (!!lot.parentLot?.details?.length) {
+      lot.parentLot.details.forEach((detail) => {
+        if (!detail.state || !detail.data) return;
+        Object.keys(detail.data).forEach((key) => {
+          if (!!detail.data[key]) parts['parentLot-'+detail.state+'-'+key] = detail.data[key];
+        })
+      })
+    }
+
+    return parts;
+  }
+
+  const deflateCerts = (certs) => {
+    const certifications = {};
+    certs.forEach((name) => { certifications[name] = true; })
+    return certifications;
+  }
+
   const stateToProduct = (translateImages) => ({
     id: productID,
     title: name, 
     description,
     productImage,
-    image: { url: (!!productImage && translateImages) ? URL.createObjectURL(productImage) : '' },
+    image: { url: (!!productImage && typeof productImage === "string") ? productImage : 
+      (!!productImage && translateImages) ? URL.createObjectURL(productImage) : '' },
     packagingDate,
-    certifications: Object.keys(certifications).filter(key => certifications[key]),
+    certifications: inflateCerts(),
+    companyLogo,
     company: { 
       name: companyName,
       description: companyDescription,
-      logo: { url: (!!companyLogo && translateImages) ? URL.createObjectURL(companyLogo) : '' },
+      logo: { url: (!!companyLogo && typeof companyLogo === "string") ? companyLogo : 
+        (!!companyLogo && translateImages) ? URL.createObjectURL(companyLogo) : '' },
       location: { 
         state: (!!companyName && !!manufacturerLocation) ?
           USStates.find(one => one.value === manufacturerLocation).label : '',
         country: (!!companyName) ? 'USA' : '',
       },
     },
-    companyLogo,
     productLot,
     additionalLot,
     lots: inflateLots(),
@@ -369,10 +455,29 @@ const ProductProfile = ({
   const isDisabled = (!name || !productLot || !Object.values(errors).every((one) => !one))
 
   const product = isDisabled ? null : stateToProduct(true);
+  console.log('STATE ', state)
   console.log('PRODUCT ', product)
 
   return (
+    <div className="container mb-24 w-128 text-left">
     <form>
+      <div className="mb-4">
+        <h3 className="text-xl font-bold text-left -ml-4 mb-4">
+          Create Product Profile
+        </h3>
+        <p className="text-sm text-left mb-2 pr-10">
+          Build trust with your consumers by giving them information regarding the cultivation,
+          processing and manufacturing process of your product.
+        </p>
+        <Link 
+          className=""
+          target="_blank"
+          to={'/product/0AgsqOf9Kz0Fb4EZe6S2'}
+        >
+          Example Product Profile
+        </Link>
+      </div>
+
       <div className="my-6">
         <h3 className="text-xl text-left mb-2 mt-4">
           Product Information
@@ -389,7 +494,7 @@ const ProductProfile = ({
           invertColor={invertColor}
           value={name}
           error={errors.name}
-          className="w-128"
+          className="w-100"
           updateValueAndError={(_, name, err) =>
             setState({ ...state, name, errors: { ...state.errors, name: err || '' } })
           }
@@ -404,23 +509,37 @@ const ProductProfile = ({
           placeholder="Enter product description"
           value={description}
           error={errors.description}
-          className="w-128"
+          className=""
           updateValueAndError={(_, description, err) =>
             setState({ ...state, description, errors: { ...state.errors, description: err || '' } })
           }
         />
       </div>
 
-      <div className="my-4 w-50">
+      <div className="my-4 w-100">
         <InputWrapper name="productImage" label="Product Image">
-        {!!productImage
-          ? <img src={URL.createObjectURL(productImage)} alt="productImage" className="w-20" />
-          : <FileUpload 
-              id="productImage"
-              types='image/*' 
-              placeholder='Choose an image to upload'
-              onUploadFile={ productImage => setState({ ...state, productImage })} 
-            />}
+        {(!!productImage && typeof productImage === "string") ? (
+          <img 
+            src={productImage} 
+            alt="productImage" 
+            className="w-20" 
+            onClick={() => setState({ ...state, productImage : null })}
+          />
+        ) : (!!productImage) ? (
+          <img 
+            src={URL.createObjectURL(productImage)} 
+            alt="productImage" 
+            className="w-20"
+            onClick={() => setState({ ...state, productImage : null })}
+          />
+        ) : (
+          <FileUpload 
+            id="productImage"
+            types='image/*' 
+            placeholder='Choose an image to upload'
+            onUploadFile={ productImage => setState({ ...state, productImage })} 
+          />
+        )}
         </InputWrapper>
       </div>
 
@@ -455,7 +574,7 @@ const ProductProfile = ({
           invertColor={invertColor}
           value={companyName}
           error={errors.companyName}
-          className="w-128"
+          className="w-100"
           updateValueAndError={(_, companyName, err) =>
             setState({ ...state, companyName, errors: { ...state.errors, companyName: err || '' } })
           }
@@ -470,38 +589,54 @@ const ProductProfile = ({
           placeholder="Enter company description"
           value={companyDescription}
           error={errors.companyDescription}
-          className="w-128"
+          className="w-100 h-200"
           updateValueAndError={(_, companyDescription, err) =>
             setState({ ...state, companyDescription, errors: { ...state.errors, companyDescription: err || '' } })
           }
         />
       </div>
 
-      <div className="my-4 w-50">
+      <div className="my-4 w-100">
         <InputWrapper name="companyLogo" label="Company Logo">
-        {!!companyLogo
-          ? <img src={URL.createObjectURL(companyLogo)} className="w-20" alt="companyLogo" />
-          : <FileUpload 
-              id="companyLogo"
-              types='image/*' 
-              placeholder='Choose an image to upload'
-              onUploadFile={ companyLogo => setState({ ...state, companyLogo })} 
-            />}
+        {(!!companyLogo && typeof companyLogo === "string") ? (
+          <img 
+            src={companyLogo} 
+            alt="companyLogo" 
+            className="w-20" 
+            onClick={() => setState({ ...state, companyLogo : null })}
+          />
+        ) : (!!companyLogo) ? (
+          <img 
+            src={URL.createObjectURL(companyLogo)} 
+            alt="companyLogo" 
+            className="w-20"
+            onClick={() => setState({ ...state, companyLogo : null })}
+          />
+        ) : (
+          <FileUpload 
+            id="companyLogo"
+            types='image/*' 
+            placeholder='Choose an image to upload'
+            onUploadFile={ companyLogo => setState({ ...state, companyLogo })} 
+          />
+        )}
         </InputWrapper>
       </div>
 
-      <div className="my-4">
-        <SelectDropdownInput 
-          name="manufacturerLocation"
-          value={manufacturerLocation}
-          label="Manufacturer Location"
-          error={errors.manufacturerLocation}
-          options={USStates}
-          updateValueAndError={(_, manufacturerLocation, err) => 
-            setState({ ...state, manufacturerLocation, errors: { ...state.errors, manufacturerLocation: err || '' } })
-          }
-        />
-      </div>
+      {!!productID && (//this a fix with cloning existing product profiles. Don't ask questions! :)
+        <div className="my-4">
+          <SelectDropdownInput 
+            name="manufacturerLocation"
+            value={manufacturerLocation}
+            label="Manufacturer Location"
+            error={errors.manufacturerLocation}
+            options={USStates}
+            updateValueAndError={(_, manufacturerLocation, err) => 
+              setState({ ...state, manufacturerLocation, errors: { ...state.errors, manufacturerLocation: err || '' } })
+            }
+          />
+        </div>
+      )}
 
       <div className="my-4">
         <h3 className="text-xl text-left mb-2 mt-4">
@@ -514,21 +649,23 @@ const ProductProfile = ({
         </p>
       </div>
 
-      <div className="my-4">
-        <SelectDropdownInput 
-          required
-          name="productLot"
-          value={productLot}
-          label="Product Lot"
-          error={errors.productLot}
-          updateValueAndError={(name, value) => setState({ ...state, productLot: value, productID: genProductID() })} 
-          options={lots.map( lot => ({
-            label: lot.name,
-            value: lot.address,
-          }))}
-          padding={'.5em'}
-        />
-      </div>
+      {!!productID && (//this a fix with cloning existing product profiles. Don't ask questions! :)
+        <div className="my-4">
+          <SelectDropdownInput
+            required
+            name="productLot"
+            value={productLot}
+            label="Product Lot"
+            error={errors.productLot}
+            updateValueAndError={(name, value) => setState({ ...state, productLot: value })} 
+            options={lots.map( lot => ({
+              label: lot.name,
+              value: lot.address,
+            }))}
+            padding={'.5em'}
+          />
+        </div>
+      )}
 
       {!!productLot && (
         <div className="my-4">
@@ -680,16 +817,22 @@ const ProductProfile = ({
         </div>
       )}
     </form>
+    </div>
   );
 };
 
+ProductProfile.defaultProps = {
+  cloneFromID: '',
+  invertColor: false,
+};
+
 ProductProfile.propTypes = {
+  cloneFromID: PropTypes.string,
   lots: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   buttonLabel: PropTypes.string.isRequired,
   handleSubmit: PropTypes.func.isRequired,
   errorMessage: PropTypes.string.isRequired,
-  isSubmitPending: PropTypes.bool.isRequired,
-  invertColor: PropTypes.bool.isRequired,
+  invertColor: PropTypes.bool,
 }
 
-export default ProductProfile
+export default ProductProfile;

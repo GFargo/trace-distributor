@@ -28,6 +28,13 @@ const userProductsRef = (email) => productsRef.where("owner", "==", email);
 const lotProductsRef = (address) => productsRef.where("productLot", "==", address);
 const productRef = (id) => productsRef.doc(id);
 
+export const getProduct = async (id, callback) => {
+  const snap = await productsRef.doc(id).get();
+  const product = snap.data();
+  if (!!callback) callback(product);
+  return product;
+}
+
 export const useProducts = (email) => {
   const [value, loading, error] = useCollection(userProductsRef(email)); 
   const products = (!value || !value.docs) ? null : (!value.docs.length) ? [] : value.docs.map(doc => ({
@@ -151,13 +158,6 @@ export const setProduct = async (product, calback) => {
   const doc = await productRef(product.id);
   await doc.set(product);
   console.log('firebase setProduct set doc: ', doc);
-
-	if (!doc){
-		doc = await productsRef.add(product);
-		console.log('firebase setProduct created, doc: ', doc);
-	} else {
-		
-	}
 
 	if (!doc || !doc.id) return;
 	const { id } = doc; 

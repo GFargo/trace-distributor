@@ -37,14 +37,14 @@ const ProductProfilesTable = ({ email }) => {
       name: 'page',
       displayName: 'Profile Page',
       displayValue: (product) => (
-        !!product?.url && (
+        !!product?.id && !!product?.url && (
           <span>
             <a className="mr-4 cursor-hand" target="_blank" rel="noopener noreferrer" href={product.url}>
               View
             </a>
-            <a className="cursor-hand" target="_blank" rel="noopener noreferrer" href={product.url}>
-              Edit
-            </a>
+            <Link to={"/distributor/product-profile-form/"+product.id}>
+              Clone
+            </Link>
           </span>
         )
       ),
@@ -58,9 +58,6 @@ const ProductProfilesTable = ({ email }) => {
           <span>
             <a className="mr-4 cursor-hand" target="_blank" rel="noopener noreferrer" href={product.qrcode.url}>
               View
-            </a>
-            <a className="cursor-hand" target="_blank" rel="noopener noreferrer" href={product.qrcode.url}>
-              Print
             </a>
           </span>
         )

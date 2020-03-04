@@ -12,10 +12,12 @@ import LoginPage from './pages/DistributorLoginPage'
 import LotDetail from './pages/DistributorLotDetail'
 import LotsIndex from './pages/DistributorLotsIndex'
 import ProductProfilesPage from './pages/DistributorProductProfiles'
+import ProductProfileForm from './components/ProductProfileForm';
 import SettingsPage from './pages/DistributorSettings'
 import ProductPage from './templates/product'
 import './styles/tailwind.css'
 import './core/src/styles/icons.css'
+
 
 const App = () => {
   const [state, dispatch] = useReducer(reducer, loadState())
@@ -81,13 +83,21 @@ const App = () => {
 
   const renderProductProfiles = () => (
     <UserLayout username={state.username} onLogout={dispatchLogout}>
-      <ProductProfilesPage
-        email={state.email}
+      <ProductProfilesPage email={state.email} />
+    </UserLayout>
+  )
+
+  const renderProductForm = (props) => (
+    <UserLayout username={state.username} onLogout={dispatchLogout}>
+      <ProductProfileForm 
+        cloneFromID={(!!props?.match?.params?.id) ? props.match.params.id : ''}
         lots={state.allLots.map(lot => ({
           ...lot,
           parentLot: (!lot.parentLot) ? null : state.lotDir[lot.parentLot.address],
         }))}
-        onExportProductProfile={dispatchExportProductProfile}
+        handleSubmit={dispatchExportProductProfile}
+        buttonLabel={'Create Product Profile'}
+        errorMessage={''}
       />
     </UserLayout>
   )
@@ -124,6 +134,8 @@ const App = () => {
         <Route path="/cultivating/:address" render={renderLotDetails} />
         <Route path="/processing/:address" render={renderLotDetails} />
         <Route exact path="/distributor/product-profiles" render={renderProductProfiles} />
+        <Route exact path="/distributor/product-profile-form" render={renderProductForm} />
+        <Route exact path="/distributor/product-profile-form/:id" render={renderProductForm} />
         <Route exact path="/distributor/settings" render={renderSettings} />
         <Route path="/product/:id" render={renderProductPage} />
         <Route render={() => <Redirect to="/distributor/products" />} />

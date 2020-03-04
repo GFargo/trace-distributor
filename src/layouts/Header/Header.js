@@ -31,14 +31,14 @@ const Header = ({ username, displayLogos, containerClass = 'border-b-2', locatio
         </div>
       )}
 
-      {!!username && location.pathname !== "/distributor/product-profiles/" && (
+      {!!username && location.pathname === "/distributor/product-profiles/" && (
         <div className="ml-auto">
           <ul className="flex flex items-center font-body">
             <Button 
               type="link"
               color="green"
               className="mb-2"
-              to="/distributor/product-profiles/"
+              to="/distributor/product-profile-form/"
             >
               Create Product Profile
             </Button>
