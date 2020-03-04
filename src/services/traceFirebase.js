@@ -136,8 +136,27 @@ const cleanObjectProps = (obj) => {
   })
 }
 
+export const deleteProductProfile = async (id) => {
+  if (!id) {
+    console.error('firebase deleteProduct NO PRODUCT ID, id: ', id);
+    return;
+  } 
+
+  let deleteTask = await store.child(`${id}/productImage`).delete();
+  console.log('firebase deleteProduct productImage, deleteTask: ', deleteTask);
+
+  deleteTask = await store.child(`${id}/companyLogo`).delete();
+  console.log('firebase deleteProduct companyLogo, deleteTask: ', deleteTask);
+
+  deleteTask = await store.child(`${id}/qrcode.png`).delete();
+  console.log('firebase deleteProduct qrcode, deleteTask: ', deleteTask);
+
+  deleteTask = await productRef(id).delete();
+  console.log('firebase deleteProduct product, deleteTask: ', deleteTask);
+}
+
 export const genProductID = () => productsRef.doc().id;
-export const setProduct = async (product, calback) => {
+export const setProductProfile = async (product, calback) => {
 	if (!product || !product.id) {
     console.error('firebase setProduct NO PRODUCT ID, product: ', product);
     return;
@@ -194,79 +213,12 @@ export const setProduct = async (product, calback) => {
 	return id;
 }
 
-/*
-export const autoAuthFirebaseUser = async (email) => {
-	let user = firebase.auth().currentUser;
-	if (!user) {
-		user = await firebase.auth().signInWithEmailAndPassword(email, TRACE_PW);
-	}
-	if (!user) {
-		user = await firebase.auth().createUserWithEmailAndPassword(email, TRACE_PW);
-	}
-	return user;
+export default {
+  useProducts,
+  useProduct,
+  useLatestLotProduct,
+  getProduct,
+  genProductID,
+  setProductProfile,
+  deleteProductProfile,
 }
-
-export const useAuth = (email) => {
-  const [state, setState] = useState(() => { 
-  	const user = firebase.auth().currentUser;
-  	const initialState = { initializing: !user, user };
-  	console.log('useAuth useState, initialState: ', initialState);
-  	return initialState;
-  })
-  const onChange = (user) => {
-  	const { initializing, creating } = state;
-  	if (initializing) {
-  		console.log('useAuth initialized, user: ', user);
-    	setState({ initializing: false, creating: !user, user });
-  	} else if (creating) {
-  		console.log('useAuth created, user: ', user);
-    	setState({ initializing: false, creating: false, user });
-  	}
-  }
-
-  useEffect(() => {
-    const unsubscribe = firebase.auth().onAuthStateChanged(onChange)
-    return () => unsubscribe()
-  }, [])
-
-  useEffect(() => {
-  	const { user, initializing, creating } = state;
-		if (!user && initializing) {
-			firebase.auth().signInWithEmailAndPassword(email, TRACE_PW);
-		} else if (!user && creating) {
-			firebase.auth().createUserWithEmailAndPassword(email, TRACE_PW);
-		}
-  }, [state])
-
-  return state
-}
-
-const userContext = createContext({
-  user: null,
-})
-
-function App() {
-  const { user } = useAuth()
-  if (!user) {
-    return <div>Loading</div>
-  }
-
-  return (
-    <userContext.Provider value={{ user }}> <UserProfile /> </userContext.Provider> )
-}
-
-.catch(error => {
-   switch (error.code) {
-      case 'auth/email-already-in-use':
-        console.log(`Email address ${this.state.email} already in use.`);
-      case 'auth/invalid-email':
-        console.log(`Email address ${this.state.email} is invalid.`);
-      case 'auth/operation-not-allowed':
-        console.log(`Error during sign up.`);
-      case 'auth/weak-password':
-        console.log('Password is not strong enough. Add additional characters including special characters and numbers.');
-      default:
-        console.log(error.message);
-    }
-});
-*/

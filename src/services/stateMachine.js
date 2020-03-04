@@ -1,5 +1,5 @@
 import { receiveUserLots, loginUser } from './traceAPI';
-import { setProduct } from './traceFirebase';
+import { setProductProfile } from './traceFirebase';
 
 const APP_CACHE = 'trace-app'
 
@@ -159,7 +159,7 @@ export const userEffects = (state, dispatch) => {
     const { productProfileExport } = state
     dispatch({ type: 'exportingProductProfile' })
     console.log('$$$$$$$ Uploading ProductProfile: ', productProfileExport)
-    setProduct(productProfileExport, (id) => dispatch({ type: 'exportedProductProfile'}));
+    setProductProfile(productProfileExport, (id) => dispatch({ type: 'exportedProductProfile'}));
   } 
   if (!state.creds) persistState(state)//never persist user creds
 }
