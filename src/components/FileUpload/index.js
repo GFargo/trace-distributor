@@ -36,6 +36,7 @@ const FileUpload = ({ id, title, placeholder, typesAccepted, onUploadFile }) => 
             {file?.name || placeholder || 'Choose a local file'}
           </label>
         </div>
+        {!!file && (
         <div className="input-group-append">
           <input 
             type="submit" 
@@ -44,6 +45,7 @@ const FileUpload = ({ id, title, placeholder, typesAccepted, onUploadFile }) => 
             className={'btn btn-block ml-2 px-4 '+((!file || !file.name) ? 'btn-disabled' : 'btn-success')}
           />
         </div>
+        )}
       </div>
     </form>
   )
