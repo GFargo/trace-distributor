@@ -465,365 +465,346 @@ const ProductProfile = ({
   console.log('PRODUCT ', product)
 
   return (
-    <div className="container mb-24 w-160 text-left">
     <form>
-      <div className="mb-4">
-        <h3 className="text-xl font-bold text-left mb-4">
-          Create Product Profile
+      <div className="my-6">
+        <h3 className="text-xl text-left mb-2 mt-4">
+          Product Information
         </h3>
-          <p className="text-sm text-left mb-2 pr-10">
-            Build trust with your consumers by giving them information regarding the cultivation,
-            processing and manufacturing process of your product.
-        </p>
-          <Link
-            className=""
-            target="_blank"
-            to={'/product/0AgsqOf9Kz0Fb4EZe6S2'}
-          >
-            Example Product Profile
-        </Link>
-        </div>
+        <hr />
+      </div>
 
-        <div className="my-6">
-          <h3 className="text-xl text-left mb-2 mt-4">
-            Product Information
-        </h3>
-          <hr />
-        </div>
+      <div className="my-4">
+        <TextInput
+          label="Product Name"
+          name="name"
+          placeholder="Enter product name"
+          required
+          invertColor={invertColor}
+          value={name}
+          error={errors.name}
+          className="w-100"
+          updateValueAndError={(_, name, err) =>
+            setState({ ...state, name, errors: { ...state.errors, name: err || '' } })
+          }
+        />
+      </div>
 
-        <div className="my-4">
-          <TextInput
-            label="Product Name"
-            name="name"
-            placeholder="Enter product name"
-            required
-            invertColor={invertColor}
-            value={name}
-            error={errors.name}
-            className="w-100"
-            updateValueAndError={(_, name, err) =>
-              setState({ ...state, name, errors: { ...state.errors, name: err || '' } })
-            }
-          />
-        </div>
+      <div className="my-4">
+        <TextAreaInput
+          label="Product Description"
+          name="description"
+          invertColor={invertColor}
+          placeholder="Enter product description"
+          value={description}
+          error={errors.description}
+          className=""
+          updateValueAndError={(_, description, err) =>
+            setState({ ...state, description, errors: { ...state.errors, description: err || '' } })
+          }
+        />
+      </div>
 
-        <div className="my-4">
-          <TextAreaInput
-            label="Product Description"
-            name="description"
-            invertColor={invertColor}
-            placeholder="Enter product description"
-            value={description}
-            error={errors.description}
-            className=""
-            updateValueAndError={(_, description, err) =>
-              setState({ ...state, description, errors: { ...state.errors, description: err || '' } })
-            }
-          />
-        </div>
-
-        <div className="my-4 w-100">
-          <InputWrapper name="productImage" label="Product Image">
-            {(!!productImage && typeof productImage === "string") ? (
-              <img
-                src={productImage}
-                alt="productImage"
-                className="w-20"
-                onClick={() => setState({ ...state, productImage: null })}
-              />
-            ) : (!!productImage) ? (
-              <img
-                src={URL.createObjectURL(productImage)}
-                alt="productImage"
-                className="w-20"
-                onClick={() => setState({ ...state, productImage: null })}
-              />
-            ) : (
-                  <FileUpload
-                    id="productImage"
-                    types='image/*'
-                    placeholder='Choose an image to upload'
-                    onUploadFile={productImage => setState({ ...state, productImage })}
-                  />
-                )}
-          </InputWrapper>
-        </div>
-
-        <div className="my-4">
-          <PackagingDatePicker
-            packagingDate={packagingDate}
-            onChangePackagingDate={packagingDate => setState({
-              ...state,
-              packagingDate,
-            })}
-          />
-        </div>
-
-        <div className="my-4">
-          <CertificationCheckboxes
-            certifications={certifications}
-            onToggleCertification={cert => setState({
-              ...state,
-              certifications: {
-                ...certifications,
-                [cert]: !certifications[cert]
-              },
-            })}
-          />
-        </div>
-
-        <div className="my-4">
-          <TextInput
-            label="Company Name"
-            name="companyName"
-            placeholder="Enter company name"
-            invertColor={invertColor}
-            value={companyName}
-            error={errors.companyName}
-            className="w-100"
-            updateValueAndError={(_, companyName, err) =>
-              setState({ ...state, companyName, errors: { ...state.errors, companyName: err || '' } })
-            }
-          />
-        </div>
-
-        <div className="my-4">
-          <TextAreaInput
-            label="Company Description"
-            name="companyDescription"
-            invertColor={invertColor}
-            placeholder="Enter company description"
-            value={companyDescription}
-            error={errors.companyDescription}
-            className="w-100 h-200"
-            updateValueAndError={(_, companyDescription, err) =>
-              setState({ ...state, companyDescription, errors: { ...state.errors, companyDescription: err || '' } })
-            }
-          />
-        </div>
-
-        <div className="my-4 w-100">
-          <InputWrapper name="companyLogo" label="Company Logo">
-            {(!!companyLogo && typeof companyLogo === "string") ? (
-              <img
-                src={companyLogo}
-                alt="companyLogo"
-                className="w-20"
-                onClick={() => setState({ ...state, companyLogo: null })}
-              />
-            ) : (!!companyLogo) ? (
-              <img
-                src={URL.createObjectURL(companyLogo)}
-                alt="companyLogo"
-                className="w-20"
-                onClick={() => setState({ ...state, companyLogo: null })}
-              />
-            ) : (
-                  <FileUpload
-                    id="companyLogo"
-                    types='image/*'
-                    placeholder='Choose an image to upload'
-                    onUploadFile={companyLogo => setState({ ...state, companyLogo })}
-                  />
-                )}
-          </InputWrapper>
-        </div>
-
-        {!!productID && (//this a fix with cloning existing product profiles. Don't ask questions! :)
-          <div className="my-4">
-            <SelectDropdownInput
-              name="manufacturerLocation"
-              value={manufacturerLocation}
-              label="Manufacturer Location"
-              error={errors.manufacturerLocation}
-              options={USStates}
-              updateValueAndError={(_, manufacturerLocation, err) =>
-                setState({ ...state, manufacturerLocation, errors: { ...state.errors, manufacturerLocation: err || '' } })
-              }
+      <div className="my-4 w-100">
+        <InputWrapper name="productImage" label="Product Image">
+          {(!!productImage && typeof productImage === "string") ? (
+            <img
+              src={productImage}
+              alt="productImage"
+              className="w-20"
+              onClick={() => setState({ ...state, productImage: null })}
             />
-          </div>
-        )}
+          ) : (!!productImage) ? (
+            <img
+              src={URL.createObjectURL(productImage)}
+              alt="productImage"
+              className="w-20"
+              onClick={() => setState({ ...state, productImage: null })}
+            />
+          ) : (
+                <FileUpload
+                  id="productImage"
+                  types='image/*'
+                  placeholder='Choose an image to upload'
+                  onUploadFile={productImage => setState({ ...state, productImage })}
+                />
+              )}
+        </InputWrapper>
+      </div>
 
+      <div className="my-4">
+        <PackagingDatePicker
+          packagingDate={packagingDate}
+          onChangePackagingDate={packagingDate => setState({
+            ...state,
+            packagingDate,
+          })}
+        />
+      </div>
+
+      <div className="my-4">
+        <CertificationCheckboxes
+          certifications={certifications}
+          onToggleCertification={cert => setState({
+            ...state,
+            certifications: {
+              ...certifications,
+              [cert]: !certifications[cert]
+            },
+          })}
+        />
+      </div>
+
+      <div className="my-4">
+        <TextInput
+          label="Company Name"
+          name="companyName"
+          placeholder="Enter company name"
+          invertColor={invertColor}
+          value={companyName}
+          error={errors.companyName}
+          className="w-100"
+          updateValueAndError={(_, companyName, err) =>
+            setState({ ...state, companyName, errors: { ...state.errors, companyName: err || '' } })
+          }
+        />
+      </div>
+
+      <div className="my-4">
+        <TextAreaInput
+          label="Company Description"
+          name="companyDescription"
+          invertColor={invertColor}
+          placeholder="Enter company description"
+          value={companyDescription}
+          error={errors.companyDescription}
+          className="w-100 h-200"
+          updateValueAndError={(_, companyDescription, err) =>
+            setState({ ...state, companyDescription, errors: { ...state.errors, companyDescription: err || '' } })
+          }
+        />
+      </div>
+
+      <div className="my-4 w-100">
+        <InputWrapper name="companyLogo" label="Company Logo">
+          {(!!companyLogo && typeof companyLogo === "string") ? (
+            <img
+              src={companyLogo}
+              alt="companyLogo"
+              className="w-20"
+              onClick={() => setState({ ...state, companyLogo: null })}
+            />
+          ) : (!!companyLogo) ? (
+            <img
+              src={URL.createObjectURL(companyLogo)}
+              alt="companyLogo"
+              className="w-20"
+              onClick={() => setState({ ...state, companyLogo: null })}
+            />
+          ) : (
+                <FileUpload
+                  id="companyLogo"
+                  types='image/*'
+                  placeholder='Choose an image to upload'
+                  onUploadFile={companyLogo => setState({ ...state, companyLogo })}
+                />
+              )}
+        </InputWrapper>
+      </div>
+
+      {!!productID && (//this a fix with cloning existing product profiles. Don't ask questions! :)
+        <div className="my-4">
+          <SelectDropdownInput
+            name="manufacturerLocation"
+            value={manufacturerLocation}
+            label="Manufacturer Location"
+            error={errors.manufacturerLocation}
+            options={USStates}
+            updateValueAndError={(_, manufacturerLocation, err) =>
+              setState({ ...state, manufacturerLocation, errors: { ...state.errors, manufacturerLocation: err || '' } })
+            }
+          />
+        </div>
+      )}
+
+      <div className="my-4">
+        <h3 className="text-xl text-left mb-2 mt-4">
+          Select Product Lot
+      </h3>
+        <hr />
+        <p className="text-sm text-left mt-4">
+          There must be a lot that has passed the "Product Ready" state in the iOS app.
+          Product information regarding this product will be pulled from this lot.
+      </p>
+      </div>
+
+      {!!productID && (//this a fix with cloning existing product profiles. Don't ask questions! :)
+        <div className="my-4">
+          <SelectDropdownInput
+            required
+            name="productLot"
+            value={productLot}
+            label="Product Lot"
+            error={errors.productLot}
+            updateValueAndError={(name, value) => setState({ ...state, productLot: value })}
+            options={lots.map(lot => ({
+              label: lot.name,
+              value: lot.address,
+            }))}
+            padding={'.5em'}
+          />
+        </div>
+      )}
+
+      {!!productLot && (
         <div className="my-4">
           <h3 className="text-xl text-left mb-2 mt-4">
-            Select Product Lot
+            Select Product Lot Information
         </h3>
           <hr />
           <p className="text-sm text-left mt-4">
-            There must be a lot that has passed the "Product Ready" state in the iOS app.
-            Product information regarding this product will be pulled from this lot.
+            Select which pieces of lot information you would like to include in you product
+            profile page.
         </p>
         </div>
+      )}
 
-        {!!productID && (//this a fix with cloning existing product profiles. Don't ask questions! :)
-          <div className="my-4">
-            <SelectDropdownInput
-              required
-              name="productLot"
-              value={productLot}
-              label="Product Lot"
-              error={errors.productLot}
-              updateValueAndError={(name, value) => setState({ ...state, productLot: value })}
-              options={lots.map(lot => ({
-                label: lot.name,
-                value: lot.address,
-              }))}
-              padding={'.5em'}
-            />
-          </div>
-        )}
+      {!!productLot && (
+        <LotDetailSelector
+          lot={lots.find(one => one.address === productLot)}
+          selection={productLotParts}
+          onToggleSelection={(key, value) => setState({
+            ...state,
+            productLotParts: {
+              ...productLotParts,
+              [key]: (!productLotParts[key]) ? value : undefined
+            },
+          })}
+        />
+      )}
 
-        {!!productLot && (
-          <div className="my-4">
-            <h3 className="text-xl text-left mb-2 mt-4">
-              Select Product Lot Information
-          </h3>
-            <hr />
-            <p className="text-sm text-left mt-4">
-              Select which pieces of lot information you would like to include in you product
-              profile page.
-          </p>
-          </div>
-        )}
-
-        {!!productLot && (
-          <LotDetailSelector
-            lot={lots.find(one => one.address === productLot)}
-            selection={productLotParts}
-            onToggleSelection={(key, value) => setState({
-              ...state,
-              productLotParts: {
-                ...productLotParts,
-                [key]: (!productLotParts[key]) ? value : undefined
-              },
-            })}
-          />
-        )}
-
-        {!!productLot && (
-          <div className="my-4">
-            <h3 className="text-xl text-left mb-2 mt-4">
-              Select Additional Product Lot (optional)
-          </h3>
-            <hr />
-          </div>
-        )}
-
-        {!!productLot && (
-          <SelectDropdownInput
-            name="additionalLot"
-            value={additionalLot}
-            label="Additional Lot"
-            error={errors.additionalLot}
-            updateValueAndError={(name, value) => setState({ ...state, additionalLot: value })}
-            options={lots
-              .filter(each =>
-                each.address !== productLot
-                && !(!!each.parentLot && each.parentLot.address === productLot)
-                && !(!!each.subLots?.length && each.subLots.find(sublot => sublot.address === productLot)))
-              .map(lot => ({
-                label: lot.name,
-                value: lot.address,
-              }))}
-            padding={'.5em'}
-          />
-        )}
-
-        {!!additionalLot && (
-          <div className="my-4">
-            <h3 className="text-xl text-left mb-2 mt-4">
-              Select Additional Lot Information
-          </h3>
-            <hr />
-            <p className="text-sm text-left mt-4">
-              Select which pieces of lot information you would like to include in you product
-              profile page.
-          </p>
-          </div>
-        )}
-
-        {!!additionalLot && (
-          <LotDetailSelector
-            lot={lots.find(one => one.address === additionalLot)}
-            selection={additionalLotParts}
-            onToggleSelection={(key, value) => setState({
-              ...state,
-              additionalLotParts: {
-                ...additionalLotParts,
-                [key]: (!additionalLotParts[key]) ? value : undefined
-              },
-            })}
-          />
-        )}
-
-        <div>
-          {errorMessage && (
-            <span className="text-orange-500">{errorMessage}</span>
-          )}
+      {!!productLot && (
+        <div className="my-4">
+          <h3 className="text-xl text-left mb-2 mt-4">
+            Select Additional Product Lot (optional)
+        </h3>
+          <hr />
         </div>
+      )}
 
-        {!previewProduct && (
-          <Button
-            onClickHandler={(e) => setState({ ...state, previewProduct: true })}
-            size="lg"
-            type="button"
-            className="uppercase mt-4"
-            isDisabled={isDisabled}
-          >
-            Preview Product Profile
-        </Button>
+      {!!productLot && (
+        <SelectDropdownInput
+          name="additionalLot"
+          value={additionalLot}
+          label="Additional Lot"
+          error={errors.additionalLot}
+          updateValueAndError={(name, value) => setState({ ...state, additionalLot: value })}
+          options={lots
+            .filter(each =>
+              each.address !== productLot
+              && !(!!each.parentLot && each.parentLot.address === productLot)
+              && !(!!each.subLots?.length && each.subLots.find(sublot => sublot.address === productLot)))
+            .map(lot => ({
+              label: lot.name,
+              value: lot.address,
+            }))}
+          padding={'.5em'}
+        />
+      )}
+
+      {!!additionalLot && (
+        <div className="my-4">
+          <h3 className="text-xl text-left mb-2 mt-4">
+            Select Additional Lot Information
+        </h3>
+          <hr />
+          <p className="text-sm text-left mt-4">
+            Select which pieces of lot information you would like to include in you product
+            profile page.
+        </p>
+        </div>
+      )}
+
+      {!!additionalLot && (
+        <LotDetailSelector
+          lot={lots.find(one => one.address === additionalLot)}
+          selection={additionalLotParts}
+          onToggleSelection={(key, value) => setState({
+            ...state,
+            additionalLotParts: {
+              ...additionalLotParts,
+              [key]: (!additionalLotParts[key]) ? value : undefined
+            },
+          })}
+        />
+      )}
+
+      <div>
+        {errorMessage && (
+          <span className="text-orange-500">{errorMessage}</span>
         )}
+      </div>
 
-        {!!previewProduct && (
-          <div className="my-6">
-            <h3 className="text-xl text-left mb-2 mt-4">
-              Product Profile Preview
-          </h3>
-            <hr />
+      {!previewProduct && (
+        <Button
+          onClickHandler={(e) => setState({ ...state, previewProduct: true })}
+          size="lg"
+          type="button"
+          className="uppercase mt-4"
+          isDisabled={isDisabled}
+        >
+          Preview Product Profile
+      </Button>
+      )}
+
+      {!!previewProduct && (
+        <div className="my-6">
+          <h3 className="text-xl text-left mb-2 mt-4">
+            Product Profile Preview
+        </h3>
+          <hr />
+        </div>
+      )}
+
+      {!!previewProduct && (
+        <div className="flex mb-8 text-left">
+          <div className="w-7/12 bg-white" style={{ minWidth: "540px", maxWidth: "540px" }}>
+            <PublicProduct product={product} />
           </div>
-        )}
-
-        {!!previewProduct && (
-          <div className="flex mb-8 text-left">
-            <div className="w-7/12 bg-white" style={{ minWidth: "540px", maxWidth: "540px" }}>
-              <PublicProduct product={product} />
-            </div>
-            <div className="w-5/12 ml-3">
-              {!!product?.url && <ProductQRCodeView url={product.url} />}
-              <Button
-                onClickHandler={(e) => {
-                  e.preventDefault();
-                  if (!isDisabled) {
-                    setState({ ...state, previewProduct: false })
-                  }
-                }}
-                size="md"
-                type="button"
-                className="uppercase mt-4 ml-10 pl-1"
-                isDisabled={isDisabled}
-              >
-                &nbsp;Close Preview&nbsp;
-            </Button>
-              <Button
-                onClickHandler={(e) => {
-                  e.preventDefault();
-                  if (!isDisabled) {
-                    handleSubmit(stateToProduct());
-                  }
-                }}
-                size="md"
-                type="button"
-                color="green"
-                className="uppercase mt-4 ml-10 pl-1"
-                isDisabled={isDisabled}
-              >
-                Publish Profile
-            </Button>
-            </div>
+          <div className="w-5/12 ml-3">
+            {!!product?.url && <ProductQRCodeView url={product.url} />}
+            <Button
+              onClickHandler={(e) => {
+                e.preventDefault();
+                if (!isDisabled) {
+                  setState({ ...state, previewProduct: false })
+                }
+              }}
+              size="md"
+              type="button"
+              className="uppercase mt-4 ml-10 pl-1"
+              isDisabled={isDisabled}
+            >
+              &nbsp;Close Preview&nbsp;
+          </Button>
+            <Button
+              onClickHandler={(e) => {
+                e.preventDefault();
+                if (!isDisabled) {
+                  handleSubmit(stateToProduct());
+                }
+              }}
+              size="md"
+              type="button"
+              color="green"
+              className="uppercase mt-4 ml-10 pl-1"
+              isDisabled={isDisabled}
+            >
+              Publish Profile
+          </Button>
           </div>
-        )}
-      </form>
-    </div>
+        </div>
+      )}
+    </form>
   );
 };
 
