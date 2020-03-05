@@ -80,7 +80,7 @@ const App = () => {
   );
 
   const renderProductProfilesPage = () => (
-    <UserLayout username={state.username} onLogout={dispatchLogout}>
+    <UserLayout username={state.username} onLogout={dispatchLogout} showCreateButton>
       <ProductProfilesPage email={state.email} />
     </UserLayout>
   );
@@ -93,7 +93,10 @@ const App = () => {
           ...lot,
           parentLot: (!lot.parentLot) ? null : state.lotDir[lot.parentLot.address],
         }))}
-        handleSubmitProfile={dispatchExportProductProfile}
+        handleSubmitProfile={(product) => {
+          props.history.push("/distributor/product-profiles");
+          dispatchExportProductProfile(product);
+        }}
       />
     </UserLayout>
   );
