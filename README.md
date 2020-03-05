@@ -20,11 +20,12 @@
 ## Project Directory
 
 - `src/core`: Trace Core Submodule
-- `src/layouts`: Trace Distributor Portal Layouts
-- `src/pages`: Trace Distributor Portal Pages
-- `src/services`: Trace Distributor Portal State Machine and API
-- `src/styles`: Trace Distributor Portal Styles
-- `src/tests`: Trace Distributor Portal Unit Tests
+- `src/layouts`: Trace Distributor Layouts
+- `src/pages`: Trace Distributor Pages
+- `src/components`: Trace Distributor Components
+- `src/services`: Trace Distributor State Machine, Firebase, and Trace API
+- `src/styles`: Trace Distributor Styles
+- `src/tests`: Trace Distributor Unit Tests
 
 ## Backend Connectivity
 

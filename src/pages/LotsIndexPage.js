@@ -27,20 +27,6 @@ const LotsIndex = ({ lots, selection, onToggleSelection }) => {
       getValue: (lot) => lot.state,
       size: 'base'
     },
-    {
-      name: 'selection',
-      displayName: 'BoG',
-      getValue: (lot) => (!!selection[lot.address]) ? "Included" : "Not Included",
-      size: 'base'
-    }
-    /*
-    {
-      name: 'verified',
-      displayName: 'Verified',
-      getValue: (lot) => (lot.verified) ? "Yes" : "No",
-      size: 'base'
-    }
-    */
   ])
 
   const tableColumns = () => ([
@@ -68,22 +54,6 @@ const LotsIndex = ({ lots, selection, onToggleSelection }) => {
       displayValue: (lot) => lot.state,
       sortable: (lot) => lot.state
     },
-    /*
-    {
-      name: 'verified',
-      displayName: 'Verified',
-      displayValue: (lot) => (lot.verified) ? 
-        (<i className="icon-check verified-mark" aria-hidden="true"></i>) : 
-          (<i className="icon-check" aria-hidden="true"></i>),
-      sortable: (lot) => (lot.verified) ? "yes" : "no"
-    },
-    {
-      name: 'sublots',
-      displayName: 'Sublots',
-      displayValue: (lot) => lot.subLots.length,
-      sortable: (lot) => lot.subLots.length
-    },
-    */
     {
       name: 'address',
       displayName: 'Blockchain Address',
@@ -93,23 +63,6 @@ const LotsIndex = ({ lots, selection, onToggleSelection }) => {
         </Link>),
       sortable: (lot) => lot.address
     },
-    {
-      name: 'selection',
-      displayName: 'Include in BoG',
-      displayValue: (lot) => 
-        <div className="custom-control custom-checkbox ml-6">
-          <input 
-            type="checkbox" 
-            className="custom-control-input text-warning" 
-            id={lot.address} 
-            checked={selection[lot.address]} 
-            onChange={() => onToggleSelection({address: lot.address})}
-          />
-          <label className="custom-control-label" htmlFor={lot.address}>
-          </label>
-        </div>,
-      sortable: (lot) => (!!selection[lot.address]) ? "Included" : "Not Included"
-    }
   ])
 
   return (

@@ -1,14 +1,17 @@
-import { receiveUserLots, loginUser } from './traceAPI'
+import { receiveUserLots, loginUser } from './traceAPI';
+import { setProductProfile } from './traceFirebase';
 
 const APP_CACHE = 'trace-app'
 
 const initGuestState = () => ({
   username: 'guest',
+  email: undefined,
   authToken: undefined
 })
 
-const initUserState = (username = '', authToken = null) => ({
+const initUserState = (username = '', email, authToken = null) => ({
   username,
+  email,
   authToken,
   authError: '',
   lotDir: {},
@@ -19,9 +22,9 @@ const initUserState = (username = '', authToken = null) => ({
   timestamp: undefined
 })
 
-const userToState = ({ username, authToken, lots }) => {
+const userToState = ({ username, email, authToken, lots }) => {
   const state = {
-    ...initUserState(username, authToken),
+    ...initUserState(username, email, authToken),
     timestamp: (!!lots) ? Date.now() : null 
   }
   if (!!lots?.length) {
@@ -45,56 +48,7 @@ export const loadState = (state = localStorage.getItem(APP_CACHE)) => (!!state) 
   {...JSON.parse(state), timestamp: undefined, type: undefined} : 
   {...initGuestState()}
 
-const toggleLotDataSelection = (selection, address, cat, entry, value) => {
-  const selected = (!selection) ? {} : { ...selection }
-  if (!!address && !!cat && !!entry && !!value) {
-    selected[address+'-'+cat+'-'+entry] = (!selection[address+'-'+cat+'-'+entry]) ? value : undefined
-  } else if (!!address && !!cat && !!entry) {
-    selected[address+'-'+cat+'-'+entry] = (!selection[address+'-'+cat+'-'+entry]) ? true : undefined
-  } else if (!!address && !!cat) {
-    selected[address+'-'+cat] = (!selection[address+'-'+cat]) ? true : undefined
-  } else if (!!address) {
-    selected[address] = (!selection[address]) ? true : undefined
-  }
-  return selected
-}
-
-const exportLotDataSelection = (selection) => {
-  const exp = {}
-  const data = {}
-  Object.keys(selection).filter((each) => !!each && each.split('-').length === 3).forEach((key) => {
-    const keyParts = key.split('-')
-    const [ address, cat, entry ] = keyParts
-    const value = selection[key]
-    if (!value || !address || !selection[address]) return
-
-    if (cat === 'lot' && !!selection[address+'-lot']) {
-      if (!data[address]) data[address] = {}
-      data[address][entry] = value
-
-    } else if (cat === 'org' && !!selection[address+'-org']) {
-      if (!data[address]) data[address] = {}
-      if (!data[address].organization) data[address].organization = {}
-      data[address].organization[entry] = value
-
-    } else if (!!selection[address+'-'+cat]) {
-      if (!data[address]) data[address] = {}
-      if (!data[address].state) data[address].state = {}
-      if (!data[address].state[cat]) data[address].state[cat] = {}
-      data[address].state[cat][entry] = value
-    }
-  })
-  if (!!Object.values(data).length) {
-    exp.created = Date.now()
-    exp.lots = Object.values(data)
-    exp.lotCount = exp.lots.length
-    return exp//JSON.stringify(exp)
-  } else return null
-  
-}
-
 export const reducer = (state = loadState(), action = {}) => {
-
   console.group(action.type)
   console.info('<<< action: ', action)
   switch (action.type) {
@@ -137,31 +91,28 @@ export const reducer = (state = loadState(), action = {}) => {
       return { ...state, type: action.type,
         ...userToState({
           username: state.username, 
+          email: state.email,
           authToken: state.authToken,
           lots: action.lots || []
         }),
-        selection: state.selection,
         timestamp: Date.now()
       }
-    case 'toggleLotDataSelection':
+    case 'exportProductProfile':
       return { ...state, type: action.type,
-        selection: toggleLotDataSelection(state.selection, action.address, action.cat, action.entry, action.value)
+        productProfileExport: { 
+          ...action.product,
+          owner: state.email, 
+          created: Date.now(), 
+        }
       }
-    case 'clearLotDataSelection':
+    case 'exportingProductProfile':
       return { ...state, type: action.type,
+        productProfileExport: null
+      }
+    case 'exportedProductProfile':
+      return { ...state, type: action.type,
+        productProfileExport: undefined,
         selection: {}
-      }
-    case 'uploadLotDataSelection':
-      return { ...state, type: action.type,
-        selectionExport: exportLotDataSelection(state.selection)
-      }
-    case 'uploadingLotDataSelection':
-      return { ...state, type: action.type,
-        selectionExport: null
-      }
-    case 'uploadedLotDataSelection':
-      return { ...state, type: action.type,
-        selectionExport: undefined
       }
     default: return state
   }
@@ -179,18 +130,22 @@ export const userEffects = (state, dispatch) => {
   console.info('>>> state: ', state)
   console.groupEnd()
 
-  if (!!state.creds) {//user is logging in
+  if (state.type === 'loginUser' && !!state.creds) {//user is logging in
     console.info('^^^ trigger effect user login')
     const { email, password } = state.creds
-    dispatch({ type: 'awaitingAuth' })
-    loginUser(
-      email, 
-      password, 
-      ({ username, authToken, authError, lots }) => 
-        (!!authError || !authToken) ? dispatch({ type: 'requireAuth', authError }) : 
-          dispatch({ type: 'authUser', user: { username, authToken, lots } })
-    )
-  } else if (!state.timestamp && !!state.authToken) {//auth'd user refreshed browser
+    if (!!email && !!password) {
+      dispatch({ type: 'awaitingAuth' })
+      loginUser(
+        email, 
+        password, 
+        ({ username, authToken, authError, lots }) => 
+          (!!authError || !authToken) ? dispatch({ type: 'requireAuth', authError }) : 
+            dispatch({ type: 'authUser', user: { username, email, authToken, lots } })
+      )
+    } else {
+      dispatch({ type: 'requireAuth' })
+    }
+  } else if (false && !state.timestamp && !!state.authToken) {//auth'd user refreshed browser
     console.info('^^^ trigger effect lots refresh')
     dispatch({ type: 'receivingLots' })
     receiveUserLots(
@@ -198,13 +153,13 @@ export const userEffects = (state, dispatch) => {
       (lots) => (!lots) ? dispatch({ type: 'requireAuth', authError: '' }) : 
         dispatch({ type: 'receivedLots', lots })
     )
-  } else if (!!state.selectionExport) {//create selection
-    console.info('^^^ trigger effect upload LotDataSelection')
-    const { selectionExport } = state
-    dispatch({ type: 'uploadingLotDataSelection' })
-    console.log('Uploading LotDataSelection: ', selectionExport)
+  } else if (state.type === 'exportProductProfile' && !!state.productProfileExport) {//create selection
+    console.info('^^^ trigger effect exportProductProfile')
+    const { productProfileExport } = state
+    dispatch({ type: 'exportingProductProfile' })
+    setProductProfile(productProfileExport, (id) => dispatch({ type: 'exportedProductProfile'}));
   } 
-  if (!state.creds) persistState(state)
+  if (!state.creds) persistState(state)//never persist user creds
 }
 
-export default reducer
+export default reducer;

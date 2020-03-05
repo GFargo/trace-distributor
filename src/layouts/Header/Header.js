@@ -5,7 +5,7 @@ import { withRouter } from "react-router"
 import Logo from '../../core/src/components/Elements/Logo'
 import Button from '../../core/src/components/Elements/Button'
 
-const Header = ({ username, displayLogos, containerClass = 'border-b-2', location }) => (
+const Header = ({ username, displayLogos, containerClass = 'border-b-2', location, showCreateButton }) => (
   <div className="" id="Header">
     <div className={`flex flex-row justify-between items-center ${containerClass}`}>
       {!!displayLogos && (
@@ -31,16 +31,16 @@ const Header = ({ username, displayLogos, containerClass = 'border-b-2', locatio
         </div>
       )}
 
-      {!!username && location.pathname !== "/distributor/manifest-creator/" && (
+      {!!username && showCreateButton && (
         <div className="ml-auto">
           <ul className="flex flex items-center font-body">
             <Button 
               type="link"
               color="green"
               className="mb-2"
-              to="/distributor/manifest-creator/"
+              to="/distributor/product-profile-form/"
             >
-              Create Bill Of Goods
+              Create Product Profile
             </Button>
           </ul>
         </div>
@@ -55,6 +55,7 @@ Header.propTypes = {
   displayLogos: PropTypes.bool,
   containerClass: PropTypes.string,
   location: PropTypes.object.isRequired,
+  showCreateButton: PropTypes.bool,
 }
 
 export default withRouter(Header)

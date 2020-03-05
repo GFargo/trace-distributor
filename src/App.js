@@ -1,54 +1,53 @@
-import React, { useReducer, useEffect } from 'react'
-import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom'
-import { reducer, loadState, userEffects } from './services/stateMachine'
+import React, { useReducer, useEffect } from 'react';
+import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
+import { reducer, loadState, userEffects } from './services/stateMachine';
+import LandingLayout from './layouts/LandingLayout';
+import LoginLayout from './layouts/LoginLayout';
+import UserLayout from './layouts/UserLayout';
+import Pending from './core/src/components/Elements/Loader';
+import NotFound from './pages/NotFound';
+import LandingPage from './pages/LandingPage';
+import LoginPage from './pages/LoginPage';
+import LotDetailPage from './pages/LotDetailPage';
+import LotsIndexPage from './pages/LotsIndexPage';
+import ProductProfilesPage from './pages/ProductProfilesPage';
+import CreateProductProfilePage from './pages/CreateProductProfilePage';
+import SettingsPage from './pages/SettingsPage';
+import ProductPage from './templates/product';
+import './styles/tailwind.css';
+import './core/src/styles/icons.css';
 
-import LandingLayout from './layouts/LandingLayout'
-import LoginLayout from './layouts/LoginLayout'
-import UserLayout from './layouts/DistributorLayout'
-import Pending from './core/src/components/Elements/Loader'
-import NotFound from './pages/NotFound'
-import LandingPage from './pages/DistributorLandingPage'
-import LoginPage from './pages/DistributorLoginPage'
-import LotDetail from './pages/DistributorLotDetail'
-import LotsIndex from './pages/DistributorLotsIndex'
-import ManifestPage from './pages/DistributorManifestCreator'
-import SettingsPage from './pages/DistributorSettings'
-import ProductPage from './ProductPage'
-
-import './styles/tailwind.css'
-import './core/src/styles/icons.css'
 
 const App = () => {
-  const [state, dispatch] = useReducer(reducer, loadState())
-  //useEffect(() => appEffects(state, dispatch), []) //Use effect as app mounted and unmounted - triggers warning though...?
-  useEffect(() => userEffects(state, dispatch), [state])
+  const [state, dispatch] = useReducer(reducer, loadState());
+  useEffect(() => userEffects(state, dispatch), [state]);
 
   /* State Action Dispatch */
-  const dispatchLogin = (email, password) => dispatch({ 
+  const dispatchLogin = (email, password) => dispatch({
     type: 'loginUser', 
     creds: { email, password } 
-  })
+  });
 
   const dispatchLogout = () => dispatch({ 
     type: 'releaseAuth' 
-  })
+  });
 
-  const dispatchToggleLotDataSelection = ({ address, cat, entry, value }) => dispatch({ 
-    type: 'toggleLotDataSelection', 
+  const dispatchToggleProductProfile = ({ address, cat, entry, value }) => dispatch({ 
+    type: 'toggleProductProfile', 
     address, cat, entry, value
-  })
+  });
 
-  const dispatchUploadLotDataSelection = ({ selection }) => dispatch({ 
-    type: 'uploadLotDataSelection',
-    selection
-  })
+  const dispatchExportProductProfile = (product) => dispatch({ 
+    type: 'exportProductProfile',
+    product
+  });
 
   /* Page Renderers */
   const renderLandingPage = () => (
     <LandingLayout>
       <LandingPage />
     </LandingLayout>
-  )
+  );
 
   const renderLoginPage = () => (
     <LoginLayout>
@@ -58,45 +57,63 @@ const App = () => {
         loginPending={(state.type === 'awaitingAuth')} 
       />
     </LoginLayout>
-  )
+  );
 
-  const renderLotIndex = () => (!state.allLots) ? (
+  const renderLotIndexPage = () => (!state.allLots) ? (
     <Pending />
   ) : (
     <UserLayout username={state.username} onLogout={dispatchLogout}>
-      <LotsIndex 
+      <LotsIndexPage 
         lots={state.allLots} 
         selection={state.selection}
-        onToggleSelection={dispatchToggleLotDataSelection} 
+        onToggleSelection={dispatchToggleProductProfile} 
       />
     </UserLayout>
-  )
+  );
 
-  const renderLotDetails = (props) => (!!props?.match?.params?.address && !!state.lotDir[props.match.params.address]) ? (
+  const renderLotDetailsPage = (props) => (!!props?.match?.params?.address && !!state.lotDir[props.match.params.address]) ? (
     <UserLayout username={state.username} onLogout={dispatchLogout}>
-      <LotDetail lot={state.lotDir[props.match.params.address]} />
+      <LotDetailPage lot={state.lotDir[props.match.params.address]} />
     </UserLayout>
   ) : (
     <NotFound />
-  )
+  );
 
-  const renderManifestCreator = () => (
+  const renderProductProfilesPage = () => (
+    <UserLayout username={state.username} onLogout={dispatchLogout} showCreateButton>
+      <ProductProfilesPage email={state.email} />
+    </UserLayout>
+  );
+
+  const renderCreateProductProfilePage = (props) => (
     <UserLayout username={state.username} onLogout={dispatchLogout}>
-      <ManifestPage
-        lots={state.allLots} 
-        selection={state.selection}
-        onToggleSelection={dispatchToggleLotDataSelection} 
-        onExportLotDataSelection={dispatchUploadLotDataSelection}
+      <CreateProductProfilePage 
+        populateFromID={(!!props?.match?.params?.id) ? props.match.params.id : ''}
+        lots={state.allLots.map(lot => ({
+          ...lot,
+          parentLot: (!lot.parentLot) ? null : state.lotDir[lot.parentLot.address],
+        }))}
+        handleSubmitProfile={(product) => {
+          props.history.push("/distributor/product-profiles");
+          dispatchExportProductProfile(product);
+        }}
       />
     </UserLayout>
-  )
+  );
     
-  const renderSettings = () => (
+  const renderSettingsPage = () => (
     <UserLayout username={state.username} onLogout={dispatchLogout}>
       <SettingsPage />
     </UserLayout>
-  )
+  );
 
+  const renderProductPage = (props) => (!!props?.match?.params?.id) ? (
+    <ProductPage id={props.match.params.id} />
+  ) : (
+    <NotFound />
+  );
+
+  /* Router Renderers */
   const GuestRouter = () => (
     <Router>
       <Switch>
@@ -107,32 +124,28 @@ const App = () => {
           <Redirect to="/" />} />
       </Switch>
     </Router>
-  )
-
-  const renderProductPage = (props) => (!!props?.match?.params?.address) ? (
-    <ProductPage address={props.match.params.address} />
-  ) : (
-    <NotFound />
-  )
+  );
 
   const UserRouter = () => (
     <Router>
       <Switch>
         <Route exact path="/" render={() => <Redirect to="/distributor/products" />} />
-        <Route exact path="/distributor/products" render={renderLotIndex} />
-        <Route path="/cultivating/:address" render={renderLotDetails} />
-        <Route path="/processing/:address" render={renderLotDetails} />
-        <Route exact path="/distributor/manifest-creator" render={renderManifestCreator} />
-        <Route exact path="/distributor/settings" render={renderSettings} />
-        <Route path="/product-page/:address" render={renderProductPage} />
+        <Route exact path="/distributor/products" render={renderLotIndexPage} />
+        <Route path="/cultivating/:address" render={renderLotDetailsPage} />
+        <Route path="/processing/:address" render={renderLotDetailsPage} />
+        <Route exact path="/distributor/product-profiles" render={renderProductProfilesPage} />
+        <Route exact path="/distributor/product-profile-form" render={renderCreateProductProfilePage} />
+        <Route exact path="/distributor/product-profile-form/:id" render={renderCreateProductProfilePage} />
+        <Route exact path="/distributor/settings" render={renderSettingsPage} />
+        <Route path="/product/:id" render={renderProductPage} />
         <Route render={() => <Redirect to="/distributor/products" />} />
       </Switch>
     </Router>
-  )
+  );
 
   return (
     (!state) ? <Pending /> : (!state.authToken) ? <GuestRouter /> : <UserRouter />
-  )
+  );
 }
 
-export default App
+export default App;

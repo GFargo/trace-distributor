@@ -20,7 +20,7 @@ const SideNav = ({ onLogout, className }) => {
 
           <ul className="sidenav-nav text-white font-body font-light list-none">
             <SideNavLink to="/distributor/products" icon="processing" title="Products" />
-            <SideNavLink to="/distributor/manifest-creator/" icon="organizations" title="Bills of Goods" />
+            <SideNavLink to="/distributor/product-profiles/" icon="organizations" title="Product Profiles" />
             <SideNavLink to="/distributor/settings/" icon="settings" title="Settings" />
             <li>
               <a onClick={handleLogout} className="py-5 px-6 flex flex-row items-center hover:text-gold-400" href="/">
