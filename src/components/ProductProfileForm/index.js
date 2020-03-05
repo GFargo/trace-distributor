@@ -15,11 +15,8 @@ import CertificationCheckboxes from './components/CertificationCheckboxes';
 import PackagingDatePicker from './components/PackagingDatePicker';
 
 
-const LOCAL_SERVER_ADDRESS = 'http://localhost:3000';
-const SERVER_ADDRESS = LOCAL_SERVER_ADDRESS; // TODO Add real server address
-const PRODUCT_NODE = `${SERVER_ADDRESS}/product/`;
-const productProfileAddress = (id) => `${PRODUCT_NODE}${id}`;
-
+const { PRODUCT_PROFILE_PUBLIC_WEB } = process.env;
+const productProfileAddress = (id) => `https://trace.directory/lot/${id}`;
 
 const inflateLotSelection = (selection) => {
   const lot = {}
