@@ -39,7 +39,12 @@ const ProductProfilesTable = ({ email }) => {
       displayValue: (product) => (
         !!product?.id && !!product?.url && (
           <span>
-            <a className="mr-4 cursor-hand" target="_blank" rel="noopener noreferrer" href={product.url}>
+            <a 
+              className="mr-4 cursor-hand" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              href={product.url}
+            >
               View
             </a>
             <Link to={"/distributor/product-profile-form/"+product.id}>
