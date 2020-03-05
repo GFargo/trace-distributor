@@ -88,7 +88,7 @@ const App = () => {
   const renderCreateProductProfilePage = (props) => (
     <UserLayout username={state.username} onLogout={dispatchLogout}>
       <CreateProductProfilePage 
-        cloneFromID={(!!props?.match?.params?.id) ? props.match.params.id : ''}
+        populateFromID={(!!props?.match?.params?.id) ? props.match.params.id : ''}
         lots={state.allLots.map(lot => ({
           ...lot,
           parentLot: (!lot.parentLot) ? null : state.lotDir[lot.parentLot.address],

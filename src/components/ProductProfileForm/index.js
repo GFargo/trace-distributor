@@ -91,7 +91,8 @@ const deflateCerts = (certs) => {
 }
 
 const productToState = (product) => ({
-  productID: !!product?.id ? product.id : '',//genProductID() to clone, OR product.id to edit
+  productID: !!product?.id ? product.id : '',
+  existingQRCode: !!product?.qrcode?.url ? product.qrcode.url : '', 
   name: !!product?.title ? product.title : '', 
   description: !!product?.description ? product.description : '', 
   productImage: !!product?.image?.url ? product.image.url : null, 
@@ -114,6 +115,7 @@ const productToState = (product) => ({
 class ProductProfileForm extends PureComponent {
   state = {
     productID: '',
+    existingQRCode: '',
     name: '',
     description: '',
     productImage: null,
@@ -144,17 +146,17 @@ class ProductProfileForm extends PureComponent {
   }
 
   componentDidMount() {
-    const { cloneFromID } = this.props;
+    const { populateFromID } = this.props;
 
-    if (!!cloneFromID) {
+    if (!!populateFromID) {
       
-      getProduct(cloneFromID, 
+      getProduct(populateFromID, 
         (product) => this.setState( state => ({ ...state, ...productToState(product) }))
         //(product) => console.log('Cloning from Product: ', product)
       );
     } else {
-      const newID = genProductID();
-      this.setState({ ...this.state, productID: newID })
+      const productID = genProductID();
+      this.setState({ ...this.state, productID })
       //console.log('New Product ID: ', newID)
     }
   }
@@ -175,14 +177,14 @@ class ProductProfileForm extends PureComponent {
     return url || ''
   }
 
-  stateToProduct = (translateImages) => ({
+  stateToProduct = (submit) => ({
     id: this.state.productID,
     title: this.state.name,
     description: this.state.description,
     productImage: this.state.productImage,
     image: {
       url: (!!this.state.productImage && typeof this.state.productImage === "string") ? this.state.productImage :
-        (!!this.state.productImage && translateImages) ? URL.createObjectURL(this.state.productImage) : ''
+        (!!this.state.productImage && !submit) ? URL.createObjectURL(this.state.productImage) : ''
     },
     packagingDate: this.state.packagingDate,
     certifications: inflateCerts(this.state.certifications),
@@ -192,7 +194,7 @@ class ProductProfileForm extends PureComponent {
       description: this.state.companyDescription,
       logo: {
         url: (!!this.state.companyLogo && typeof this.state.companyLogo === "string") ? this.state.companyLogo :
-          (!!this.state.companyLogo && translateImages) ? URL.createObjectURL(this.state.companyLogo) : ''
+          (!!this.state.companyLogo && !submit) ? URL.createObjectURL(this.state.companyLogo) : ''
       },
       location: {
         state: (!!this.state.manufacturerLocation && !!USStates) ?
@@ -203,8 +205,8 @@ class ProductProfileForm extends PureComponent {
     productLot: this.state.productLot,
     additionalLot: this.state.additionalLot,
     lots: this.inflateLots(),
-    url: (!!this.state.productID) ? productProfileAddress(this.state.productID) : '',
-    qrcode: (!!this.state.productID) ? this.getProductQRDataURL() : '',
+    qrcode: (!this.state.existingQRCode && !!submit) ? this.getProductQRDataURL() : '',
+    existingQRCode: this.state.existingQRCode
   })
 
   render() {
@@ -236,7 +238,7 @@ class ProductProfileForm extends PureComponent {
 
     const isDisabled = (!name || !productLot || !Object.values(errors).every((one) => !one))
 
-    const product = isDisabled ? null : this.stateToProduct(true);
+    const product = isDisabled ? null : this.stateToProduct();
     //console.log('STATE ', this.state)
     //console.log('PRODUCT ', product)
 
@@ -547,7 +549,7 @@ class ProductProfileForm extends PureComponent {
               <PublicProduct product={product} />
             </div>
             <div className="w-5/12 ml-3">
-              {!!product?.url && <QRCodeView url={product.url} name="productQRCode" />}
+              {!!productID && <QRCodeView url={productProfileAddress(productID)} name="productQRCode" />}
               <Button
                 onClickHandler={(e) => {
                   e.preventDefault();
@@ -566,7 +568,7 @@ class ProductProfileForm extends PureComponent {
                 onClickHandler={(e) => {
                   e.preventDefault();
                   if (!isDisabled) {
-                    handleSubmit(this.stateToProduct());
+                    handleSubmit(this.stateToProduct(true));
                   }
                 }}
                 size="md"
@@ -586,13 +588,13 @@ class ProductProfileForm extends PureComponent {
 }
 
 ProductProfileForm.defaultProps = {
-  cloneFromID: '',
+  populateFromID: '',
   invertColor: false,
   errorMessage: '',
 };
 
 ProductProfileForm.propTypes = {
-  cloneFromID: PropTypes.string,
+  populateFromID: PropTypes.string,
   lots: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   handleSubmit: PropTypes.func.isRequired,
   errorMessage: PropTypes.string,
