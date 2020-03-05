@@ -132,17 +132,10 @@ export const deleteProductProfile = async (id) => {
     console.error('firebase deleteProduct NO PRODUCT ID, id: ', id);
     return;
   } 
-  let deleteTask = await store.child(`${id}/productImage`).delete();
-  //console.log('firebase deleteProduct productImage, deleteTask: ', deleteTask);
-
-  deleteTask = await store.child(`${id}/companyLogo`).delete();
-  //console.log('firebase deleteProduct companyLogo, deleteTask: ', deleteTask);
-
-  deleteTask = await store.child(`${id}/qrcode.png`).delete();
-  //console.log('firebase deleteProduct qrcode, deleteTask: ', deleteTask);
-
-  deleteTask = await productRef(id).delete();
-  //console.log('firebase deleteProduct product, deleteTask: ', deleteTask);
+  await store.child(`${id}/productImage`).delete();
+  await store.child(`${id}/companyLogo`).delete();
+  await store.child(`${id}/qrcode.png`).delete();
+  await productRef(id).delete();
 }
 
 export const genProductID = () => productsRef.doc().id;
