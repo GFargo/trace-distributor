@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Link }  from 'react-router-dom';
+import { Link, withRouter  }  from 'react-router-dom';
 import ProductProfileForm from '../components/ProductProfileForm';
 
 
@@ -8,6 +8,7 @@ const CreateProductProfilePage = ({
   cloneFromID, 
   lots, 
   handleSubmitProfile, 
+  history,
 }) => (
   <div className="container mb-24 w-160 text-left">
     <div className="mb-4">
@@ -30,8 +31,10 @@ const CreateProductProfilePage = ({
     <ProductProfileForm 
       cloneFromID={cloneFromID}
       lots={lots}
-      handleSubmit={handleSubmitProfile}
-      buttonLabel={'Create Product Profile'}
+      handleSubmit={(product) => {
+        history.push("/distributor/product-profiles");
+        handleSubmitProfile(product);
+      }}
     />
   </div>
 )
@@ -46,4 +49,4 @@ CreateProductProfilePage.propTypes = {
   handleSubmitProfile: PropTypes.func.isRequired,
 }
 
-export default CreateProductProfilePage;
+export default withRouter(CreateProductProfilePage);
