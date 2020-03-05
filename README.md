@@ -1,5 +1,7 @@
 # Trace Distributor Portal
 
+[![Netlify Status](https://api.netlify.com/api/v1/badges/be646086-b683-4aea-9f59-fcdb6fe756cc/deploy-status)](https://app.netlify.com/sites/trace-distributor/deploys)
+
 ## Install
 
 ### `git submodule update --init --recursive`
