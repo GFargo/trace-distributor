@@ -4,19 +4,20 @@ import 'firebase/firestore';
 import 'firebase/storage';
 import { useDocument, useCollection } from 'react-firebase-hooks/firestore';
 
-//const { FIREBASE_APIKEY, FIREBASE_DB_NAME } = process.env;
+const { REACT_APP_FIREBASE_APIKEY, REACT_APP_FIRESTORE_DB_NAME } = process.env;
+//console.log('firebase init, process.env: ', process.env);
 
 // TODO move secrets to env vars
 //const TRACE_PW = 'trace$_ 2020'
 const firebaseConfig = {
-  apiKey: "AIzaSyA50fd2T2VVBORsYFCGIRBfwamCGJhoRiM",
+  apiKey: REACT_APP_FIREBASE_APIKEY,
   authDomain: "trace-public-product-backend.firebaseapp.com",
   databaseURL: "https://trace-public-product-backend.firebaseio.com",
   projectId: "trace-public-product-backend",
   storageBucket: "trace-public-product-backend.appspot.com",
   messagingSenderId: "583899937939",
   appId: "1:583899937939:web:67f09728e8ded9493ce166",
-  measurementId: "G-XD4P3V7JMP"
+  measurementId: "G-XD4P3V7JMP",
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -24,7 +25,7 @@ firebase.initializeApp(firebaseConfig);
 
 const store = firebase.storage().ref();
 const db = firebase.firestore();
-const productsRef = db.collection('product-profiles');
+const productsRef = db.collection(REACT_APP_FIRESTORE_DB_NAME);
 
 const userProductsRef = (email) => productsRef.where("owner", "==", email);
 const lotProductsRef = (address) => productsRef.where("productLot", "==", address);

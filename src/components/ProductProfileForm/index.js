@@ -15,8 +15,8 @@ import CertificationCheckboxes from './components/CertificationCheckboxes';
 import PackagingDatePicker from './components/PackagingDatePicker';
 
 
-//const { PRODUCT_PROFILE_PUBLIC_WEB } = process.env;
-const productProfileAddress = (id) => `https://trace.directory/lot/${id}`;
+const { REACT_APP_TRACE_DIRECTORY } = process.env;
+const productProfileAddress = (id) => `${REACT_APP_TRACE_DIRECTORY}${id}`;
 
 const inflateLotSelection = (selection) => {
   const lot = {}
@@ -107,7 +107,6 @@ const productToState = (product) => ({
   additionalLotParts: (!!product?.additionalLot && !!product?.lots?.length && !!product.lots[1]) ?
     deflateLotSelection(product.lots[1]) : {},
 });
-
 
 class ProductProfileForm extends PureComponent {
   state = {

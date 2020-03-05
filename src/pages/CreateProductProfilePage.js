@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import ProductProfileForm from '../components/ProductProfileForm';
 
-//const { PRODUCT_PROFILE_PUBLIC_WEB } = process.env;
+const { REACT_APP_TRACE_DIRECTORY } = process.env;
 
 const CreateProductProfilePage = ({ 
   populateFromID, 
@@ -21,7 +21,7 @@ const CreateProductProfilePage = ({
       <a
         className="text-gold-700"
         target="_blank"
-        href={`https://trace.directory/lot/sample`}
+        href={`${REACT_APP_TRACE_DIRECTORY}sample`}
         rel="noopener noreferrer"
       >
         Example Product Profile
