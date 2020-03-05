@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import ProductProfileForm from '../components/ProductProfileForm';
 
-const { PRODUCT_PROFILE_PUBLIC_WEB } = process.env;
+//const { PRODUCT_PROFILE_PUBLIC_WEB } = process.env;
 
 const CreateProductProfilePage = ({ 
   populateFromID, 

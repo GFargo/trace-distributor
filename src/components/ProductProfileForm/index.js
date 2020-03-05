@@ -15,7 +15,7 @@ import CertificationCheckboxes from './components/CertificationCheckboxes';
 import PackagingDatePicker from './components/PackagingDatePicker';
 
 
-const { PRODUCT_PROFILE_PUBLIC_WEB } = process.env;
+//const { PRODUCT_PROFILE_PUBLIC_WEB } = process.env;
 const productProfileAddress = (id) => `https://trace.directory/lot/${id}`;
 
 const inflateLotSelection = (selection) => {
