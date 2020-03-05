@@ -6,8 +6,6 @@ import ProductCompany from './components/ProductCompany';
 import LotDetailSwitch from './components/LotDetailSwitch';
 import ProductFooter from './components/ProductFooter';
 
-// TODO: Convert all styling from bootstrap to tailwind
-
 const Product = ({ product }) => (
   <div className="container w-full max-w-xl">
     <div className="grid-row m-0 p-0">

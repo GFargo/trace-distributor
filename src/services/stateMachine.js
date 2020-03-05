@@ -49,7 +49,6 @@ export const loadState = (state = localStorage.getItem(APP_CACHE)) => (!!state) 
   {...initGuestState()}
 
 export const reducer = (state = loadState(), action = {}) => {
-
   console.group(action.type)
   console.info('<<< action: ', action)
   switch (action.type) {
@@ -158,10 +157,9 @@ export const userEffects = (state, dispatch) => {
     console.info('^^^ trigger effect exportProductProfile')
     const { productProfileExport } = state
     dispatch({ type: 'exportingProductProfile' })
-    console.log('$$$$$$$ Uploading ProductProfile: ', productProfileExport)
     setProductProfile(productProfileExport, (id) => dispatch({ type: 'exportedProductProfile'}));
   } 
   if (!state.creds) persistState(state)//never persist user creds
 }
 
-export default reducer
+export default reducer;

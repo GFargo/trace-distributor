@@ -54,7 +54,7 @@ export const useProduct = (id) => {
   const [value, loading, error] = useDocument(productRef(id)); 
   const product = (!value || !value.data) ? null : value.data();
   if (!!product && !product.id) product.id = value.id;
-  console.log('ProductPage, product: ', product);
+  //console.log('ProductPage, product: ', product);
 
   return [
   	product,
@@ -70,7 +70,7 @@ export const useLatestLotProduct = (address) => {
   	...doc.data(),
   	id: doc.id,
   }));
-  console.log('useLatestLotProduct, products: ', products);
+  //console.log('useLatestLotProduct, products: ', products);
   let product = null;
   if (!!products?.length) {
   	products.forEach( p => {
@@ -89,7 +89,7 @@ const addProductImage = async (id, productImage) => {
 	const uploadTask = await store.child(`${id}/productImage`).put(productImage);
 	//console.log('firebase addProductImage, uploadTask: ', uploadTask);
 	const url = await uploadTask.ref.getDownloadURL();
-	console.log('firebase addProductImage, url: ', url);
+	//console.log('firebase addProductImage, url: ', url);
 	return url;
 }
 
@@ -97,7 +97,7 @@ const addCompanyLogo = async (id, companyLogo) => {
 	const uploadTask = await store.child(`${id}/companyLogo`).put(companyLogo);
 	//console.log('firebase addCompanyLogo, uploadTask: ', uploadTask);
 	const url = await uploadTask.ref.getDownloadURL();
-	console.log('firebase addCompanyLogo, url: ', url);
+	//console.log('firebase addCompanyLogo, url: ', url);
 	return url;
 }
 
@@ -105,12 +105,12 @@ const addQRCodeDataURL = async (id, qrcodeDataURL) => {
 	const uploadTask = await store.child(`${id}/qrcode.png`).putString(qrcodeDataURL, 'data_url');
 	//console.log('firebase addQRCodeImageURL, uploadTask: ', uploadTask);
 	const url = await uploadTask.ref.getDownloadURL();
-	console.log('firebase addQRCodeDataURL, url: ', url);
+	//console.log('firebase addQRCodeDataURL, url: ', url);
 	return url;
 }
 
 const cleanObjectProps = (obj) => {
-  console.log('firebase cleanProductFields, object: ', obj);
+  //console.log('firebase cleanProductFields, object: ', obj);
   if (!obj) return;
   Object.keys(obj).forEach((key) => {
     const objType = typeof obj[key];
@@ -132,18 +132,17 @@ export const deleteProductProfile = async (id) => {
     console.error('firebase deleteProduct NO PRODUCT ID, id: ', id);
     return;
   } 
-
   let deleteTask = await store.child(`${id}/productImage`).delete();
-  console.log('firebase deleteProduct productImage, deleteTask: ', deleteTask);
+  //console.log('firebase deleteProduct productImage, deleteTask: ', deleteTask);
 
   deleteTask = await store.child(`${id}/companyLogo`).delete();
-  console.log('firebase deleteProduct companyLogo, deleteTask: ', deleteTask);
+  //console.log('firebase deleteProduct companyLogo, deleteTask: ', deleteTask);
 
   deleteTask = await store.child(`${id}/qrcode.png`).delete();
-  console.log('firebase deleteProduct qrcode, deleteTask: ', deleteTask);
+  //console.log('firebase deleteProduct qrcode, deleteTask: ', deleteTask);
 
   deleteTask = await productRef(id).delete();
-  console.log('firebase deleteProduct product, deleteTask: ', deleteTask);
+  //console.log('firebase deleteProduct product, deleteTask: ', deleteTask);
 }
 
 export const genProductID = () => productsRef.doc().id;
@@ -161,13 +160,13 @@ export const setProductProfile = async (product, calback) => {
   const existingQRCode = product.existingQRCode;
   delete product.existingQRCode;
 
-	console.log('firebase setProduct starting, product: ', product);
+	//console.log('firebase setProduct starting, product: ', product);
   cleanObjectProps(product)
-  console.log('firebase setProduct cleaned, product: ', product);
+  //console.log('firebase setProduct cleaned, product: ', product);
 
   const doc = await productRef(product.id);
   await doc.set(product);
-  console.log('firebase setProduct set doc: ', doc);
+  //console.log('firebase setProduct set doc: ', doc);
 
 	if (!doc || !doc.id) return;
 	const { id } = doc; 

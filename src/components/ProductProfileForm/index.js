@@ -101,15 +101,15 @@ const ProductProfileForm = ({
 
   useEffect(() => {
     if (!!cloneFromID) {
-      console.log('Cloning from Product ID: ', cloneFromID)
+      //console.log('Cloning from Product ID: ', cloneFromID)
       getProduct(cloneFromID, (product) => setState({ ...state, ...productToState(product) }));
     } else {
       const newID = genProductID();
       setState({ ...state, productID: newID })
-      console.log('New Product ID: ', newID)
+      //console.log('New Product ID: ', newID)
     }
-    return () => { }//no op to prevent error on dismount
-  }, []);
+    return () => { }
+  }, []);//mount/unmount
 
   const inflateLotSelection = (selection) => {
     const lot = {}
@@ -217,9 +217,9 @@ const ProductProfileForm = ({
           (!!companyLogo && translateImages) ? URL.createObjectURL(companyLogo) : ''
       },
       location: {
-        state: (!!companyName && !!manufacturerLocation) ?
+        state: (!!manufacturerLocation) ?
           USStates.find(one => one.value === manufacturerLocation).label : '',
-        country: (!!companyName) ? 'USA' : '',
+        country: (!!manufacturerLocation) ? 'USA' : '',
       },
     },
     productLot,
@@ -232,8 +232,8 @@ const ProductProfileForm = ({
   const isDisabled = (!name || !productLot || !Object.values(errors).every((one) => !one))
 
   const product = isDisabled ? null : stateToProduct(true);
-  console.log('STATE ', state)
-  console.log('PRODUCT ', product)
+  //console.log('STATE ', state)
+  //console.log('PRODUCT ', product)
 
   return (
     <form>

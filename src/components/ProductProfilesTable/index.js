@@ -9,7 +9,7 @@ import { useProducts } from '../../services/traceFirebase';
 
 const ProductProfilesTable = ({ email }) => {
   const [products, loading, error] = useProducts(email); 
-  //console.log('ProductList, products: ', products);
+  //console.log('ProductProfilesTable, products: ', products);
 
   const tableColumns = () => ([
     {

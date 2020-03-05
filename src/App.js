@@ -20,7 +20,6 @@ import './core/src/styles/icons.css';
 
 const App = () => {
   const [state, dispatch] = useReducer(reducer, loadState());
-  //useEffect(() => appEffects(state, dispatch), []) //Use effect as app mounted and unmounted - triggers warning though...?
   useEffect(() => userEffects(state, dispatch), [state]);
 
   /* State Action Dispatch */
@@ -111,6 +110,7 @@ const App = () => {
     <NotFound />
   );
 
+  /* Router Renderers */
   const GuestRouter = () => (
     <Router>
       <Switch>
