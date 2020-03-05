@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Link }  from 'react-router-dom';
 import ProductProfileForm from '../components/ProductProfileForm';
 
+const { PRODUCT_PROFILE_PUBLIC_WEB } = process.env;
 
 const CreateProductProfilePage = ({ 
   populateFromID, 
@@ -18,13 +18,14 @@ const CreateProductProfilePage = ({
         Build trust with your consumers by giving them information regarding the cultivation,
         processing and manufacturing process of your product.
       </p>
-      <Link
+      <a
         className="text-gold-700"
         target="_blank"
-        to={'/product/0AgsqOf9Kz0Fb4EZe6S2'}
+        href={`https://trace.directory/lot/sample`}
+        rel="noopener noreferrer"
       >
         Example Product Profile
-      </Link>
+      </a>
     </div>
 
     <ProductProfileForm 
