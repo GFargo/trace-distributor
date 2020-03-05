@@ -552,7 +552,7 @@ const ProductProfileForm = ({
               }}
               size="md"
               type="button"
-              className="uppercase mt-4 ml-16"
+              className="uppercase mt-4 ml-20"
               isDisabled={isDisabled}
             >
               &nbsp;Close Preview&nbsp;
@@ -567,7 +567,7 @@ const ProductProfileForm = ({
               size="md"
               type="button"
               color="green"
-              className="uppercase mt-4 ml-16"
+              className="uppercase mt-4 ml-20"
               isDisabled={isDisabled}
             >
               Publish Profile

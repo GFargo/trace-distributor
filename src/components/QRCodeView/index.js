@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import QRCode from 'qrcode.react';
+import Button from '../../core/src/components/Elements/Button'
 
 
 const dlProductQRImageURL = (name, url) => {
@@ -30,9 +31,12 @@ const QRCodeView = ({ name, url }) => (
       level={"H"}
       includeMargin={true}
     />
-    <a onClick={() => dlProductQRImage(name)}>
+    <Button
+      color="transparent"
+      variant="outline"
+      onClickHandler={() => dlProductQRImage(name)}>
       Download QR Code
-    </a>
+    </Button>
   </div>
 );
 
