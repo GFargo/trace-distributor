@@ -68,6 +68,12 @@ const LotDetailSelector = ({ lot, selection, onToggleSelection }) => {
           label="Genetics:"
           value={getLotStateField(cultLot, 'initial', 'strain')}
         />}
+      {!!getLotStateField(cultLot, 'initial', 'cloned') &&
+        <CheckboxListItem
+          name={`${lotRef}-initial-cloned`}
+          label="Seed Source:"
+          value={getLotStateField(cultLot, 'initial', 'cloned')}
+        />}
       {!!getLotStateField(cultLot, 'initial', 'growType') &&
         <CheckboxListItem
           name={`${lotRef}-initial-growType`}
@@ -82,15 +88,9 @@ const LotDetailSelector = ({ lot, selection, onToggleSelection }) => {
         />}
       {!!getLotStateField(cultLot, 'harvest', 'lastMaturityDate') &&
         <CheckboxListItem
-          name={`${lotRef}-initial-lastMaturityDate`}
+          name={`${lotRef}-harvest-lastMaturityDate`}
           label="Harvest Date:"
           value={getLotStateField(cultLot, 'harvest', 'lastMaturityDate')}
-        />}
-      {!!getLotStateField(cultLot, 'initial', 'cloned') &&
-        <CheckboxListItem
-          name={`${lotRef}-initial-cloned`}
-          label="Seed Source:"
-          value={getLotStateField(cultLot, 'initial', 'cloned')}
         />}
       {!!getLotStateField(cultLot, 'grow', 'notes') &&
         <CheckboxListItem
