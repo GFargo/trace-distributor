@@ -1,12 +1,13 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
+import Button from '../../core/src/components/Elements/Button'
 
 const FileUpload = ({ id, title, placeholder, typesAccepted, onUploadFile }) => {
   const [file, setFile] = useState(undefined)
 
   const onChooseFile = (e) => {
+    //console.log('onChooseFile: ', e) 
     const f = (!!e.target.files[0]?.name) ? e.target.files[0] : undefined
-    //console.log('onChooseFile: ', f?.name || 'canceled.. f in chat') 
     setFile(f)
   }
 
@@ -19,43 +20,62 @@ const FileUpload = ({ id, title, placeholder, typesAccepted, onUploadFile }) => 
   }
 
   return (
-    <form onSubmit={onUploadingFile}>
-      <div className="input-group mb-2">
-        {!!title &&
-          <div className="input-group-prepend">
-            <span className="input-group-text" id="inputTitle">{title}</span>
-          </div>}
-        <div className="custom-file">
-          <input type="file" accept={typesAccepted || ''} id={"FileUpload-"+id} className="custom-file-input" 
-            onChange={onChooseFile} />
-          <label 
-            className="custom-file-label text-gold-500 text-sm font-weight-light opacity-50" 
-            htmlFor={"FileUpload-"+id}
-          >
-            {file?.name || placeholder || 'Choose a local file'}
-          </label>
-        </div>
-        {!!file && (
-        <div className="input-group-append">
-          <input 
-            type="submit" 
-            value='Upload' 
-            disabled={!file || !file.name} 
-            className={'btn btn-block ml-2 px-4 '+((!file || !file.name) ? 'btn-disabled' : 'btn-success')}
-          />
-        </div>
-        )}
-      </div>
-    </form>
+    <div className="flex items-center justify-left mb-2">
+      <label className="px-4 py-2 cursor-pointer rounded border border-gray-500 hover:border-gray-800 text-gray-500 hover:text-gray-800">
+        Browse
+        <input 
+          type="file" 
+          id={"FileUpload-"+id} 
+          accept={typesAccepted} 
+          className="form-control-file hidden" 
+          onChange={onChooseFile}
+        />
+      </label>
+
+      {!file?.name && (
+        <label 
+          className="custom-file-label text-gold-500 text-sm font-weight-light opacity-50 pl-2" 
+          htmlFor={"FileUpload-"+id}
+        >
+          {placeholder}
+        </label>
+      )}
+
+      {!!file && !!file?.name && (
+        <label 
+        className="custom-file-label text-gray-500 text-sm font-weight-light pl-2" 
+        htmlFor={"FileUpload-"+id}
+        >
+          {file.name}
+        </label>
+      )}
+
+      {!!file && (
+        <Button 
+          type="button" 
+          value='Upload' 
+          variant="outline"
+          disabled={!file || !file.name} 
+          className="ml-2 px-4"
+          onClickHandler={onUploadingFile}
+        >
+          Upload File
+        </Button>
+      )}
+    </div>
   )
 }
 
+FileUpload.defaultProps = {
+  placeholder: 'Choose a local file',
+  typesAccepted: '',
+}
+
 FileUpload.propTypes = {
-  id: PropTypes.string,
-  title: PropTypes.string,
+  id: PropTypes.string.isRequired,
   placeholder: PropTypes.string,
   typesAccepted: PropTypes.string,
-  onUploadFile: PropTypes.func.isRequired
+  onUploadFile: PropTypes.func.isRequired,
 }
 
 export default FileUpload;
