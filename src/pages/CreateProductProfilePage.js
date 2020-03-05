@@ -5,7 +5,7 @@ import ProductProfileForm from '../components/ProductProfileForm';
 
 
 const CreateProductProfilePage = ({ 
-  cloneFromID, 
+  populateFromID, 
   lots, 
   handleSubmitProfile, 
   history,
@@ -29,7 +29,7 @@ const CreateProductProfilePage = ({
     </div>
 
     <ProductProfileForm 
-      cloneFromID={cloneFromID}
+      populateFromID={populateFromID}
       lots={lots}
       handleSubmit={(product) => {
         history.push("/distributor/product-profiles");
@@ -40,11 +40,11 @@ const CreateProductProfilePage = ({
 )
 
 CreateProductProfilePage.defaultProps = {
-  cloneFromID: '',
+  populateFromID: '',
 }
 
 CreateProductProfilePage.propTypes = {
-  cloneFromID: PropTypes.string,
+  populateFromID: PropTypes.string,
   lots: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   handleSubmitProfile: PropTypes.func.isRequired,
 }
