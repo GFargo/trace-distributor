@@ -38,31 +38,20 @@ const ProductProfilesTable = ({ email }) => {
       displayName: 'Profile Page',
       displayValue: (product) => (
         !!product?.id && !!product?.url && (
-          <span>
+          <span className="">
             <a 
-              className="mr-4 cursor-hand" 
+              className="" 
               target="_blank" 
               rel="noopener noreferrer" 
               href={product.url}
             >
-              View
+              <span className="icon icon-file-o mr-2 text-2xl text-gold-500 hover:text-gold-900"></span>
             </a>
             <Link to={"/distributor/product-profile-form/"+product.id}>
-              Edit
+              <span className="icon icon-pencil mr-2 text-2xl text-gold-500 hover:text-gold-900"></span>
             </Link>
-          </span>
-        )
-      ),
-      sortable: () => false,
-    },
-    {
-      name: 'qrcode',
-      displayName: 'QR Code',
-      displayValue: (product) => (
-        !!product?.qrcode?.url && (
-          <span>
-            <a className="mr-4 cursor-hand" target="_blank" rel="noopener noreferrer" href={product.qrcode.url}>
-              View
+            <a className="" target="_blank" rel="noopener noreferrer" href={product.qrcode.url}>
+              <span className="icon icon-qrcode mr-2 text-2xl text-gold-500 hover:text-gold-900"></span>
             </a>
           </span>
         )
@@ -100,4 +89,4 @@ ProductProfilesTable.propTypes = {
   email: PropTypes.string.isRequired,
 }
 
-export default ProductProfilesTable
+export default ProductProfilesTable;
