@@ -20,7 +20,7 @@ const FileUpload = ({ id, title, placeholder, typesAccepted, onUploadFile }) => 
   }
 
   return (
-    <div className="flex items-center justify-left mb-2">
+    <div className="flex items-center justify-left mb-2 ml-3">
       <label className="px-4 py-2 cursor-pointer rounded border border-gray-500 hover:border-gray-800 text-gray-500 hover:text-gray-800">
         Browse
         <input 
