@@ -77,7 +77,8 @@ const ProductProfilesTable = ({ email }) => {
       <SortableTable
         columns={tableColumns()}
         data={products}
-        defaultSort='created'
+        defaultSort="date"
+        defaultSortOrder="desc"
         noSearch={true}
         maxRows={0}
         filterFn={(product) => product.title + product.date}
