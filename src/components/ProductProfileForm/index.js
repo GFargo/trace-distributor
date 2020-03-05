@@ -15,11 +15,8 @@ import CertificationCheckboxes from './components/CertificationCheckboxes';
 import PackagingDatePicker from './components/PackagingDatePicker';
 
 
-const LOCAL_SERVER_ADDRESS = 'http://localhost:3000';
-const SERVER_ADDRESS = LOCAL_SERVER_ADDRESS; // TODO Add real server address
-const PRODUCT_NODE = `${SERVER_ADDRESS}/product/`;
-const productProfileAddress = (id) => `${PRODUCT_NODE}${id}`;
-
+const { REACT_APP_TRACE_DIRECTORY } = process.env;
+const productProfileAddress = (id) => `${REACT_APP_TRACE_DIRECTORY}${id}`;
 
 const inflateLotSelection = (selection) => {
   const lot = {}
@@ -110,7 +107,6 @@ const productToState = (product) => ({
   additionalLotParts: (!!product?.additionalLot && !!product?.lots?.length && !!product.lots[1]) ?
     deflateLotSelection(product.lots[1]) : {},
 });
-
 
 class ProductProfileForm extends PureComponent {
   state = {
