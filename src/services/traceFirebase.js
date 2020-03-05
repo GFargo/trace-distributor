@@ -4,6 +4,8 @@ import 'firebase/firestore';
 import 'firebase/storage';
 import { useDocument, useCollection } from 'react-firebase-hooks/firestore';
 
+const { FIREBASE_APIKEY, FIREBASE_DB_NAME } = process.env;
+
 // TODO move secrets to env vars
 //const TRACE_PW = 'trace$_ 2020'
 const firebaseConfig = {
