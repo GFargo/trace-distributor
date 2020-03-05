@@ -205,6 +205,7 @@ class ProductProfileForm extends PureComponent {
     productLot: this.state.productLot,
     additionalLot: this.state.additionalLot,
     lots: this.inflateLots(),
+    url: (!!this.state.productID) ? productProfileAddress(this.state.productID) : '',
     qrcode: (!this.state.existingQRCode && !!submit) ? this.getProductQRDataURL() : '',
     existingQRCode: this.state.existingQRCode
   })
@@ -549,7 +550,7 @@ class ProductProfileForm extends PureComponent {
               <PublicProduct product={product} />
             </div>
             <div className="w-5/12 ml-3">
-              {!!productID && <QRCodeView url={productProfileAddress(productID)} name="productQRCode" />}
+              {!!product.url && <QRCodeView url={product.url} name="productQRCode" />}
               <Button
                 onClickHandler={(e) => {
                   e.preventDefault();
