@@ -6,7 +6,7 @@
   REACT_APP_API_ENDPOINT='https://trace-backend-dev-pr-204.herokuapp.com'
 
 [context.production]
-  REACT_APP_API_ENDPOINT='https://trace-backend-dev-pr-204.herokuapp.com'
+  REACT_APP_API_ENDPOINT='https://trace-backend-prod.herokuapp.com'
 
 [context.production.processing]
   skip_processing = false
