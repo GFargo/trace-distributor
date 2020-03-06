@@ -4,10 +4,10 @@ import InputWrapper from '../../../core/src/components/MultiForm/parts/InputWrap
 
 const PackagingDatePicker = ({ packagingDate, onChangePackagingDate }) => (
   <InputWrapper name="packagingDate" label="Product Packaging Date">
-    <div className={"row row-sm w-25 pl-3"} >
+    <div className={"w-64 ml-3 mb-2"} >
       <input
         type="date"
-        className=""
+        className="py-3 cursor-pointer rounded border border-gray-500 hover:border-gray-800 text-gray-700 hover:text-gray-900 opacity-50"
         id="packagingDate"
         value={packagingDate}
         onChange={(event) => onChangePackagingDate(event.target.value)}
