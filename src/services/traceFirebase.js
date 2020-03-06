@@ -88,28 +88,20 @@ export const useLatestLotProduct = (address) => {
   ]
 }
 
-const addProductImage = async (id, productImage) => {
-	const uploadTask = await store.child(`${id}/productImage`).put(productImage);
-	//console.log('firebase addProductImage, uploadTask: ', uploadTask);
-	const url = await uploadTask.ref.getDownloadURL();
-	//console.log('firebase addProductImage, url: ', url);
-	return url;
-}
-
-const addCompanyLogo = async (id, companyLogo) => {
-	const uploadTask = await store.child(`${id}/companyLogo`).put(companyLogo);
-	//console.log('firebase addCompanyLogo, uploadTask: ', uploadTask);
-	const url = await uploadTask.ref.getDownloadURL();
-	//console.log('firebase addCompanyLogo, url: ', url);
-	return url;
-}
-
-const addQRCodeDataURL = async (id, qrcodeDataURL) => {
-	const uploadTask = await store.child(`${id}/qrcode.png`).putString(qrcodeDataURL, 'data_url');
+const addImageDataURL = async (id, name, imageDataURL) => {
+	const uploadTask = await store.child(`${id}/${name}`).putString(imageDataURL, 'blob_url');
 	//console.log('firebase addQRCodeImageURL, uploadTask: ', uploadTask);
 	const url = await uploadTask.ref.getDownloadURL();
-	//console.log('firebase addQRCodeDataURL, url: ', url);
+	console.log('firebase addQRCodeDataURL, url: ', url);
 	return url;
+}
+
+const addImageFile = async (id, name, imageFile) => {
+  const uploadTask = await store.child(`${id}/${name}`).put(imageFile);
+  //console.log('firebase addImageFile, uploadTask: ', uploadTask);
+  const url = await uploadTask.ref.getDownloadURL();
+  console.log('firebase addImageFile, url: ', url);
+  return url;
 }
 
 const cleanObjectProps = (obj) => {
@@ -130,73 +122,92 @@ const cleanObjectProps = (obj) => {
   })
 }
 
-export const deleteProductProfile = async (id) => {
-  if (!id) {
-    console.error('firebase deleteProduct NO PRODUCT ID, id: ', id);
-    return;
-  } 
-  await store.child(`${id}/productImage`).delete();
-  await store.child(`${id}/companyLogo`).delete();
-  await store.child(`${id}/qrcode.png`).delete();
-  await productRef(id).delete();
-}
-
 export const genProductID = () => productsRef.doc().id;
 export const setProductProfile = async (product, calback) => {
-	if (!product || !product.id) {
-    console.error('firebase setProduct NO PRODUCT ID, product: ', product);
+	if (!product || !product.id || (!product.existingQRCode && !product.qrcode)) {
+    console.error('firebase setProduct MUST HAVE PRODUCT ID, product: ', product);
     return;
   } 
-	const productImage = product.productImage;
-	delete product.productImage;
-	const companyLogo = product.companyLogo;
-	delete product.companyLogo;
-	const qrcodeDataURL = product.qrcode;
-	delete product.qrcode;
-  const existingQRCode = product.existingQRCode;
-  delete product.existingQRCode;
+  if (!product.existingQRCode && !product.qrcode) {
+    console.error('firebase setProduct MUST HAVE QR CODE, product: ', product);
+    return;
+  } 
+  console.log('firebase setProduct, product: ', product);
+  const id = product.id;
 
-	//console.log('firebase setProduct starting, product: ', product);
-  cleanObjectProps(product)
-  //console.log('firebase setProduct cleaned, product: ', product);
+  const qrcodeDataURL = product.qrcode;
+  product.qrcode = { url: '' };
+  if (!!product.existingQRCode) {
+    product.qrcode.url = product.existingQRCode;
+    delete product.existingQRCode;
+  } else {
+    product.qrcode.url = await addImageDataURL(id, 'qrcode.png', qrcodeDataURL);
+  }
 
-  const doc = await productRef(product.id);
+  if (!product.image) product.image = {};
+  if (!!product.productImage?.file && product.productImage.type === 'file') {
+    product.image.url = await addImageFile(id, 'productImage', product.productImage.file);
+  } else if (!!product.productImage?.url && product.productImage.type === 'data') {
+    product.image.url = await addImageDataURL(id, 'productImage', product.productImage.url);
+    console.log('firebase setProduct, product.image.url: ', product.image.url);
+  } else if (!!product.productImage?.url && product.productImage.type === 'firebase') {
+    product.image.url = product.productImage.url
+  } else {
+    product.image.url = '';
+  }
+  delete product.productImage;
+
+  if (!product.company) product.company = {};
+  if (!product.company.logo) product.company.logo = {};
+  if (!!product.companyLogo?.file && product.companyLogo.type === 'file') {
+    product.company.logo.url = await addImageFile(id, 'companyLogo', product.companyLogo.file);
+  } else if (!!product.companyLogo?.url && product.companyLogo.type === 'data') {
+    product.company.logo.url = await addImageDataURL(id, 'companyLogo', product.companyLogo.url);
+  } else if (!!product.companyLogo?.url && product.companyLogo.type === 'firebase') {
+    product.company.logo.url = product.companyLogo.url
+  } else {
+    product.company.logo.url = '';
+  }
+  delete product.companyLogo;
+
+  cleanObjectProps(product);
+
+  const doc = await productRef(id);
+  if (!doc || doc.id !== id) return;
   await doc.set(product);
-  //console.log('firebase setProduct set doc: ', doc);
-
-	if (!doc || !doc.id) return;
-	const { id } = doc; 
-
-	if (!!productImage && typeof productImage === "string") {//existing
-    await doc.update({image: {url: productImage}});
-    //console.log('firebase setProduct, exsting productImage: ', productImage);
-  } else if (!!productImage) {
-		const productImageURL = await addProductImage(id, productImage);
-		//console.log('firebase setProduct, productImageURL: ', productImageURL);
-		await doc.update({image: {url: productImageURL}});
-	}
-
-	if (!!companyLogo && typeof companyLogo === "string") {//existing
-    await doc.update({company: { ...product.company, logo: {url: companyLogo}}});
-    //console.log('firebase setProduct, exsting companyLogo: ', companyLogo);
-  } else if (!!companyLogo) {
-		const companyLogoURL = await addCompanyLogo(id, companyLogo);
-		//console.log('firebase setProduct, addCompanyLogo: ', companyLogoURL);
-		await doc.update({company: { ...product.company, logo: {url: companyLogoURL}}});
-	}
-
-	if (!!existingQRCode) {//existing
-    await doc.update({qrcode: {url: existingQRCode}});
-    //console.log('firebase setProduct, exsting QRCode: ', existingQRCode);
-  } else if (!!qrcodeDataURL) {
-		const qrcodeImageURL = await addQRCodeDataURL(id, qrcodeDataURL);
-		//console.log('firebase setProduct, qrcodeImageURL: ', qrcodeImageURL);
-		await doc.update({qrcode: {url: qrcodeImageURL}});
-	}
 
 	//console.log('firebase setProduct complete, id: ', id);
 	if (!!calback) calback(id)
 	return id;
+}
+
+export const deleteProductProfile = async (id) => {
+  if (!id) {
+    console.error('firebase deleteProduct MUST HAVE PRODUCT ID, id: ', id);
+    return;
+  } 
+  await store.child(`${id}/productImage`).delete().then(() => {
+    console.log('firebase file deleted - productImage, for ID: ', id);
+  }).catch(error => {
+    console.log('firebase file does not exist - productImage, for ID: ', id);
+  });
+  await store.child(`${id}/companyLogo`).delete().then(() => {
+    console.log('firebase file deleted - companyLogo, for ID: ', id);
+  }).catch(error => {
+    console.log('firebase file does not exist - companyLogo, for ID: ', id);
+  });
+  await store.child(`${id}/qrcode.png`).delete().then(() => {
+    console.log('firebase file deleted - qrcode.png, for ID: ', id);
+  }).catch(error => {
+    console.log('firebase file does not exist - qrcode.png, for ID: ', id);
+  });
+  await productRef(id).delete().then(function() {
+      console.log('firebase doc deleted, for ID: ', id);
+  }).catch(function(error) {
+      console.error('firebase error deleting doc, for ID: ', id);
+      console.error('firebase error: ', error);
+  });
+
 }
 
 export default {
