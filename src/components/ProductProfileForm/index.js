@@ -10,6 +10,7 @@ import { genProductID, getProduct } from '../../services/traceFirebase';
 import PublicProduct from '../PublicProduct';
 import FileUpload from '../FileUpload'
 import QRCodeView from '../QRCodeView';
+import ImageCropper from '../ImageCropper';
 import LotDetailSelector from './components/LotDetailSelector';
 import CertificationCheckboxes from './components/CertificationCheckboxes';
 import PackagingDatePicker from './components/PackagingDatePicker';
@@ -92,12 +93,18 @@ const productToState = (product) => ({
   existingQRCode: !!product?.qrcode?.url ? product.qrcode.url : '', 
   name: !!product?.title ? product.title : '', 
   description: !!product?.description ? product.description : '', 
-  productImage: !!product?.image?.url ? product.image.url : null, 
+  productImage: {
+    url: !!product?.image?.url ? product.image.url : '', 
+    type: !!product?.image?.url ? 'firebase' : '',
+  },
   packagingDate: !!product?.packagingDate ? product.packagingDate : '', 
   certifications: !!product?.certifications ? deflateCerts(product.certifications) : {}, 
   companyName: !!product?.company?.name ? product.company.name : '', 
   companyDescription: !!product?.company?.description ? product.company.description : '', 
-  companyLogo: !!product?.company?.logo?.url ? product.company.logo.url : null,
+  companyLogo: {
+    url: !!product?.company?.logo?.url ? product.company.logo.url : '',
+    type: !!product?.company?.logo?.url ? 'firebase' : '',
+  },
   manufacturerLocation: (!!product?.company?.location?.state && !!USStates) ?
     USStates.find(one => one.label === product.company.location.state).value : '',
   productLot: !!product?.productLot ? product.productLot : null,
@@ -114,12 +121,21 @@ class ProductProfileForm extends PureComponent {
     existingQRCode: '',
     name: '',
     description: '',
-    productImage: null,
+    productImage: {
+      file: null,
+      url: '',
+      type: '',
+    },
+    productImageModal: false,
     packagingDate: '',
     certifications: {},
     companyName: '',
     companyDescription: '',
-    companyLogo: null,
+    companyLogo: {
+      file: null,
+      url: '',
+      type: '',
+    },
     manufacturerLocation: '',
     productLot: null,
     productLotParts: {},
@@ -178,9 +194,8 @@ class ProductProfileForm extends PureComponent {
     title: this.state.name,
     description: this.state.description,
     productImage: this.state.productImage,
-    image: {
-      url: (!!this.state.productImage && typeof this.state.productImage === "string") ? this.state.productImage :
-        (!!this.state.productImage && !submit) ? URL.createObjectURL(this.state.productImage) : ''
+    image: { 
+      url: (!!this.state.productImage?.url && !submit) ? this.state.productImage.url : '',
     },
     packagingDate: this.state.packagingDate,
     certifications: inflateCerts(this.state.certifications),
@@ -189,8 +204,7 @@ class ProductProfileForm extends PureComponent {
       name: this.state.companyName,
       description: this.state.companyDescription,
       logo: {
-        url: (!!this.state.companyLogo && typeof this.state.companyLogo === "string") ? this.state.companyLogo :
-          (!!this.state.companyLogo && !submit) ? URL.createObjectURL(this.state.companyLogo) : ''
+        url: (!!this.state.companyLogo?.url && !submit) ? this.state.companyLogo.url : '' 
       },
       location: {
         state: (!!this.state.manufacturerLocation && !!USStates) ?
@@ -241,6 +255,7 @@ class ProductProfileForm extends PureComponent {
 
     return (
       <form>
+  
         <div className="my-6">
           <h3 className="text-xl text-left mb-2 mt-4">
             Product Information
@@ -257,7 +272,7 @@ class ProductProfileForm extends PureComponent {
             invertColor={invertColor}
             value={name}
             error={errors.name}
-            className="w-100"
+            className="w-100 hover:border-gray-500"
             updateValueAndError={(_, name, err) =>
               this.setState({ ...this.state, name, errors: { ...this.state.errors, name: err || '' } })
             }
@@ -272,7 +287,7 @@ class ProductProfileForm extends PureComponent {
             placeholder="Enter product description"
             value={description}
             error={errors.description}
-            className=""
+            className="w-100 hover:border-gray-500"
             updateValueAndError={(_, description, err) =>
               this.setState({ ...this.state, description, errors: { ...this.state.errors, description: err || '' } })
             }
@@ -281,26 +296,39 @@ class ProductProfileForm extends PureComponent {
 
         <div className="my-4 w-100">
           <InputWrapper name="productImage" label="Product Image">
-            {(!!productImage && typeof productImage === "string") ? (
+            {(!!productImage?.file && productImage.type === 'raw') ? (
+               <ImageCropper 
+                  className=""
+                  image={URL.createObjectURL(productImage.file)}
+                  onCroppedInage={file => this.setState({ ...this.state, productImage: { 
+                    file, 
+                    url: (!!file)? URL.createObjectURL(file) : '', 
+                    type: (!!file)? 'file' : '' 
+                  } })} 
+                />
+            ) : !!productImage?.url ? (
               <img
-                src={productImage}
+                src={productImage.url}
                 alt="productImage"
-                className="w-20"
-                onClick={() => this.setState({ ...this.state, productImage: null })}
-              />
-            ) : (!!productImage) ? (
-              <img
-                src={URL.createObjectURL(productImage)}
-                alt="productImage"
-                className="w-20"
-                onClick={() => this.setState({ ...this.state, productImage: null })}
+                className="w-32 rounded-full"
+                onClick={() => this.setState({ ...this.state, productImage: { 
+                  file: null, 
+                  url: '', 
+                  type: '' 
+                } })}
               />
             ) : (
               <FileUpload
                 id="productImage"
                 types='image/*'
                 placeholder='Choose an image to upload'
-                onUploadFile={productImage => this.setState({ ...this.state, productImage })}
+                buttonText="Upload Image"
+                uploadImmediately
+                onUploadFile={file => this.setState({ ...this.state, productImage: { 
+                  file, 
+                  url: '', 
+                  type: 'raw' 
+                } })}
               />
             )}
           </InputWrapper>
@@ -337,7 +365,7 @@ class ProductProfileForm extends PureComponent {
             invertColor={invertColor}
             value={companyName}
             error={errors.companyName}
-            className="w-100"
+            className="w-100 hover:border-gray-500"
             updateValueAndError={(_, companyName, err) =>
               this.setState({ ...this.state, companyName, errors: { ...this.state.errors, companyName: err || '' } })
             }
@@ -352,7 +380,7 @@ class ProductProfileForm extends PureComponent {
             placeholder="Enter company description"
             value={companyDescription}
             error={errors.companyDescription}
-            className="w-100 h-200"
+            className="w-100 h-200 hover:border-gray-500"
             updateValueAndError={(_, companyDescription, err) =>
               this.setState({ ...this.state, companyDescription, errors: { ...this.state.errors, companyDescription: err || '' } })
             }
@@ -361,28 +389,41 @@ class ProductProfileForm extends PureComponent {
 
         <div className="my-4 w-100">
           <InputWrapper name="companyLogo" label="Company Logo">
-            {(!!companyLogo && typeof companyLogo === "string") ? (
+            {(!!companyLogo?.file && companyLogo.type === 'raw') ? (
+               <ImageCropper 
+                  className=""
+                  rawImage={companyLogo.file}
+                  onCroppedInage={file => this.setState({ ...this.state, companyLogo: { 
+                    file, 
+                    url: URL.createObjectURL(file), 
+                    type: 'file' 
+                  } })} 
+                />
+            ) : !!companyLogo?.url ? (
               <img
-                src={companyLogo}
+                src={companyLogo.url}
                 alt="companyLogo"
-                className="w-20"
-                onClick={() => this.setState({ ...this.state, companyLogo: null })}
-              />
-            ) : (!!companyLogo) ? (
-              <img
-                src={URL.createObjectURL(companyLogo)}
-                alt="companyLogo"
-                className="w-20"
-                onClick={() => this.setState({ ...this.state, companyLogo: null })}
+                className="w-32 rounded-full"
+                onClick={() => this.setState({ ...this.state, companyLogo: { 
+                  file: null, 
+                  url: '', 
+                  type: '' 
+                } })}
               />
             ) : (
-                  <FileUpload
-                    id="companyLogo"
-                    types='image/*'
-                    placeholder='Choose an image to upload'
-                    onUploadFile={companyLogo => this.setState({ ...this.state, companyLogo })}
-                  />
-                )}
+              <FileUpload
+                id="companyLogo"
+                types='image/*'
+                placeholder='Choose an image to upload'
+                buttonText="Upload Image"
+                uploadImmediately
+                onUploadFile={file => this.setState({ ...this.state, companyLogo: { 
+                  file, 
+                  url: '', 
+                  type: 'raw' 
+                } })}
+              />
+            )}
           </InputWrapper>
         </div>
 
@@ -392,6 +433,7 @@ class ProductProfileForm extends PureComponent {
               name="manufacturerLocation"
               value={manufacturerLocation}
               label="Manufacturer Location"
+              className="w-100 h-200 hover:border-gray-500"
               error={errors.manufacturerLocation}
               options={USStates}
               updateValueAndError={(_, manufacturerLocation, err) =>
@@ -419,6 +461,7 @@ class ProductProfileForm extends PureComponent {
               name="productLot"
               value={productLot}
               label="Product Lot"
+              className="w-100 h-200 hover:border-gray-500"
               error={errors.productLot}
               updateValueAndError={(name, value) => this.setState({ ...this.state, productLot: value, productLotParts: {} })}
               options={lots.map(lot => ({
