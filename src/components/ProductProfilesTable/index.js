@@ -13,7 +13,7 @@ const ProductProfilesTable = ({ email }) => {
   const [products, loading, error] = useProducts(email); 
   //console.log('ProductProfilesTable, products: ', products);
 
-  const [ deleteModal, setDeleteModal ] = useState(false);
+  const [ deleteThisProductID, setDeleteModal ] = useState(false);
 
   const tableColumns = () => ([
     {
@@ -83,13 +83,13 @@ const ProductProfilesTable = ({ email }) => {
     !!products?.length ? (
       <div className="container">
         <ConfirmationModal
-          modal={{ isOpen: !!deleteModal, setOpen: setDeleteModal }}
+          modal={{ isOpen: !!deleteThisProductID, setOpen: setDeleteModal }}
           titleText={"Are you sure you want to delete this product?"}
           useImg={false} // Turns off fancy image if you want just title text & buttons
           confirmFn={() => {
             // Do stuff on confirm button press.
-            if (!deleteModal) return;
-            const id = deleteModal;
+            if (!deleteThisProductID) return;
+            const id = deleteThisProductID;
             console.log('Deleting Product Profile ID:', id);
             deleteProductProfile(id);
             setDeleteModal(false);
