@@ -4,7 +4,7 @@ import { Link }  from 'react-router-dom';
 import SortableTable from '../../core/src/components/SortableTable'
 import Button from '../../core/src/components/Elements/Button'
 import Pending from '../../core/src/components/Elements/Loader'
-import ReactModal from 'react-modal';
+import ConfirmationModal from '../../core/src/components/Elements/Modal/Confirmation'
 import { localizeDateFromString } from '../../core/src/utils/date-time/utils'
 import { useProducts, deleteProductProfile } from '../../services/traceFirebase';
 
@@ -77,64 +77,27 @@ const ProductProfilesTable = ({ email }) => {
     <h3>{`Error Loading Products: ${error || ''}`}</h3>
   );
 
-  const DeleteModal = () => (
-    <ReactModal
-      closeTimeoutMS={200}
-      isOpen={!!deleteModal}
-      contentLabel={'Modal Content'}
-      ariaLabel="Confirmation dialogue:"
-      ariaCloseLabel="Close confirmation dialogue"
-      ariaHideApp={false}
-      className={`bg-white rounded`}
-      overlayClassName={`fixed z-50 flex self-stretch justify-center items-center h-screen top-0 left-0 min-w-full`}
-      style={{
-        overlay: { inset: '0px', backgroundColor: 'rgba(255, 255, 255, 0.75)' },
-      }}
-      onRequestClose={() => setDeleteModal(false)}
-    >
-      <div className="relative">
-        <span className="absolute top-0 bottom-0 right-0 p-4 z-10">
-          <button type="button" onClick={() => setDeleteModal(false)}>
-            <span className="sr-only">Close</span>
-            <span className="icon icon-delete mr-2 text-2xl text-gold-500 hover:text-gold-900"></span>
-          </button>
-        </span>
-        <div className="pt-12 pb-12 mr-4 ml-4 text-center">
-          <div className="font-body text-md font-normal">
-            <h3 className="text-lg font-bold mb-4 px-4">{`Confirm Delete Product Profile?`}</h3>
-            <Button
-              onClickHandler={() => setDeleteModal(false)}
-              color={'red'}
-              className="mr-4"
-              type="button"
-            >
-              Cancel
-            </Button>
-            <Button
-              color={'gold'}
-              onClickHandler={() => {
-                const id = deleteModal;
-                console.log('Deleting Product Profile ID:', id);
-                deleteProductProfile(id);
-                setDeleteModal(false);
-              }}
-              className="ml-4"
-              type="button"
-            >
-              Confirm
-            </Button>
-          </div>
-        </div>
-      </div>
-    </ReactModal>
-  );
-
   return (
     (!products && loading) ? <Pending /> : 
     (!products || !!error) ? <ErrorView /> : 
     !!products?.length ? (
       <div className="container">
-        <DeleteModal />
+        <ConfirmationModal
+          modal={{ isOpen: !!deleteModal, setOpen: setDeleteModal }}
+          titleText={"Are you sure you want to delete this product?"}
+          useImg={false} // Turns off fancy image if you want just title text & buttons
+          confirmFn={() => {
+            // Do stuff on confirm button press.
+            if (!deleteModal) return;
+            const id = deleteModal;
+            console.log('Deleting Product Profile ID:', id);
+            deleteProductProfile(id);
+            setDeleteModal(false);
+          }}
+          cancelFn={() => {
+            setDeleteModal(false)
+          }}
+        />
         <SortableTable
           columns={tableColumns()}
           data={products}
