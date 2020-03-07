@@ -392,11 +392,11 @@ class ProductProfileForm extends PureComponent {
             {(!!companyLogo?.file && companyLogo.type === 'raw') ? (
                <ImageCropper 
                   className=""
-                  rawImage={companyLogo.file}
+                  image={URL.createObjectURL(companyLogo.file)}
                   onCroppedInage={file => this.setState({ ...this.state, companyLogo: { 
                     file, 
-                    url: URL.createObjectURL(file), 
-                    type: 'file' 
+                    url: (!!file)? URL.createObjectURL(file) : '', 
+                    type: (!!file)? 'file' : '' 
                   } })} 
                 />
             ) : !!companyLogo?.url ? (
