@@ -89,7 +89,7 @@ export const useLatestLotProduct = (address) => {
 }
 
 const addImageDataURL = async (id, name, imageDataURL) => {
-	const uploadTask = await store.child(`${id}/${name}`).putString(imageDataURL, 'blob_url');
+	const uploadTask = await store.child(`${id}/${name}`).putString(imageDataURL, 'data_url');
 	//console.log('firebase addQRCodeImageURL, uploadTask: ', uploadTask);
 	const url = await uploadTask.ref.getDownloadURL();
 	console.log('firebase addQRCodeDataURL, url: ', url);
