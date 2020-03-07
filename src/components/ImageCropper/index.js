@@ -86,7 +86,7 @@ const ImageCropper = ({ image, onCroppedInage }) => {
         croppedAreaPixels,
         rotation
       )
-      //console.log('donee', { croppedImage })
+      //console.log('exportCroppedImage', croppedImage)
       onCroppedInage(croppedImage)
     } catch (e) {
       console.error(e)
