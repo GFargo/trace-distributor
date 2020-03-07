@@ -7,7 +7,7 @@ const PackagingDatePicker = ({ packagingDate, onChangePackagingDate }) => (
     <div className={"w-64 ml-3 mb-2"} >
       <input
         type="date"
-        className="py-3 cursor-pointer rounded border border-gray-500 hover:border-gray-800 text-gray-700 hover:text-gray-900 opacity-50"
+        className="py-3 cursor-pointer rounded border border-gray-200 hover:border-gray-500 text-gray-700 font-light hover:text-gray-900"
         id="packagingDate"
         value={packagingDate}
         onChange={(event) => onChangePackagingDate(event.target.value)}
