@@ -2,7 +2,15 @@ import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import Button from '../../core/src/components/Elements/Button'
 
-const FileUpload = ({ id, title, placeholder, typesAccepted, onUploadFile }) => {
+const FileUpload = ({ 
+  id, 
+  title, 
+  placeholder,
+  buttonText,
+  typesAccepted, 
+  onUploadFile,
+  uploadImmediately 
+}) => {
   const [file, setFile] = useState(undefined)
 
   const onChooseFile = (e) => {
@@ -19,16 +27,25 @@ const FileUpload = ({ id, title, placeholder, typesAccepted, onUploadFile }) => 
     }
   }
 
+  const onUploadImmediately = (e) => {
+    e.preventDefault()
+    const f = (!!e.target.files[0]?.name) ? e.target.files[0] : undefined
+    if(!!f?.name) {
+      //console.log('onUploadingFile: ', f)
+      onUploadFile(f)
+    }
+  }
+
   return (
-    <div className="flex items-center justify-left mb-2 ml-3">
-      <label className="px-4 py-2 cursor-pointer rounded border border-gray-500 hover:border-gray-800 text-gray-500 hover:text-gray-800">
-        Browse
+    <div className="flex items-center justify-left mb-3 ml-3">
+      <label className="px-5 py-3 cursor-pointer rounded bg-white border border-gray-500 hover:border-gray-800 text-gray-700 hover:text-gray-800 opacity-50">
+        {!!buttonText ? buttonText : uploadImmediately ? 'Upload File' : 'Browse'}
         <input 
           type="file" 
           id={"FileUpload-"+id} 
           accept={typesAccepted} 
           className="form-control-file hidden" 
-          onChange={onChooseFile}
+          onChange={((uploadImmediately) ? onUploadImmediately : onChooseFile)}
         />
       </label>
 
@@ -69,12 +86,15 @@ const FileUpload = ({ id, title, placeholder, typesAccepted, onUploadFile }) => 
 FileUpload.defaultProps = {
   placeholder: 'Choose a local file',
   typesAccepted: '',
+  buttonText: '',
+  uploadImmediately: false,
 }
 
 FileUpload.propTypes = {
   id: PropTypes.string.isRequired,
-  placeholder: PropTypes.string,
+  buttonText: PropTypes.string,
   typesAccepted: PropTypes.string,
+  uploadImmediately: PropTypes.bool,
   onUploadFile: PropTypes.func.isRequired,
 }
 
