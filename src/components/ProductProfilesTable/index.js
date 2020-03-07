@@ -85,7 +85,7 @@ const ProductProfilesTable = ({ email }) => {
         <ConfirmationModal
           modal={{ isOpen: !!deleteThisProductID, setOpen: setDeleteModal }}
           titleText={"Are you sure you want to delete this product?"}
-          useImg={false} // Turns off fancy image if you want just title text & buttons
+          imgSrc="/img/cropped/rejected.png"
           confirmFn={() => {
             // Do stuff on confirm button press.
             if (!deleteThisProductID) return;
