@@ -59,7 +59,7 @@ const ProductProfilesTable = ({ email }) => {
             <Link to={"/distributor/product-profile-form/"+product.id}>
               <span className="icon icon-pencil mr-2 text-2xl text-gold-500 hover:text-gold-900" data-toggle="tooltip" data-placement="top" title="Edit Profile"></span>
             </Link>
-            <span className="" data-toggle="modal" data-target="#exampleModal">
+            <span className=""  data-toggle="tooltip" data-placement="top" title="Delete Profile">
               <Button
                 className="icon icon-delete -ml-4 text-2xl text-gold-500 hover:text-gold-900"
                 color="transparent"
