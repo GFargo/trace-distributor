@@ -88,6 +88,18 @@ const deflateCerts = (certs) => {
   return certifications;
 }
 
+const indexParts = (lotIDs, lots) => {
+  const parts = {};
+  lots.forEach((lot, index) => { 
+    if (!!lot.address) {
+      parts[lot.address] = lot;
+    } else if (!!lotIDs[index]) {
+      parts[lotIDs[index]] = lot;
+    }
+  })
+  return parts;
+}
+
 const productToState = (product) => ({
   productID: !!product?.id ? product.id : '',
   existingQRCode: !!product?.qrcode?.url ? product.qrcode.url : '', 
@@ -110,9 +122,13 @@ const productToState = (product) => ({
   productLot: !!product?.productLot ? product.productLot : null,
   productLotParts: (!!product?.productLot && !!product?.lots?.length) ?
     deflateLotSelection(product.lots[0]) : {},
-  additionalLot: !!product?.additionalLot ? product.additionalLot : null,
-  additionalLotParts: (!!product?.additionalLot && !!product?.lots?.length && !!product.lots[1]) ?
-    deflateLotSelection(product.lots[1]) : {},
+  additionalLots: !!product?.additionalLots ? product.additionalLots : 
+    !!product?.additionalLot ? [ product.additionalLot ] : [],
+  additionalLotsParts: (!!product?.additionalLots?.length && !!product.lots?.length && product.lots.length > 1) 
+    ? indexParts(product.additionalLots, product.lots.filter(each => each.address !== product.productLot).map(lot => deflateLotSelection(lot)))
+    : (!!product?.additionalLot && !!product.lots?.length && product.lots.length > 1)
+    ? { [product.additionalLot]: deflateLotSelection(product.lots[1]) }
+    : {},
 });
 
 class ProductProfileForm extends PureComponent {
@@ -139,8 +155,8 @@ class ProductProfileForm extends PureComponent {
     manufacturerLocation: '',
     productLot: null,
     productLotParts: {},
-    additionalLot: null,
-    additionalLotParts: {},
+    additionalLots: [],
+    additionalLotsParts: {},
     previewProduct: false,
     errors: {
       name: '',
@@ -177,8 +193,10 @@ class ProductProfileForm extends PureComponent {
     const lots = [];
     const pLot = inflateLotSelection(this.state.productLotParts);
     if (!!pLot) lots.push(pLot);
-    const aLot = inflateLotSelection(this.state.additionalLotParts);
-    if (!!aLot) lots.push(aLot);
+    this.state.additionalLots.forEach(address => {
+      const aLot = address !== 'IGNORE' && inflateLotSelection(this.state.additionalLotsParts[address] || {});
+      if (!!aLot) lots.push(aLot);
+    })
     return lots;
   }
 
@@ -213,12 +231,26 @@ class ProductProfileForm extends PureComponent {
       },
     },
     productLot: this.state.productLot,
-    additionalLot: this.state.additionalLot,
+    additionalLots: this.state.additionalLots.filter(each => !!each && each !== 'IGNORE'),
     lots: this.inflateLots(),
     url: (!!this.state.productID) ? productProfileAddress(this.state.productID) : '',
     qrcode: (!this.state.existingQRCode && !!submit) ? this.getProductQRDataURL() : '',
     existingQRCode: this.state.existingQRCode
   })
+
+  remainingLotsToSelect = (selected) => {
+    const { lots } = this.props;
+    const { productLot, additionalLots } = this.state;
+    const lotsIncluded = [ productLot, ...additionalLots ]
+
+    return lots.filter(lot => lot.address === selected || (
+        !lotsIncluded.find(address => address === lot.address)
+        && !(!!lot.parentLot && lotsIncluded.find(address => address === lot.parentLot.address))
+        && !(!!lot.subLots?.length && lot.subLots.find(sublot => 
+          lotsIncluded.find(address => address === sublot.address)))
+      )
+    )
+  }
 
   render() {
     const { 
@@ -241,8 +273,8 @@ class ProductProfileForm extends PureComponent {
       manufacturerLocation,
       productLot,
       productLotParts,
-      additionalLot,
-      additionalLotParts,
+      additionalLots,
+      additionalLotsParts,
       previewProduct,
       errors
     } = this.state;
@@ -252,6 +284,14 @@ class ProductProfileForm extends PureComponent {
     const product = isDisabled ? null : this.stateToProduct();
     //console.log('STATE ', this.state)
     //console.log('PRODUCT ', product)
+
+    const lotsLeft = this.remainingLotsToSelect()
+    //console.log('lotsLeft ', lotsLeft)
+
+    const selectedLots = [...additionalLots]
+    if (!!lotsLeft.length) {
+      selectedLots.push('')
+    }
 
     return (
       <form>
@@ -446,12 +486,12 @@ class ProductProfileForm extends PureComponent {
         <div className="my-4">
           <h3 className="text-xl text-left mb-2 mt-4">
             Select Product Lot
-        </h3>
+          </h3>
           <hr />
           <p className="text-sm text-left mt-4">
             There must be a lot that has passed the "Product Ready" state in the iOS app.
             Product information regarding this product will be pulled from this lot.
-        </p>
+          </p>
         </div>
 
         {!!productID && (//this a fix with cloning existing product profiles. Don't ask questions! :)
@@ -464,7 +504,7 @@ class ProductProfileForm extends PureComponent {
               className="w-100 h-200 hover:border-gray-500"
               error={errors.productLot}
               updateValueAndError={(name, value) => this.setState({ ...this.state, productLot: value, productLotParts: {} })}
-              options={lots.map(lot => ({
+              options={this.remainingLotsToSelect(productLot).map(lot => ({
                 label: lot.name,
                 value: lot.address,
               }))}
@@ -477,12 +517,12 @@ class ProductProfileForm extends PureComponent {
           <div className="my-4">
             <h3 className="text-xl text-left mb-2 mt-4">
               Select Product Lot Information
-          </h3>
+            </h3>
             <hr />
             <p className="text-sm text-left mt-4">
               Select which pieces of lot information you would like to include in you product
               profile page.
-          </p>
+            </p>
           </div>
         )}
 
@@ -501,59 +541,103 @@ class ProductProfileForm extends PureComponent {
         )}
 
         {!!productLot && (
-          <div className="my-4">
-            <h3 className="text-xl text-left mb-2 mt-4">
-              Select Additional Product Lot (optional)
-          </h3>
-            <hr />
-          </div>
-        )}
+          selectedLots.map((address, index) => address !== 'IGNORE' && (
+            <div key={index.toString()}>
+              <div className="my-4">
+                <h3 className="text-xl text-left mb-2 mt-4">
+                  Select Additional Product Lot (optional)
+                </h3>
+                <hr />
+              </div>
 
-        {!!productLot && (
-          <SelectDropdownInput
-            name="additionalLot"
-            value={additionalLot}
-            label="Additional Lot"
-            error={errors.additionalLot}
-            updateValueAndError={(name, value) => this.setState({ ...this.state, additionalLot: value, additionalLotParts: {} })}
-            options={lots
-              .filter(each =>
-                each.address !== productLot
-                && !(!!each.parentLot && each.parentLot.address === productLot)
-                && !(!!each.subLots?.length && each.subLots.find(sublot => sublot.address === productLot)))
-              .map(lot => ({
-                label: lot.name,
-                value: lot.address,
-              }))}
-            padding={'.5em'}
-          />
-        )}
+              <span>
+                <SelectDropdownInput
+                  name={"additionalLot"+index}
+                  value={address}
+                  label="Additional Lot"
+                  error={''}
+                  updateValueAndError={(name, value) => {
+                    if (!!value && value !== address && name === "additionalLot"+index) {
+                      this.setState(state => {
+                        const _lots = [
+                          ...state.additionalLots
+                        ]
+                        _lots[index] = value
 
-        {!!additionalLot && (
-          <div className="my-4">
-            <h3 className="text-xl text-left mb-2 mt-4">
-              Select Additional Lot Information
-          </h3>
-            <hr />
-            <p className="text-sm text-left mt-4">
-              Select which pieces of lot information you would like to include in you product
-              profile page.
-          </p>
-          </div>
-        )}
+                        const _lotsParts = {
+                          ...state.additionalLotsParts
+                        }
+                        if (!_lotsParts[value]) _lotsParts[value] = {}
 
-        {!!additionalLot && (
-          <LotDetailSelector
-            lot={lots.find(one => one.address === additionalLot)}
-            selection={additionalLotParts}
-            onToggleSelection={(key, value) => this.setState({
-              ...this.state,
-              additionalLotParts: {
-                ...additionalLotParts,
-                [key]: (!additionalLotParts[key]) ? value : undefined
-              },
-            })}
-          />
+                        return ({ 
+                          ...state,
+                          additionalLots: _lots,
+                          additionalLotsParts: _lotsParts
+                        })
+                      })
+                    }
+                  }}
+                  options={this.remainingLotsToSelect(address).map(lot => ({
+                    label: lot.name,
+                    value: lot.address,
+                  }))}
+                  padding={'.5em'}
+                />
+                {!!address && (
+                  <span className="" data-toggle="tooltip" data-placement="top" title="Remove Lot">
+                    <Button
+                      className="-ml-2 text-sm text-gold-500 hover:text-gold-900"
+                      color="transparent"
+                      onClickHandler={() => 
+                        this.setState(state => {
+                          const _lots = [
+                            ...state.additionalLots
+                          ]
+                          _lots[index] = 'IGNORE'
+
+                          return ({ 
+                            ...state,
+                            additionalLots: _lots,
+                          })
+                        })
+                      }>
+                      Remove Lot
+                    </Button>
+                  </span>
+                )}
+              </span>
+
+              {!!address && (
+                <div className="mb-4">
+                  <h3 className="text-xl text-left mb-2 mt-4">
+                    Select Additional Lot Information
+                  </h3>
+                  <hr />
+                  <p className="text-sm text-left mt-4">
+                    Select which pieces of lot information you would like to include in you product
+                    profile page.
+                  </p>
+                </div>
+              )}
+
+              {!!address && (
+                <LotDetailSelector
+                  lot={lots.find(one => one.address === address)}
+                  selection={additionalLotsParts[address] || {}}
+                  onToggleSelection={(key, value) => this.setState(state => ({
+                    ...state,
+                    additionalLotsParts: { 
+                      ...state.additionalLotsParts,
+                      [address]: {
+                        ...state.additionalLotsParts[address],
+                        [key]: (!state.additionalLotsParts[address][key]) ? value : undefined
+                      }
+                    }
+                  }))}
+                />
+              )}
+            </div>
+          ))
         )}
 
         <div>
