@@ -1,10 +1,11 @@
 import React, { useReducer, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
 import { reducer, loadState, userEffects } from './services/stateMachine';
-import LandingLayout from './layouts/LandingLayout';
-import LoginLayout from './layouts/LoginLayout';
+import LoggedOutLayout from './layouts/LoggedOutLayout';
 import UserLayout from './layouts/UserLayout';
 import Pending from './core/src/components/Elements/Loader';
+import { Layout as CoreLayout } from './core/src/layouts';
+import { TracePattern } from './core/src/components/Elements'
 import NotFound from './pages/NotFound';
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
@@ -24,60 +25,92 @@ const App = () => {
 
   /* State Action Dispatch */
   const dispatchLogin = (email, password) => dispatch({
-    type: 'loginUser', 
-    creds: { email, password } 
+    type: 'loginUser',
+    creds: { email, password }
   });
 
-  const dispatchLogout = () => dispatch({ 
-    type: 'releaseAuth' 
+  const dispatchLogout = () => dispatch({
+    type: 'releaseAuth'
   });
 
-  const dispatchToggleProductProfile = ({ address, cat, entry, value }) => dispatch({ 
-    type: 'toggleProductProfile', 
+  const dispatchToggleProductProfile = ({ address, cat, entry, value }) => dispatch({
+    type: 'toggleProductProfile',
     address, cat, entry, value
   });
 
-  const dispatchExportProductProfile = (product) => dispatch({ 
+  const dispatchExportProductProfile = (product) => dispatch({
     type: 'exportProductProfile',
     product
   });
 
   /* Page Renderers */
   const renderLandingPage = () => (
-    <LandingLayout>
+    <CoreLayout
+      headerPadding="py-4 md:py-8"
+      headerLogoWidth="215px"
+      layoutId="layout_root"
+      footerPadding="py-4 md:py-8"
+      footerNav={(
+        <div>
+          Need Help?
+          <a className={`ml-2 font-bold underline hover:text-gold-500`}
+            href="https://tracevt.com/contact" target="_blank" rel="noopener noreferrer"
+          >
+            Contact Us
+        </a>
+        </div>
+      )}
+    >
       <LandingPage />
-    </LandingLayout>
+    </CoreLayout>
   );
 
   const renderLoginPage = () => (
-    <LoginLayout>
-      <LoginPage 
-        onLoginSubmit={dispatchLogin} 
-        loginError={state.authError || ''} 
-        loginPending={(state.type === 'awaitingAuth')} 
-      />
-    </LoginLayout>
+    <TracePattern className="bg-gray-100" bgPosition="right -35%">
+      <CoreLayout
+        headerPadding="py-4 md:py-8"
+        headerLogoWidth="215px"
+        layoutId="layout_root"
+        footerPadding="py-4 md:py-8"
+        footerNav={(
+          <div>
+            Need Help?
+            <a className={`ml-2 font-bold underline hover:text-gold-500`}
+              href="https://tracevt.com/contact" target="_blank" rel="noopener noreferrer"
+            >
+              Contact Us
+        </a>
+          </div>
+        )}
+      >
+        <LoginPage
+          onLoginSubmit={dispatchLogin}
+          loginError={state.authError || ''}
+          loginPending={(state.type === 'awaitingAuth')}
+        />
+      </CoreLayout>
+    </TracePattern>
   );
 
   const renderLotIndexPage = () => (!state.allLots) ? (
     <Pending />
   ) : (
-    <UserLayout username={state.username} onLogout={dispatchLogout}>
-      <LotsIndexPage 
-        lots={state.allLots} 
-        selection={state.selection}
-        onToggleSelection={dispatchToggleProductProfile} 
-      />
-    </UserLayout>
-  );
+      <UserLayout username={state.username} onLogout={dispatchLogout}>
+        <LotsIndexPage
+          lots={state.allLots}
+          selection={state.selection}
+          onToggleSelection={dispatchToggleProductProfile}
+        />
+      </UserLayout>
+    );
 
   const renderLotDetailsPage = (props) => (!!props?.match?.params?.address && !!state.lotDir[props.match.params.address]) ? (
     <UserLayout username={state.username} onLogout={dispatchLogout}>
       <LotDetailPage lot={state.lotDir[props.match.params.address]} />
     </UserLayout>
   ) : (
-    <NotFound />
-  );
+      <NotFound />
+    );
 
   const renderProductProfilesPage = () => (
     <UserLayout username={state.username} onLogout={dispatchLogout} showCreateButton>
@@ -87,7 +120,7 @@ const App = () => {
 
   const renderCreateProductProfilePage = (props) => (
     <UserLayout username={state.username} onLogout={dispatchLogout}>
-      <CreateProductProfilePage 
+      <CreateProductProfilePage
         populateFromID={(!!props?.match?.params?.id) ? props.match.params.id : ''}
         lots={state.allLots.map(lot => ({
           ...lot,
@@ -100,7 +133,7 @@ const App = () => {
       />
     </UserLayout>
   );
-    
+
   const renderSettingsPage = () => (
     <UserLayout username={state.username} onLogout={dispatchLogout}>
       <SettingsPage />
@@ -110,8 +143,8 @@ const App = () => {
   const renderProductPage = (props) => (!!props?.match?.params?.id) ? (
     <ProductPage id={props.match.params.id} />
   ) : (
-    <NotFound />
-  );
+      <NotFound />
+    );
 
   /* Router Renderers */
   const GuestRouter = () => (
@@ -119,8 +152,8 @@ const App = () => {
       <Switch>
         <Route exact path="/" render={renderLandingPage} />
         <Route exact path="/login" render={renderLoginPage} />
-        <Route render={() => (state.type === 'requireAuth') ? 
-          <Redirect to="/login" /> : 
+        <Route render={() => (state.type === 'requireAuth') ?
+          <Redirect to="/login" /> :
           <Redirect to="/" />} />
       </Switch>
     </Router>
