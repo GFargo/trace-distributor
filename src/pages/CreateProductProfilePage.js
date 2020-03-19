@@ -9,7 +9,7 @@ const CreateProductProfilePage = ({
   lots, 
   handleSubmitProfile,
 }) => (
-  <div className="container mb-24 w-160 text-left">
+  <div className="mb-24 w-160 text-left">
     <div className="mb-4">
       <h3 className="text-xl font-bold text-left mb-4">
         Create Product Profile

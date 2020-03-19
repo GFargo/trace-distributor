@@ -37,6 +37,7 @@ const UserLayout = ({ hasBackground, onLogout, username, showCreateButton, child
     <CoreLayout
       type="sidebar"
       headerDisplayLogo={false}
+      headerIsFluid
       headerNav={(
         <React.Fragment>
           {!!username && (
