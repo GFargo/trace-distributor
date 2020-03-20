@@ -1,0 +1,20 @@
+sudo: true
+dist: xenial
+language:
+  - node_js
+node_js:
+  - "stable"
+notifications:
+  email:
+    on_success: change
+    on_failure: always
+cache:
+  - yarn
+  directories:
+  - node_modules
+before_script:
+  - yarn install 
+script:
+  - yarn test
+  - yarn lint
+  - yarn build
