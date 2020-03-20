@@ -1,7 +1,6 @@
 sudo: true
 dist: xenial
-language:
-  - node_js
+language: node_js
 node_js:
   - "stable"
 notifications:
@@ -9,7 +8,6 @@ notifications:
     on_success: change
     on_failure: always
 cache:
-  - yarn
   directories:
   - node_modules
 before_script:
