@@ -1,7 +1,6 @@
 import React, { useReducer, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
 import { reducer, loadState, userEffects } from './services/stateMachine';
-import LoggedOutLayout from './layouts/LoggedOutLayout';
 import UserLayout from './layouts/UserLayout';
 import Pending from './core/src/components/Elements/Loader';
 import { Layout as CoreLayout } from './core/src/layouts';
@@ -92,25 +91,29 @@ const App = () => {
     </TracePattern>
   );
 
-  const renderLotIndexPage = () => (!state.allLots) ? (
-    <Pending />
-  ) : (
-      <UserLayout username={state.username} onLogout={dispatchLogout}>
+  const renderLotIndexPage = () => (
+    <UserLayout username={state.username} onLogout={dispatchLogout}>
+      {(!state.allLots) ? (
+        <Pending />
+      ) : (
         <LotsIndexPage
           lots={state.allLots}
           selection={state.selection}
           onToggleSelection={dispatchToggleProductProfile}
         />
-      </UserLayout>
-    );
-
-  const renderLotDetailsPage = (props) => (!!props?.match?.params?.address && !!state.lotDir[props.match.params.address]) ? (
-    <UserLayout username={state.username} onLogout={dispatchLogout}>
-      <LotDetailPage lot={state.lotDir[props.match.params.address]} />
+      )}
     </UserLayout>
-  ) : (
-      <NotFound />
-    );
+  );
+
+  const renderLotDetailsPage = (props) => (
+    <UserLayout username={state.username} onLogout={dispatchLogout}>
+      {(!!props?.match?.params?.address && !!state.lotDir[props.match.params.address]) ? (
+        <LotDetailPage lot={state.lotDir[props.match.params.address]} />
+      ) : (
+        <NotFound />
+      )}
+    </UserLayout>
+  );
 
   const renderProductProfilesPage = () => (
     <UserLayout username={state.username} onLogout={dispatchLogout} showCreateButton>
@@ -143,8 +146,8 @@ const App = () => {
   const renderProductPage = (props) => (!!props?.match?.params?.id) ? (
     <ProductPage id={props.match.params.id} />
   ) : (
-      <NotFound />
-    );
+    <NotFound />
+  );
 
   /* Router Renderers */
   const GuestRouter = () => (
