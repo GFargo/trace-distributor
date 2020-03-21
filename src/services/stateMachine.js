@@ -1,7 +1,12 @@
 import { receiveUserLots, loginUser } from './traceAPI';
 import { setProductProfile } from './traceFirebase';
 
+
+// TODO: Should we make this application specific, e.g. trace-distributor
+// ... or would we benenfit from a shared cache?
 const APP_CACHE = 'trace-app'
+
+// TODO: Add JEST testing for the various state changes.
 
 const initGuestState = () => ({
   username: 'guest',
