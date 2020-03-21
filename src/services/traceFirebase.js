@@ -4,8 +4,10 @@ import 'firebase/firestore';
 import 'firebase/storage';
 import { useDocument, useCollection } from 'react-firebase-hooks/firestore';
 
-const { REACT_APP_FIREBASE_APIKEY, REACT_APP_FIRESTORE_DB_NAME } = process.env;
-//console.log('firebase init, process.env: ', process.env);
+const { 
+  REACT_APP_FIREBASE_APIKEY, 
+  REACT_APP_FIRESTORE_DB_NAME = 'product-profiles',
+} = process.env;
 
 // TODO move secrets to env vars
 //const TRACE_PW = 'trace$_ 2020'
