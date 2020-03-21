@@ -6,8 +6,8 @@ import LotDotButtons from './LotDotButtons';
 
 const LotDetailSwitch = ({ lots }) => {
   const [ lotSelected, setLotSelected ] = useState(0);
-  const lot = (!!lots?.length) ? lots[lotSelected] : null;
-  const parentLot = (!!lot?.parentLot) ? lot.parentLot : null;
+  const lot = (lots?.length) ? lots[lotSelected] : null;
+  const parentLot = (lot?.parentLot) ? lot.parentLot : null;
 
   return (
     !!lots?.length && (

@@ -44,8 +44,8 @@ const inflateLotSelection = (selection) => {
     }
   })
 
-  if (!!lot.details) lot.details = Object.values(lot.details);
-  if (!!lot.parentLot?.details) lot.parentLot.details = Object.values(lot.parentLot.details)
+  if (lot.details) lot.details = Object.values(lot.details);
+  if (lot.parentLot?.details) lot.parentLot.details = Object.values(lot.parentLot.details)
 
   return (Object.keys(lot).length > 0) ? lot : null;
 }
@@ -56,26 +56,26 @@ const deflateLotSelection = (lot) => {
   const parts = {};
   if (!lot) return parts;
 
-  if (!!lot.name) parts['lot-lot-name'] = lot.name;
-  if (!!lot.address) parts['lot-lot-address'] = lot.address;
-  if (!!lot.organization?.name) parts['lot-org-name'] = lot.organization.name;
-  if (!!lot.details?.length) {
+  if (lot.name) parts['lot-lot-name'] = lot.name;
+  if (lot.address) parts['lot-lot-address'] = lot.address;
+  if (lot.organization?.name) parts['lot-org-name'] = lot.organization.name;
+  if (lot.details?.length) {
     lot.details.forEach((detail) => {
       if (!detail.state || !detail.data) return;
       Object.keys(detail.data).forEach((key) => {
-        if (!!detail.data[key]) parts[`lot-${detail.state}-${key}`] = detail.data[key];
+        if (detail.data[key]) parts[`lot-${detail.state}-${key}`] = detail.data[key];
       })
     })
   }
 
-  if (!!lot.parentLot?.name) parts['parentLot-lot-name'] = lot.parentLot.name;
-  if (!!lot.parentLot?.address) parts['parentLot-lot-address'] = lot.parentLot.address;
-  if (!!lot.parentLot?.organization?.name) parts['parentLot-org-name'] = lot.parentLot.organization.name;
-  if (!!lot.parentLot?.details?.length) {
+  if (lot.parentLot?.name) parts['parentLot-lot-name'] = lot.parentLot.name;
+  if (lot.parentLot?.address) parts['parentLot-lot-address'] = lot.parentLot.address;
+  if (lot.parentLot?.organization?.name) parts['parentLot-org-name'] = lot.parentLot.organization.name;
+  if (lot.parentLot?.details?.length) {
     lot.parentLot.details.forEach((detail) => {
       if (!detail.state || !detail.data) return;
       Object.keys(detail.data).forEach((key) => {
-        if (!!detail.data[key]) parts[`parentLot-${detail.state}-${key}`] = detail.data[key];
+        if (detail.data[key]) parts[`parentLot-${detail.state}-${key}`] = detail.data[key];
       })
     })
   }
@@ -91,9 +91,9 @@ const deflateCerts = (certs) => {
 const indexParts = (lotIDs, lots) => {
   const parts = {};
   lots.forEach((lot, index) => { 
-    if (!!lot.address) {
+    if (lot.address) {
       parts[lot.address] = lot;
-    } else if (!!lotIDs[index]) {
+    } else if (lotIDs[index]) {
       parts[lotIDs[index]] = lot;
     }
   })
@@ -101,29 +101,29 @@ const indexParts = (lotIDs, lots) => {
 }
 
 const productToState = (product) => ({
-  productID: !!product?.id ? product.id : '',
-  existingQRCode: !!product?.qrcode?.url ? product.qrcode.url : '', 
-  name: !!product?.title ? product.title : '', 
-  description: !!product?.description ? product.description : '', 
+  productID: product?.id ? product.id : '',
+  existingQRCode: product?.qrcode?.url ? product.qrcode.url : '', 
+  name: product?.title ? product.title : '', 
+  description: product?.description ? product.description : '', 
   productImage: {
-    url: !!product?.image?.url ? product.image.url : '', 
-    type: !!product?.image?.url ? 'firebase' : '',
+    url: product?.image?.url ? product.image.url : '', 
+    type: product?.image?.url ? 'firebase' : '',
   },
-  packagingDate: !!product?.packagingDate ? product.packagingDate : '', 
-  certifications: !!product?.certifications ? deflateCerts(product.certifications) : {}, 
-  companyName: !!product?.company?.name ? product.company.name : '', 
-  companyDescription: !!product?.company?.description ? product.company.description : '', 
+  packagingDate: product?.packagingDate ? product.packagingDate : '', 
+  certifications: product?.certifications ? deflateCerts(product.certifications) : {}, 
+  companyName: product?.company?.name ? product.company.name : '', 
+  companyDescription: product?.company?.description ? product.company.description : '', 
   companyLogo: {
-    url: !!product?.company?.logo?.url ? product.company.logo.url : '',
-    type: !!product?.company?.logo?.url ? 'firebase' : '',
+    url: product?.company?.logo?.url ? product.company.logo.url : '',
+    type: product?.company?.logo?.url ? 'firebase' : '',
   },
   manufacturerLocation: (!!product?.company?.location?.state && !!USStates) ?
     USStates.find(one => one.label === product.company.location.state).value : '',
-  productLot: !!product?.productLot ? product.productLot : null,
+  productLot: product?.productLot ? product.productLot : null,
   productLotParts: (!!product?.productLot && !!product?.lots?.length) ?
     deflateLotSelection(product.lots[0]) : {},
-  additionalLots: !!product?.additionalLots ? product.additionalLots : 
-    !!product?.additionalLot ? [ product.additionalLot ] : [],
+  additionalLots: product?.additionalLots ? product.additionalLots : 
+    product?.additionalLot ? [ product.additionalLot ] : [],
   additionalLotsParts: (!!product?.additionalLots?.length && !!product.lots?.length && product.lots.length > 1) 
     ? indexParts(product.additionalLots, product.lots.filter(each => each.address !== product.productLot).map(lot => deflateLotSelection(lot)))
     : (!!product?.additionalLot && !!product.lots?.length && product.lots.length > 1)
@@ -176,7 +176,7 @@ class ProductProfileForm extends PureComponent {
   componentDidMount() {
     const { populateFromID } = this.props;
 
-    if (!!populateFromID) {
+    if (populateFromID) {
       
       getProduct(populateFromID, 
         (product) => this.setState( state => ({ ...state, ...productToState(product) }))
@@ -192,10 +192,10 @@ class ProductProfileForm extends PureComponent {
   inflateLots = () => {
     const lots = [];
     const pLot = inflateLotSelection(this.state.productLotParts);
-    if (!!pLot) lots.push(pLot);
+    if (pLot) lots.push(pLot);
     this.state.additionalLots.forEach(address => {
       const aLot = address !== 'IGNORE' && inflateLotSelection(this.state.additionalLotsParts[address] || {});
-      if (!!aLot) lots.push(aLot);
+      if (aLot) lots.push(aLot);
     })
     return lots;
   }
@@ -227,13 +227,13 @@ class ProductProfileForm extends PureComponent {
       location: {
         state: (!!this.state.manufacturerLocation && !!USStates) ?
           USStates.find(one => one.value === this.state.manufacturerLocation).label : '',
-        country: (!!this.state.manufacturerLocation) ? 'USA' : '',
+        country: (this.state.manufacturerLocation) ? 'USA' : '',
       },
     },
     productLot: this.state.productLot,
     additionalLots: this.state.additionalLots.filter(each => !!each && each !== 'IGNORE'),
     lots: this.inflateLots(),
-    url: (!!this.state.productID) ? productProfileAddress(this.state.productID) : '',
+    url: (this.state.productID) ? productProfileAddress(this.state.productID) : '',
     qrcode: (!this.state.existingQRCode && !!submit) ? this.getProductQRDataURL() : '',
     existingQRCode: this.state.existingQRCode
   })
@@ -289,7 +289,7 @@ class ProductProfileForm extends PureComponent {
     //console.log('lotsLeft ', lotsLeft)
 
     const selectedLots = [...additionalLots]
-    if (!!lotsLeft.length) {
+    if (lotsLeft.length) {
       selectedLots.push('')
     }
 
@@ -342,11 +342,11 @@ class ProductProfileForm extends PureComponent {
                   image={URL.createObjectURL(productImage.file)}
                   onCroppedInage={file => this.setState({ ...this.state, productImage: { 
                     file, 
-                    url: (!!file)? URL.createObjectURL(file) : '', 
-                    type: (!!file)? 'file' : '' 
+                    url: (file)? URL.createObjectURL(file) : '', 
+                    type: (file)? 'file' : '' 
                   } })} 
                 />
-            ) : !!productImage?.url ? (
+            ) : productImage?.url ? (
               <img
                 src={productImage.url}
                 alt="productImage"
@@ -435,11 +435,11 @@ class ProductProfileForm extends PureComponent {
                   image={URL.createObjectURL(companyLogo.file)}
                   onCroppedInage={file => this.setState({ ...this.state, companyLogo: { 
                     file, 
-                    url: (!!file)? URL.createObjectURL(file) : '', 
-                    type: (!!file)? 'file' : '' 
+                    url: (file)? URL.createObjectURL(file) : '', 
+                    type: (file)? 'file' : '' 
                   } })} 
                 />
-            ) : !!companyLogo?.url ? (
+            ) : companyLogo?.url ? (
               <img
                 src={companyLogo.url}
                 alt="companyLogo"

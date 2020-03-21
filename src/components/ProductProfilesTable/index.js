@@ -80,7 +80,7 @@ const ProductProfilesTable = ({ email }) => {
   return (
     (!products && loading) ? <Pending /> : 
     (!products || !!error) ? <ErrorView /> : 
-    !!products?.length ? (
+    products?.length ? (
       <div className="container">
         <ConfirmationModal
           modal={{ isOpen: !!deleteThisProductID, setOpen: setDeleteModal }}

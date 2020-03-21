@@ -15,13 +15,13 @@ const FileUpload = ({
 
   const onChooseFile = (e) => {
     //console.log('onChooseFile: ', e) 
-    const f = (!!e.target.files[0]?.name) ? e.target.files[0] : undefined
+    const f = (e.target.files[0]?.name) ? e.target.files[0] : undefined
     setFile(f)
   }
 
   const onUploadingFile = (e) => {
     e.preventDefault()
-    if(!!file?.name) {
+    if(file?.name) {
       //console.log('onUploadingFile: ', file)
       onUploadFile(file)
     }
@@ -29,8 +29,8 @@ const FileUpload = ({
 
   const onUploadImmediately = (e) => {
     e.preventDefault()
-    const f = (!!e.target.files[0]?.name) ? e.target.files[0] : undefined
-    if(!!f?.name) {
+    const f = (e.target.files[0]?.name) ? e.target.files[0] : undefined
+    if(f?.name) {
       //console.log('onUploadingFile: ', f)
       onUploadFile(f)
     }
@@ -39,7 +39,7 @@ const FileUpload = ({
   return (
     <div className="flex items-center justify-left mb-3 ml-3">
       <label className="px-5 py-3 cursor-pointer rounded bg-white border border-gray-500 hover:border-gray-800 text-gray-700 hover:text-gray-800 opacity-50">
-        {!!buttonText ? buttonText : uploadImmediately ? 'Upload File' : 'Browse'}
+        {buttonText ? buttonText : uploadImmediately ? 'Upload File' : 'Browse'}
         <input 
           type="file" 
           id={"FileUpload-"+id} 

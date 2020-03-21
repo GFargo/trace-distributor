@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import { transformValues } from '../../../core/src/components/Lots/LotStateSection/LotSectionHelpers';
 
 const LotDetailSelector = ({ lot, selection, onToggleSelection }) => {
-  const cultLot = !!lot?.parentLot ? lot.parentLot : lot;
-  const lotRef = !!lot?.parentLot ? 'parentLot' : 'lot';
+  const cultLot = lot?.parentLot ? lot.parentLot : lot;
+  const lotRef = lot?.parentLot ? 'parentLot' : 'lot';
 
   const CheckboxListItem = ({ name, label, value }) => (
     <div className={"py-2"} >
@@ -17,7 +17,7 @@ const LotDetailSelector = ({ lot, selection, onToggleSelection }) => {
           onChange={() => onToggleSelection(name, value)}
         />
         <label
-          className={"custom-control-label " + (!!selection[name] ? "text-body" : "text-muted")}
+          className={"custom-control-label " + (selection[name] ? "text-body" : "text-muted")}
           htmlFor={lot.address + name}
         >
           <strong>{label}</strong>

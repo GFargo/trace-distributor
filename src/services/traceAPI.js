@@ -21,17 +21,17 @@ const fetchQuery = async (query, authToken = '') => {
   try {
     const response = await fetch(GRAPHQL_PATH, {
       method: "POST",
-      headers: (!!authToken) ? JSON_AUTH_HEADER(authToken) : {...JSON_HEADER},
+      headers: (authToken) ? JSON_AUTH_HEADER(authToken) : {...JSON_HEADER},
       body: JSON.stringify({query})
     })
     const result = await response.json()
-    if (!!result?.errors?.length) {
+    if (result?.errors?.length) {
       return { 
         error: result.errors[0].message, 
         errorMsg: result.errors[0].message 
       }
     } else { 
-      return (!!result?.data) ? result.data : { 
+      return (result?.data) ? result.data : { 
         error: "Query returned null data." 
       } 
     }
@@ -379,7 +379,7 @@ const receiveAllLots = async () => {
   const result = await fetchQuery(allLotsQuery)
 
   /* TODO No access to org owner name - injecting temp data to prevent core component error  */
-  const lots = !(!!result?.lots?.length) ? [] : 
+  const lots = !result?.lots?.length ? [] : 
     result.lots.filter((each) => !!each?.organization).map((lot) => ({
       ...lot, 
       organization: {
@@ -394,7 +394,7 @@ const receiveAllLots = async () => {
 const receiveMeOrgLots = async (authToken) => {
   const result = await fetchQuery(meOrgLotsQuery, authToken)
   console.log('traceAPI - receiveMeOrgLots result: ', result)
-  let lots = (!!result.error) ? null : (!!result?.me?.organization?.lots) ? result.me.organization.lots : []
+  let lots = (result.error) ? null : (result?.me?.organization?.lots) ? result.me.organization.lots : []
 
   /* TODO Failsafe data for testing - Remove after dev server setup */
   if (!!lots && !lots.length) {//empty lots, fill with test data
@@ -411,8 +411,8 @@ export const loginUser = async (email, password, callback) => {
   const result = await fetchQuery(loginQuery(email, password))
 
   if (!result.login || !result.login.authToken || !!result.error) {
-    user.authError = (!!result.errorMsg) ? result.errorMsg : "Email or Password Incorrect"
-    console.error('traceAPI - loginUser auth error: ', (!!result.error) ? result.error : 'Uh oh! Unknown Error')
+    user.authError = (result.errorMsg) ? result.errorMsg : "Email or Password Incorrect"
+    console.error('traceAPI - loginUser auth error: ', (result.error) ? result.error : 'Uh oh! Unknown Error')
   
   } else { //valid auth
     user.username = (result.login.firstName || '')+' '+(result.login.lastName || '')
@@ -421,7 +421,7 @@ export const loginUser = async (email, password, callback) => {
     //console.log('traceAPI - loginUser user: ', user)
   }
   
-  if(!!callback) callback(user) 
+  if(callback) callback(user) 
   return user
 }
 
@@ -433,7 +433,7 @@ export const receiveUserLots = async (authToken, callback) => {
 
   //console.log('traceAPI - receiveUserLots products: ', products)
 
-  if(!!callback) callback(lots)
+  if(callback) callback(lots)
   return {lots}
 }
 

@@ -30,11 +30,11 @@ const initUserState = (username = '', email, authToken = null) => ({
 const userToState = ({ username, email, authToken, lots }) => {
   const state = {
     ...initUserState(username, email, authToken),
-    timestamp: (!!lots) ? Date.now() : null 
+    timestamp: (lots) ? Date.now() : null 
   }
-  if (!!lots?.length) {
+  if (lots?.length) {
     lots.forEach((lot) => {
-      if (!!lot?.address) {
+      if (lot?.address) {
         state.lotDir[lot.address] = lot
         state.allLots.push(lot)
         if (!lot.parentLot) state.parentLots.push(lot)
@@ -49,7 +49,7 @@ const persistState = async (state) => {
   !!state && localStorage.setItem(APP_CACHE, JSON.stringify(state)) 
 }
 
-export const loadState = (state = localStorage.getItem(APP_CACHE)) => (!!state) ? 
+export const loadState = (state = localStorage.getItem(APP_CACHE)) => (state) ? 
   {...JSON.parse(state), timestamp: undefined, type: undefined} : 
   {...initGuestState()}
 
@@ -68,7 +68,7 @@ export const reducer = (state = loadState(), action = {}) => {
         authToken: null, //while null -> login page
         authError: undefined, //send auth errors as requireAuth action only
         timestamp: null,
-        creds: !(!!action.creds?.email) ? undefined : {
+        creds: !action.creds?.email ? undefined : {
           ...action.creds
         }
       }

@@ -36,7 +36,7 @@ const productRef = (id) => productsRef.doc(id);
 export const getProduct = async (id, callback) => {
   const snap = await productsRef.doc(id).get();
   const product = snap.data();
-  if (!!callback) callback(product);
+  if (callback) callback(product);
   return product;
 }
 
@@ -77,7 +77,7 @@ export const useLatestLotProduct = (address) => {
   }));
   //console.log('useLatestLotProduct, products: ', products);
   let product = null;
-  if (!!products?.length) {
+  if (products?.length) {
   	products.forEach( p => {
 	  	if (!product || p.created > product.created) product = p;
 	  })
@@ -139,7 +139,7 @@ export const setProductProfile = async (product, calback) => {
 
   const qrcodeDataURL = product.qrcode;
   product.qrcode = { url: '' };
-  if (!!product.existingQRCode) {
+  if (product.existingQRCode) {
     product.qrcode.url = product.existingQRCode;
     delete product.existingQRCode;
   } else {
@@ -179,7 +179,7 @@ export const setProductProfile = async (product, calback) => {
   await doc.set(product);
 
 	//console.log('firebase setProduct complete, id: ', id);
-	if (!!calback) calback(id)
+	if (calback) calback(id)
 	return id;
 }
 

@@ -22,12 +22,12 @@ const DualVerticalDetail = ({ title, value }) => (
         </h4>
       </div>
     </div>
-  ) : (!!value[0]) ? (
+  ) : (value[0]) ? (
     <VerticalDetail
       title={title[0]}
       value={value[0]}
     />
-  ) : (!!value[1]) ? (
+  ) : (value[1]) ? (
     <VerticalDetail
       title={title[1]}
       value={value[1]}
