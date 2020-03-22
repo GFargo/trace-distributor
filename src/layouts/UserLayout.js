@@ -92,6 +92,7 @@ UserLayout.propTypes = {
   onLogout: PropTypes.func.isRequired,
   children: PropTypes.object,
   showCreateButton: PropTypes.bool,
+  hasBackground: PropTypes.bool,
 }
 
 export default UserLayout
