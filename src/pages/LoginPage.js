@@ -5,7 +5,7 @@ import Login from '../core/src/components/Forms/Login'
 import Title from '../core/src/components/Elements/Title'
 import Copy from '../core/src/components/Elements/Copy'
 
-const DistributorLoginForm = ({onLoginSubmit, loginPending, loginError}) => {
+const DistributorLoginForm = ({ onLoginSubmit, loginPending, loginError }) => {
 
   let onlyOnce = true
   const handleSubmit = (event, form) => {
@@ -18,7 +18,7 @@ const DistributorLoginForm = ({onLoginSubmit, loginPending, loginError}) => {
     }
     onlyOnce = false
   }
-  
+
   return (
     <div id="LoginForm" className="w-full md:w-8/12 lg:w-8/12 flex">
       <div className="flex flex-col self-center text-black">
@@ -27,9 +27,9 @@ const DistributorLoginForm = ({onLoginSubmit, loginPending, loginError}) => {
           <Copy className="mt-3"><p>Login using your iOS credentials</p></Copy>
         </div>
 
-        {loginPending ? <Pending /> : ( 
+        {loginPending ? <Pending /> : (
           <div className="">
-            <Login handleSubmit={handleSubmit} loginResponse={loginError || ''} submitBtnColor="green" displayForgotPassword={false}/>
+            <Login handleSubmit={handleSubmit} loginResponse={loginError || ''} submitBtnColor="green" displayForgotPassword={false} />
           </div>
         )}
 
