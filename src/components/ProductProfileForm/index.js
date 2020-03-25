@@ -673,9 +673,11 @@ class ProductProfileForm extends PureComponent {
                     ...state,
                     additionalLotsParts: { 
                       ...state.additionalLotsParts,
-                      [address]: {
+                      [address]: (!!state.additionalLotsParts[address]) ? {
                         ...state.additionalLotsParts[address],
                         [key]: (!state.additionalLotsParts[address][key]) ? value : undefined
+                      } : {
+                        [key]: value
                       }
                     }
                   }))}
