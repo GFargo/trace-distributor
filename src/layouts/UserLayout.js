@@ -38,18 +38,19 @@ const UserLayout = ({ hasBackground, onLogout, username, showCreateButton, child
       type="sidebar"
       headerDisplayLogo={false}
       headerIsFluid
+      headerNavContainerClass="w-full"
       headerNav={(
         <React.Fragment>
           {!!username && (
-            <div className="w-3/12">
-              <p className="py-4">
+            <div className="mr-64">
+              <p className="">
                 Hello, <Link className="text-gold-800" to="/distributor/settings/"><strong>{username}</strong></Link>
               </p>
             </div>
           )}
 
           {!!username && showCreateButton && (
-            <div className="ml-auto">
+            <div className="ml-32">
               <ul className="flex flex items-center font-body">
                 <Button 
                   type="link"

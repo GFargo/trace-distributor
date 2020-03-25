@@ -1,7 +1,6 @@
 import React, { useReducer, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
 import { reducer, loadState, userEffects } from './services/stateMachine';
-import LoggedOutLayout from './layouts/LoggedOutLayout';
 import UserLayout from './layouts/UserLayout';
 import Pending from './core/src/components/Elements/Loader';
 import { Layout as CoreLayout } from './core/src/layouts';
@@ -154,7 +153,8 @@ const App = () => {
         <Route exact path="/login" render={renderLoginPage} />
         <Route render={() => (state.type === 'requireAuth') ?
           <Redirect to="/login" /> :
-          <Redirect to="/" />} />
+          <Redirect to="/" />
+        }/>
       </Switch>
     </Router>
   );
@@ -171,6 +171,10 @@ const App = () => {
         <Route exact path="/distributor/product-profile-form/:id" render={renderCreateProductProfilePage} />
         <Route exact path="/distributor/settings" render={renderSettingsPage} />
         <Route path="/product/:id" render={renderProductPage} />
+        <Route path='/p/contact/' component={() => { 
+           window.location.href = 'https://tracevt.com/contact/'; 
+           return null;
+        }}/>
         <Route render={() => <Redirect to="/distributor/products" />} />
       </Switch>
     </Router>
