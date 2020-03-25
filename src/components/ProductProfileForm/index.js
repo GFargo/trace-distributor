@@ -21,6 +21,8 @@ const productProfileAddress = (id) => `${REACT_APP_TRACE_DIRECTORY}${id}`;
 
 const inflateLotSelection = (selection) => {
   const lot = {}
+  if (!selection) return null;
+
   Object.keys(selection).filter((each) => !!each && !!selection[each]).forEach((key) => {
     const keyParts = key.split('-')
     const [lotField, cat, entry] = keyParts
@@ -88,13 +90,21 @@ const deflateCerts = (certs) => {
   return certifications;
 }
 
-const indexParts = (lotIDs, lots) => {
+const deflateLabels = (labelOverrides) => {
+  const overrides = {};
+  Object.keys(labelOverrides).forEach(address => { 
+    if (!!labelOverrides[address]) {
+      overrides[address] = deflateLotSelection(labelOverrides[address]); 
+    }
+  })
+  return overrides;
+}
+
+const deflateLots = (lotIDs, lots) => {
   const parts = {};
-  lots.forEach((lot, index) => { 
-    if (!!lot.address) {
-      parts[lot.address] = lot;
-    } else if (!!lotIDs[index]) {
-      parts[lotIDs[index]] = lot;
+  lotIDs.forEach(address => { 
+    if (!!lots && !!lots[address]) {
+      parts[address] = deflateLotSelection(lots[address]);
     }
   })
   return parts;
@@ -120,15 +130,12 @@ const productToState = (product) => ({
   manufacturerLocation: (!!product?.company?.location?.state && !!USStates) ?
     USStates.find(one => one.label === product.company.location.state).value : '',
   productLot: !!product?.productLot ? product.productLot : null,
-  productLotParts: (!!product?.productLot && !!product?.lots?.length) ?
-    deflateLotSelection(product.lots[0]) : {},
+  productLotParts: (!!product?.productLot && !!product?.lots) ?
+    deflateLotSelection(product.lots[product.productLot]) : {},
   additionalLots: !!product?.additionalLots ? product.additionalLots : 
     !!product?.additionalLot ? [ product.additionalLot ] : [],
-  additionalLotsParts: (!!product?.additionalLots?.length && !!product.lots?.length && product.lots.length > 1) 
-    ? indexParts(product.additionalLots, product.lots.filter(each => each.address !== product.productLot).map(lot => deflateLotSelection(lot)))
-    : (!!product?.additionalLot && !!product.lots?.length && product.lots.length > 1)
-    ? { [product.additionalLot]: deflateLotSelection(product.lots[1]) }
-    : {},
+  additionalLotsParts: !!product?.additionalLots ? deflateLots(product.additionalLots, product.lots) : {},
+  labelOverrides: !!product?.labelOverrides ? deflateLabels(product.labelOverrides) : {},
 });
 
 class ProductProfileForm extends PureComponent {
@@ -157,6 +164,7 @@ class ProductProfileForm extends PureComponent {
     productLotParts: {},
     additionalLots: [],
     additionalLotsParts: {},
+    labelOverrides: {},
     previewProduct: false,
     errors: {
       name: '',
@@ -190,14 +198,27 @@ class ProductProfileForm extends PureComponent {
   }
 
   inflateLots = () => {
-    const lots = [];
-    const pLot = inflateLotSelection(this.state.productLotParts);
-    if (!!pLot) lots.push(pLot);
+    const lots = {};
+    const selection = !!this.state.productLot && inflateLotSelection(this.state.productLotParts)
+    if (!!selection) {
+      lots[this.state.productLot] = inflateLotSelection(this.state.productLotParts || {});
+    }
+    
     this.state.additionalLots.forEach(address => {
-      const aLot = address !== 'IGNORE' && inflateLotSelection(this.state.additionalLotsParts[address] || {});
-      if (!!aLot) lots.push(aLot);
+      const selection = address !== 'IGNORE' && inflateLotSelection(this.state.additionalLotsParts[address])
+      if (!!selection) lots[address] = selection;
     })
     return lots;
+  }
+
+  inflateLabels = () => {
+    const overrides = {};
+    Object.keys(this.state.labelOverrides).forEach(address => {
+      if (address !== 'IGNORE') {
+        overrides[address] = inflateLotSelection(this.state.labelOverrides[address] || {});
+      }
+    })
+    return overrides;
   }
 
   getProductQRDataURL = () => {
@@ -232,6 +253,7 @@ class ProductProfileForm extends PureComponent {
     },
     productLot: this.state.productLot,
     additionalLots: this.state.additionalLots.filter(each => !!each && each !== 'IGNORE'),
+    labelOverrides: this.inflateLabels(),
     lots: this.inflateLots(),
     url: (!!this.state.productID) ? productProfileAddress(this.state.productID) : '',
     qrcode: (!this.state.existingQRCode && !!submit) ? this.getProductQRDataURL() : '',
@@ -275,6 +297,7 @@ class ProductProfileForm extends PureComponent {
       productLotParts,
       additionalLots,
       additionalLotsParts,
+      labelOverrides,
       previewProduct,
       errors
     } = this.state;
@@ -529,6 +552,17 @@ class ProductProfileForm extends PureComponent {
         {!!productLot && (
           <LotDetailSelector
             lot={lots.find(one => one.address === productLot)}
+            labelOverrides={labelOverrides[productLot] || {}}
+            onOverrideLabel={(name, value) => {
+              const overrides = (!!labelOverrides[productLot]) ? { ...labelOverrides[productLot] } : {}
+              overrides[name] = value || '';
+              this.setState({ ...this.state, 
+                labelOverrides: {
+                  ...labelOverrides,
+                  [productLot]: overrides
+                } 
+              })
+            }}
             selection={productLotParts}
             onToggleSelection={(key, value) => this.setState({
               ...this.state,
@@ -623,6 +657,17 @@ class ProductProfileForm extends PureComponent {
               {!!address && (
                 <LotDetailSelector
                   lot={lots.find(one => one.address === address)}
+                  labelOverrides={labelOverrides[address] || {}}
+                  onOverrideLabel={(name, value) => {
+                    const overrides = (!!labelOverrides[address]) ? { ...labelOverrides[address] } : {}
+                    overrides[name] = value || '';
+                    this.setState({ ...this.state, 
+                      labelOverrides: {
+                        ...labelOverrides,
+                        [address]: overrides
+                      } 
+                    })
+                  }}
                   selection={additionalLotsParts[address] || {}}
                   onToggleSelection={(key, value) => this.setState(state => ({
                     ...state,
