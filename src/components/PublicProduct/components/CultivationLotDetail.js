@@ -6,8 +6,40 @@ import Notes from './Notes';
 import BlockchainAddress from './BlockchainAddress';
 import { getLotStateField } from '../utils';
 
-const CultivationLotDetail = ({ lot }) => (
-  !!lot && (
+const CultivationLotDetail = ({ lot, labels }) => {
+  
+  const details = {
+    strain: {
+      label: !!getLotStateField(labels, 'initial', 'strain') ? getLotStateField(labels, 'initial', 'strain')+':' : 'Strain:',
+      value: getLotStateField(lot, 'initial', 'strain')
+    },
+    growType: {
+      label: !!getLotStateField(labels, 'initial', 'growType') ? getLotStateField(labels, 'initial', 'growType')+':' : 'Grow Type:',
+      value: getLotStateField(lot, 'initial', 'growType')
+    },
+    growMedium: {
+      label: !!getLotStateField(labels, 'initial', 'growMedium') ? getLotStateField(labels, 'initial', 'growMedium')+':' : 'Grow Medium:',
+      value: getLotStateField(lot, 'initial', 'growMedium')
+    },
+    lastMaturityDate: {
+      label: !!getLotStateField(labels, 'harvest', 'lastMaturityDate') ? getLotStateField(labels, 'harvest', 'lastMaturityDate')+':' : 'Harvest Date:',
+      value: getLotStateField(lot, 'harvest', 'lastMaturityDate')
+    },
+    cloned: {
+      label: !!getLotStateField(labels, 'initial', 'cloned') ? getLotStateField(labels, 'initial', 'cloned')+':' : 'Seed Source:',
+      value: getLotStateField(lot, 'initial', 'cloned')
+    },
+    notes: {
+      label: !!getLotStateField(labels, 'grow', 'notes') ? getLotStateField(labels, 'grow', 'notes')+':' : 'Farming Practice Notes:',
+      value: getLotStateField(lot, 'grow', 'notes')
+    },
+    nutrientCycle: {
+      label: !!getLotStateField(labels, 'grow', 'nutrientCycle') ? getLotStateField(labels, 'grow', 'nutrientCycle')+':' : 'Nutrient Cycle Notes:',
+      value: getLotStateField(lot, 'grow', 'nutrientCycle')
+    },
+  }
+
+  return !!lot && (
     <div className="mb-2 mt-8">
       {!!lot?.name && (
         <div className="grid-row mx-4 mb-6 text-3xl font-bold text-left">
@@ -18,7 +50,7 @@ const CultivationLotDetail = ({ lot }) => (
         <div className="flex mx-4 mb-8 text-left">
           <div className="w-full">
             <h3 className="text-2xl mb-2 font-bold text-gold-500">
-              Cultivator Name
+              {(!!labels?.organization?.name) ? labels.organization.name+':': 'Cultivator Name:'}
             </h3>
             <div className="text-xl">
               {lot.organization.name}
@@ -26,37 +58,30 @@ const CultivationLotDetail = ({ lot }) => (
           </div>
         </div>
       )}
-      <BlockchainAddress address={lot.address} />
+      <BlockchainAddress address={lot.address} label={(!!labels?.address) ? labels.address : 'Blockchain Address'} />
       <DualVerticalDetail
-        title={['Genetics:', 'Grow Type:']}
-        value={[
-          getLotStateField(lot, 'initial', 'strain'),
-          getLotStateField(lot, 'initial', 'growType'),
-        ]}
+        title={[details.strain.label, details.growType.label]}
+        value={[details.strain.value, details.growType.value]}
       />
       <DualVerticalDetail
-        title={['Grow Medium:', 'Harvest Date:']}
-        value={[
-          getLotStateField(lot, 'initial', 'growMedium'),
-          getLotStateField(lot, 'harvest', 'lastMaturityDate'),
-        ]}
+        title={[details.growMedium.label, details.lastMaturityDate.label]}
+        value={[details.growMedium.value, details.lastMaturityDate.value]}
       />
       <VerticalDetail
-        title="Seed Source:"
-        value={getLotStateField(lot, 'initial', 'cloned') === true ? 'clone' : 
-          getLotStateField(lot, 'initial', 'cloned') === false ? 'seed' : ''}
+        title={details.cloned.label}
+        value={details.cloned.value}
       />
       <Notes
-        title="Farming Practice Notes:"
-        text={getLotStateField(lot, 'grow', 'notes')}
+        title={details.notes.label}
+        text={details.notes.value}
       />
       <Notes
-        title="Nutrient Cycle Notes:"
-        text={getLotStateField(lot, 'grow', 'nutrientCycle')}
+        title={details.nutrientCycle.label}
+        text={details.nutrientCycle.value}
       />
     </div>
-  )
-);
+  );
+}
 
 CultivationLotDetail.defaultProps = {
   lot: {
@@ -66,6 +91,7 @@ CultivationLotDetail.defaultProps = {
       name: '',
     },
   },
+  labels: {},
 };
 
 CultivationLotDetail.propTypes = {
@@ -76,6 +102,7 @@ CultivationLotDetail.propTypes = {
       name: PropTypes.string,
     }),
   }),
+  labels: PropTypes.shape({}),
 };
 
 export default CultivationLotDetail;

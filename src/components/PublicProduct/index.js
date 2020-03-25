@@ -13,7 +13,7 @@ const Product = ({ product }) => (
         <ProductHeader product={product} />
         <ProductCertifications certifications={product.certifications} />
         <ProductCompany company={product.company} />
-        <LotDetailSwitch lots={product.lots} />
+        <LotDetailSwitch lots={product.lots} labels={product.labelOverrides || {}} />
         <ProductFooter />
       </div>
     </div>
@@ -40,7 +40,7 @@ Product.defaultProps = {
     },
     packagingDate: '',
     certifications: [],
-    lots: [],
+    lots: {},
   },
 };
 
@@ -64,22 +64,7 @@ Product.propTypes = {
     }),
     packagingDate: PropTypes.string,
     certifications: PropTypes.arrayOf(PropTypes.string),
-    lots: PropTypes.arrayOf(PropTypes.shape({
-      name: PropTypes.string,
-      address: PropTypes.string,
-      organization: PropTypes.shape({
-        name: PropTypes.string,
-      }),
-      details: PropTypes.arrayOf(PropTypes.shape({})),
-      parentLot: PropTypes.shape({
-        name: PropTypes.string,
-        address: PropTypes.string,
-        organization: PropTypes.shape({
-          name: PropTypes.string,
-        }),
-        details: PropTypes.arrayOf(PropTypes.shape({})),
-      }),
-    })),
+    lots: PropTypes.shape({}),
   }),
 };
 
