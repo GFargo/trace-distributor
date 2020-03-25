@@ -305,8 +305,8 @@ class ProductProfileForm extends PureComponent {
     const isDisabled = (!name || !productLot || !Object.values(errors).every((one) => !one))
 
     const product = isDisabled ? null : this.stateToProduct();
-    console.log('STATE ', this.state)
-    console.log('PRODUCT ', product)
+    //console.log('STATE ', this.state)
+    //console.log('PRODUCT ', product)
 
     const lotsLeft = this.remainingLotsToSelect()
     //console.log('lotsLeft ', lotsLeft)
