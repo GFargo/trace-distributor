@@ -3,21 +3,7 @@ import PropTypes from 'prop-types';
 import InputWrapper from '../../../core/src/components/MultiForm/parts/InputWrapper';
 
 const CERTIFICATIONS = ['ORGANIC', 'KOSHER', 'NONGMO', 'AOSCA', 'GF'];
-const certFileSwitch = (cert) => {
-  switch (cert) {
-    case 'ORGANIC':
-      return '/img/organic.png';
-    case 'KOSHER':
-      return '/img/kosher.png';
-    case 'NONGMO':
-      return '/img/nongmo.jpg';
-    case 'AOSCA':
-      return '/img/aosca.png';
-    default:
-    case 'GF':
-      return '/img/gf.png';
-  }
-}
+
 const CertificationCheckboxes = ({ certifications, onToggleCertification }) => (
   <InputWrapper name="productCertifications" label="Product Certifications">
     <div className={"flex flex-row pl-3"} >
@@ -37,8 +23,8 @@ const CertificationCheckboxes = ({ certifications, onToggleCertification }) => (
             <img
               className=""
               width="72"
-              src={certFileSwitch(cert)}
-              alt={cert}
+              src={`/images/certificates/${cert}.png`}
+              alt={`${cert} Certification Logo`}
             />
           </label>
         </div>
