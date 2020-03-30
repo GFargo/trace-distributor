@@ -7,13 +7,19 @@ import SelectDropdownInput from '../../core/src/components/MultiForm/parts/Selec
 import USStates from '../../core/src/components/MultiForm/constants/USStates';
 import InputWrapper from '../../core/src/components/MultiForm/parts/InputWrapper';
 import { genProductID, getProduct } from '../../services/traceFirebase';
-import PublicProduct from '../PublicProduct';
 import FileUpload from '../FileUpload'
 import QRCodeView from '../QRCodeView';
 import ImageCropper from '../ImageCropper';
 import LotDetailSelector from './components/LotDetailSelector';
 import CertificationCheckboxes from './components/CertificationCheckboxes';
 import PackagingDatePicker from './components/PackagingDatePicker';
+
+import ProductHeaderPattern from '../../core/src/components/PublicProduct/Components/Header/ProductHeaderPattern';
+import ProductHeader from '../../core/src/components/PublicProduct/Components/Header';
+import ProductFooter from '../../core/src/components/PublicProduct/Components/Footer';
+import ProductCertifications from '../../core/src/components/PublicProduct/Components/ProductCertifications';
+import ProductCompany from '../../core/src/components/PublicProduct/Components/ProductCompany';
+import LotDetails from '../../core/src/components/PublicProduct/Components/LotDetails';
 
 
 const { REACT_APP_TRACE_DIRECTORY } = process.env;
@@ -713,13 +719,22 @@ class ProductProfileForm extends PureComponent {
             <hr />
           </div>
         )}
-
         {!!previewProduct && (
-          <div className="flex mb-8 text-left">
-            <div className="w-7/12 bg-white" style={{ minWidth: "540px", maxWidth: "540px" }}>
-              <PublicProduct product={product} />
+          <div className="flex container mb-8">
+            <div className="w-7/12 bg-white shadow-lg" style={{ minWidth: "448px", maxWidth: "448px" }}>
+              <ProductHeaderPattern>
+                <div className="grid-row m-0 pt-20">
+                  <div className="grid-col-12">
+                    <ProductHeader product={product} />
+                    {!!product.certifications && <ProductCertifications certs={product.certifications} />}
+                    {!!product.company && <ProductCompany company={product.company} />}
+                    {!!product.lots && <LotDetails lots={product.lots} labels={product.labelOverrides} />}
+                    <ProductFooter />
+                  </div>
+                </div>
+              </ProductHeaderPattern>
             </div>
-            <div className="w-5/12 ml-3">
+            <div className="w-5/12 ml-6">
               {!!product.url && <QRCodeView url={product.url} name="productQRCode" />}
               <Button
                 onClickHandler={(e) => {

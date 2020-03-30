@@ -13,7 +13,6 @@ import LotsIndexPage from './pages/LotsIndexPage';
 import ProductProfilesPage from './pages/ProductProfilesPage';
 import CreateProductProfilePage from './pages/CreateProductProfilePage';
 import SettingsPage from './pages/SettingsPage';
-import ProductPage from './templates/product';
 import './styles/tailwind.css';
 import './core/src/styles/icons.css';
 
@@ -139,12 +138,6 @@ const App = () => {
     </UserLayout>
   );
 
-  const renderProductPage = (props) => (!!props?.match?.params?.id) ? (
-    <ProductPage id={props.match.params.id} />
-  ) : (
-      <NotFound />
-    );
-
   /* Router Renderers */
   const GuestRouter = () => (
     <Router>
@@ -170,7 +163,6 @@ const App = () => {
         <Route exact path="/distributor/product-profile-form" render={renderCreateProductProfilePage} />
         <Route exact path="/distributor/product-profile-form/:id" render={renderCreateProductProfilePage} />
         <Route exact path="/distributor/settings" render={renderSettingsPage} />
-        <Route path="/product/:id" render={renderProductPage} />
         <Route path='/p/contact/' component={() => { 
            window.location.href = 'https://tracevt.com/contact/'; 
            return null;
