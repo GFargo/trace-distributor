@@ -1,4 +1,5 @@
 import React, { useReducer, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
 import { reducer, loadState, userEffects } from './services/stateMachine';
 import UserLayout from './layouts/UserLayout';
@@ -175,6 +176,26 @@ const App = () => {
   return (
     (!state) ? <Pending /> : (!state.authToken) ? <GuestRouter /> : <UserRouter />
   );
+}
+
+App.defaultProps = {
+  match: {
+    params: {
+      id: '',
+      address: '',
+    },
+  },
+  history: [],
+};
+
+App.propTypes = {
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      id: PropTypes.string,
+      address: PropTypes.string,
+    }),
+  }),
+  history: PropTypes.arrayOf(PropTypes.string),
 }
 
 export default App;
