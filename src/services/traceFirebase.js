@@ -41,13 +41,13 @@ export const getProduct = async (id, callback) => {
 export const useProducts = (email) => {
   const [value, loading, error] = useCollection(userProductsRef(email)); 
   const products = (!value || !value.docs) ? null : (!value.docs.length) ? [] : value.docs.map(doc => ({
-  	...doc.data(),
-  	id: doc.id,
+    ...doc.data(),
+    id: doc.id,
   }));
   //console.log('ProductPage, product: ', product);
 
   return [
-  	products,
+    products,
     loading,
     error,
   ]
@@ -60,7 +60,7 @@ export const useProduct = (id) => {
   //console.log('ProductPage, product: ', product);
 
   return [
-  	product,
+    product,
     loading,
     error,
   ]
@@ -70,30 +70,30 @@ export const useLatestLotProduct = (address) => {
   const [value, loading, error] = useCollection(lotProductsRef(address)); 
   //console.log('useLatestLotProduct, value: ', value);
   const products = (!value || !value.docs) ? null : (!value.docs.length) ? [] : value.docs.map(doc => ({
-  	...doc.data(),
-  	id: doc.id,
+    ...doc.data(),
+    id: doc.id,
   }));
   //console.log('useLatestLotProduct, products: ', products);
   let product = null;
   if (!!products?.length) {
-  	products.forEach( p => {
-	  	if (!product || p.created > product.created) product = p;
-	  })
+    products.forEach( p => {
+      if (!product || p.created > product.created) product = p;
+    })
   }
 
   return [
-  	product,
+    product,
     loading,
     error,
   ]
 }
 
 const addImageDataURL = async (id, name, imageDataURL) => {
-	const uploadTask = await store.child(`${id}/${name}`).putString(imageDataURL, 'data_url');
-	//console.log('firebase addQRCodeImageURL, uploadTask: ', uploadTask);
-	const url = await uploadTask.ref.getDownloadURL();
-	console.log('firebase addQRCodeDataURL, url: ', url);
-	return url;
+  const uploadTask = await store.child(`${id}/${name}`).putString(imageDataURL, 'data_url');
+  //console.log('firebase addQRCodeImageURL, uploadTask: ', uploadTask);
+  const url = await uploadTask.ref.getDownloadURL();
+  console.log('firebase addQRCodeDataURL, url: ', url);
+  return url;
 }
 
 const addImageFile = async (id, name, imageFile) => {
@@ -124,7 +124,7 @@ const cleanObjectProps = (obj) => {
 
 export const genProductID = () => productsRef.doc().id;
 export const setProductProfile = async (product, calback) => {
-	if (!product || !product.id || (!product.existingQRCode && !product.qrcode)) {
+  if (!product || !product.id || (!product.existingQRCode && !product.qrcode)) {
     console.error('firebase setProduct MUST HAVE PRODUCT ID, product: ', product);
     return;
   } 
@@ -176,9 +176,9 @@ export const setProductProfile = async (product, calback) => {
   if (!doc || doc.id !== id) return;
   await doc.set(product);
 
-	//console.log('firebase setProduct complete, id: ', id);
-	if (!!calback) calback(id)
-	return id;
+  //console.log('firebase setProduct complete, id: ', id);
+  if (!!calback) calback(id)
+  return id;
 }
 
 export const deleteProductProfile = async (id) => {
@@ -189,17 +189,17 @@ export const deleteProductProfile = async (id) => {
   await store.child(`${id}/productImage`).delete().then(() => {
     console.log('firebase file deleted - productImage, for ID: ', id);
   }).catch(error => {
-    console.log('firebase file does not exist - productImage, for ID: ', id);
+    console.log('firebase file does not exist - productImage, for ID: ', id, error);
   });
   await store.child(`${id}/companyLogo`).delete().then(() => {
     console.log('firebase file deleted - companyLogo, for ID: ', id);
   }).catch(error => {
-    console.log('firebase file does not exist - companyLogo, for ID: ', id);
+    console.log('firebase file does not exist - companyLogo, for ID: ', id, error);
   });
   await store.child(`${id}/qrcode.png`).delete().then(() => {
     console.log('firebase file deleted - qrcode.png, for ID: ', id);
   }).catch(error => {
-    console.log('firebase file does not exist - qrcode.png, for ID: ', id);
+    console.log('firebase file does not exist - qrcode.png, for ID: ', id, error);
   });
   await productRef(id).delete().then(function() {
       console.log('firebase doc deleted, for ID: ', id);
