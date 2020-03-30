@@ -701,7 +701,7 @@ class ProductProfileForm extends PureComponent {
 
         {!previewProduct && (
           <Button
-            onClickHandler={(e) => this.setState({ ...this.state, previewProduct: true })}
+            onClickHandler={() => this.setState({ ...this.state, previewProduct: true })}
             size="lg"
             type="button"
             className="uppercase mt-4"

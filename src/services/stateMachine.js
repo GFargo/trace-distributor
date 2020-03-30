@@ -118,7 +118,7 @@ export const reducer = (state = loadState(), action = {}) => {
   }
 }
 
-export const appEffects = (state, dispatch) => { 
+export const appEffects = () => { 
   console.info('mounted')
   return () => {
     console.info('unmounted')
@@ -157,7 +157,7 @@ export const userEffects = (state, dispatch) => {
     console.info('^^^ trigger effect exportProductProfile')
     const { productProfileExport } = state
     dispatch({ type: 'exportingProductProfile' })
-    setProductProfile(productProfileExport, (id) => dispatch({ type: 'exportedProductProfile'}));
+    setProductProfile(productProfileExport, () => dispatch({ type: 'exportedProductProfile'}));
   } 
   if (!state.creds) persistState(state)//never persist user creds
 }
