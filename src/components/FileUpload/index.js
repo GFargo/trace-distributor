@@ -3,13 +3,12 @@ import PropTypes from 'prop-types'
 import Button from '../../core/src/components/Elements/Button'
 
 const FileUpload = ({ 
-  id, 
-  title, 
+  id,
   placeholder,
   buttonText,
-  typesAccepted, 
+  typesAccepted,
   onUploadFile,
-  uploadImmediately 
+  uploadImmediately
 }) => {
   const [file, setFile] = useState(undefined)
 
@@ -92,6 +91,7 @@ FileUpload.defaultProps = {
 
 FileUpload.propTypes = {
   id: PropTypes.string.isRequired,
+  placeholder: PropTypes.string,
   buttonText: PropTypes.string,
   typesAccepted: PropTypes.string,
   uploadImmediately: PropTypes.bool,

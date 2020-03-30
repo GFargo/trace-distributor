@@ -5,7 +5,13 @@ import { Link } from 'react-router-dom';
 import { Layout as CoreLayout, SidebarLink } from '../core/src/layouts';
 import { TracePattern, Button } from '../core/src/components/Elements'
 
-const UserLayout = ({ hasBackground, onLogout, username, showCreateButton, children }) => {
+const UserLayout = ({ 
+  hasBackground, 
+  onLogout, 
+  username, 
+  showCreateButton, 
+  children 
+}) => {
   const footerNav = () => (
     <div>
       Need Help?
@@ -88,11 +94,17 @@ const UserLayout = ({ hasBackground, onLogout, username, showCreateButton, child
   );
 }
 
+UserLayout.defaultProps = {
+  showCreateButton: false,
+  hasBackground: false,
+}
+
 UserLayout.propTypes = {
-  username: PropTypes.string,
+  username: PropTypes.string.isRequired,
   onLogout: PropTypes.func.isRequired,
-  children: PropTypes.object,
   showCreateButton: PropTypes.bool,
+  hasBackground: PropTypes.bool,
+  children: PropTypes.object.isRequired,
 }
 
 export default UserLayout

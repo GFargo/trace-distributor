@@ -40,7 +40,8 @@ const DistributorLoginForm = ({onLoginSubmit, loginPending, loginError}) => {
 
 DistributorLoginForm.propTypes = {
   onLoginSubmit: PropTypes.func.isRequired,
-  loginError: PropTypes.string
+  loginPending: PropTypes.bool.isRequired,
+  loginError: PropTypes.string.isRequired,
 }
 
 export default DistributorLoginForm
