@@ -25,7 +25,7 @@ firebase.initializeApp(firebaseConfig);
 
 const store = firebase.storage().ref();
 const db = firebase.firestore();
-const productsRef = db.collection(REACT_APP_FIRESTORE_DB_NAME);
+const productsRef = db.collection(REACT_APP_FIRESTORE_DB_NAME || 'product-profiles');
 
 const userProductsRef = (email) => productsRef.where("owner", "==", email);
 const lotProductsRef = (address) => productsRef.where("productLot", "==", address);
