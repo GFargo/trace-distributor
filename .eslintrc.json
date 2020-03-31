@@ -29,6 +29,7 @@
     "rules": {
       "no-console": 0,
       "react/display-name": 0,
-      "react/jsx-pascal-case": 0
+      "react/jsx-pascal-case": 0,
+	  "no-extra-boolean-cast": 0
     }
 }

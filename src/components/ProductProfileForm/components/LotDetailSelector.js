@@ -40,7 +40,7 @@ const LotDetailSelector = ({ lot, labelOverrides, onOverrideLabel, selection, on
           value={overrideValue}
           error={""}
           className="w-100 hover:border-gray-500"
-          updateValueAndError={(_, value, err) => setOverrideValue(value)}
+          updateValueAndError={(_, value) => setOverrideValue(value)}
         />
       </ConfirmationModal>
 
@@ -79,6 +79,12 @@ const LotDetailSelector = ({ lot, labelOverrides, onOverrideLabel, selection, on
     </div>
   );
 
+  CheckboxListItem.propTypes = {
+    name: PropTypes.string.isRequired,
+    label: PropTypes.string.isRequired,
+    value: PropTypes.string.isRequired,
+  }
+
   const SectionTitle = ({ title }) => (
     <div className={"row row-sm w-100 my-2"} >
       <h4 className="text-md font-bold text-gold-500">
@@ -86,6 +92,10 @@ const LotDetailSelector = ({ lot, labelOverrides, onOverrideLabel, selection, on
       </h4>
     </div>
   );
+
+  SectionTitle.propTypes = {
+    title: PropTypes.string.isRequired,
+  }
 
   const getLotStateField = (lot, state, field) => {
     const details = !!lot.details && lot.details.find(one => one.state === state);
@@ -193,8 +203,28 @@ const LotDetailSelector = ({ lot, labelOverrides, onOverrideLabel, selection, on
   )
 }
 
+LotDetailSelector.defaultProps = {
+  lot: {
+    address: '',
+    name: '',
+    parentLot: null,
+    organization: {
+      name: '',
+    },
+    details: [],
+  },
+}
+
 LotDetailSelector.propTypes = {
-  lot: PropTypes.shape({}).isRequired, 
+  lot: PropTypes.shape({
+    address: PropTypes.string,
+    name: PropTypes.string,
+    parentLot: PropTypes.shape({}),
+    organization: PropTypes.shape({
+      name: PropTypes.string,
+    }),
+    details: PropTypes.arrayOf(PropTypes.shape({})),
+  }).isRequired, 
   labelOverrides: PropTypes.shape({}).isRequired,
   onOverrideLabel: PropTypes.func.isRequired,
   selection: PropTypes.shape({}).isRequired, 

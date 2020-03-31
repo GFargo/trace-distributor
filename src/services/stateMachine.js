@@ -1,4 +1,4 @@
-import { receiveUserLots, loginUser } from './traceAPI';
+import { /*receiveUserLots,*/ loginUser } from './traceAPI';
 import { setProductProfile } from './traceFirebase';
 
 const APP_CACHE = 'trace-app'
@@ -118,7 +118,7 @@ export const reducer = (state = loadState(), action = {}) => {
   }
 }
 
-export const appEffects = (state, dispatch) => { 
+export const appEffects = () => { 
   console.info('mounted')
   return () => {
     console.info('unmounted')
@@ -145,19 +145,19 @@ export const userEffects = (state, dispatch) => {
     } else {
       dispatch({ type: 'requireAuth' })
     }
-  } else if (false && !state.timestamp && !!state.authToken) {//auth'd user refreshed browser
+  /*} else if (!state.timestamp && !!state.authToken) {//auth'd user refreshed browser
     console.info('^^^ trigger effect lots refresh')
     dispatch({ type: 'receivingLots' })
     receiveUserLots(
       state.authToken, 
       (lots) => (!lots) ? dispatch({ type: 'requireAuth', authError: '' }) : 
         dispatch({ type: 'receivedLots', lots })
-    )
+    )*/
   } else if (state.type === 'exportProductProfile' && !!state.productProfileExport) {//create selection
     console.info('^^^ trigger effect exportProductProfile')
     const { productProfileExport } = state
     dispatch({ type: 'exportingProductProfile' })
-    setProductProfile(productProfileExport, (id) => dispatch({ type: 'exportedProductProfile'}));
+    setProductProfile(productProfileExport, () => dispatch({ type: 'exportedProductProfile'}));
   } 
   if (!state.creds) persistState(state)//never persist user creds
 }

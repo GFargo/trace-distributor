@@ -518,7 +518,7 @@ class ProductProfileForm extends PureComponent {
           </h3>
           <hr />
           <p className="text-sm text-left mt-4">
-            There must be a lot that has passed the "Product Ready" state in the iOS app.
+            There must be a lot that has passed the &quot;Product Ready&quot; state in the iOS app.
             Product information regarding this product will be pulled from this lot.
           </p>
         </div>
@@ -701,7 +701,7 @@ class ProductProfileForm extends PureComponent {
 
         {!previewProduct && (
           <Button
-            onClickHandler={(e) => this.setState({ ...this.state, previewProduct: true })}
+            onClickHandler={() => this.setState({ ...this.state, previewProduct: true })}
             size="lg"
             type="button"
             className="uppercase mt-4"

@@ -6,7 +6,7 @@ import SortableTable from '../core/src/components/SortableTable'
 import { localizeDateFromString } from '../core/src/utils/date-time/utils'
 
 
-const LotsIndex = ({ lots, selection, onToggleSelection }) => {
+const LotsIndex = ({ lots }) => {
 
   const targetInfoLink = (lot) => (
     <Button color="black" variant="outline" to={"/" + (!lot.parentLot ? "cultivating" : "processing") + "/" + lot.address}>
@@ -86,8 +86,6 @@ const LotsIndex = ({ lots, selection, onToggleSelection }) => {
 
 LotsIndex.propTypes = {
   lots: PropTypes.array.isRequired,
-  selection: PropTypes.object.isRequired,
-  onToggleSelection: PropTypes.func.isRequired
 }
 
 export default LotsIndex
