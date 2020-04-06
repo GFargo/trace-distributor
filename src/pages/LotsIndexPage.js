@@ -66,7 +66,7 @@ const LotsIndex = ({ lots }) => {
           {lot.address.substr(0, 20) + " …"}
         </Link>
       ),
-      sortable: (lot) => lot.address
+      sortable: (lot) => lot.address === 'unverified' ? lot.id : lot.address
     },
   ])
 
