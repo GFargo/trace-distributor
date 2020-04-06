@@ -26,6 +26,24 @@ firebase.initializeApp(firebaseConfig);
 const store = firebase.storage().ref();
 const db = firebase.firestore();
 const productsRef = db.collection(REACT_APP_FIRESTORE_DB_NAME || 'product-profiles');
+const lotsRef = db.collection('lots');
+const lotRef = (id) => lotsRef.doc(id);
+
+const userLotsRef = (email) => !!email && lotsRef.where("owner", "==", email);
+export const useLots = (email) => {
+  const [value, loading, error] = useCollection(userLotsRef(email)); 
+  const lots = (!value || !value.docs) ? null : (!value.docs.length) ? [] : value.docs.map(doc => ({
+    ...doc.data(),
+    id: doc.id,
+  }));
+  console.log('useLots, lots: ', lots);
+
+  return [
+    lots,
+    loading,
+    error,
+  ]
+}
 
 const userProductsRef = (email) => productsRef.where("owner", "==", email);
 const lotProductsRef = (address) => productsRef.where("productLot", "==", address);
@@ -120,6 +138,27 @@ const cleanObjectProps = (obj) => {
       delete obj[key]
     }
   })
+}
+
+
+export const genLotID = () => lotsRef.doc().id;
+export const setLot = async (lot, calback) => {
+  if (!lot || !lot.id) {
+    console.error('firebase setLot MUST HAVE LOT ID, lot: ', lot);
+    return;
+  } 
+  const id = lot.id;
+
+  const doc = await lotRef(id);
+  if (!doc || doc.id !== id) return;
+
+  cleanObjectProps(lot);
+  console.log('firebase setLot, lot: ', lot);
+  await doc.set(lot);
+
+  //console.log('firebase setProduct complete, id: ', id);
+  if (!!calback) calback(id)
+  return id;
 }
 
 export const genProductID = () => productsRef.doc().id;
