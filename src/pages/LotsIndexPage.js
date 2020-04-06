@@ -57,10 +57,15 @@ const LotsIndex = ({ lots }) => {
     {
       name: 'address',
       displayName: 'Blockchain Address',
-      displayValue: (lot) => (
+      displayValue: (lot) => lot.address === 'unverified' ? (
+        <Link to={'/distributor/lot-form/'+lot.id}>
+          {lot.id.substr(0, 20) + " …"}
+        </Link>
+      ) : (
         <Link to={"/" + (!lot.parentLot ? "cultivating" : "processing") + "/" + lot.address}>
           {lot.address.substr(0, 20) + " …"}
-        </Link>),
+        </Link>
+      ),
       sortable: (lot) => lot.address
     },
   ])
