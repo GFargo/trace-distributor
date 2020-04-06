@@ -1,5 +1,5 @@
 import { /*receiveUserLots,*/ loginUser } from './traceAPI';
-import { setProductProfile } from './traceFirebase';
+import { setProductProfile, setLot } from './traceFirebase';
 
 const APP_CACHE = 'trace-app'
 
@@ -97,6 +97,22 @@ export const reducer = (state = loadState(), action = {}) => {
         }),
         timestamp: Date.now()
       }
+    case 'exportLot':
+      return { ...state, type: action.type,
+        lotExport: { 
+          ...action.lot,
+          owner: state.email, 
+          created: Date.now(), 
+        }
+      }
+    case 'exportingLot':
+      return { ...state, type: action.type,
+        lotExport: null
+      }
+    case 'exportedLot':
+      return { ...state, type: action.type,
+        lotExport: undefined
+      }
     case 'exportProductProfile':
       return { ...state, type: action.type,
         productProfileExport: { 
@@ -145,6 +161,7 @@ export const userEffects = (state, dispatch) => {
     } else {
       dispatch({ type: 'requireAuth' })
     }
+
   /*} else if (!state.timestamp && !!state.authToken) {//auth'd user refreshed browser
     console.info('^^^ trigger effect lots refresh')
     dispatch({ type: 'receivingLots' })
@@ -153,6 +170,13 @@ export const userEffects = (state, dispatch) => {
       (lots) => (!lots) ? dispatch({ type: 'requireAuth', authError: '' }) : 
         dispatch({ type: 'receivedLots', lots })
     )*/
+
+  } else if (state.type === 'exportLot' && !!state.lotExport) {//create selection
+    console.info('^^^ trigger effect exportLot')
+    const { lotExport } = state
+    dispatch({ type: 'exportingLot' })
+    setLot(lotExport, () => dispatch({ type: 'exportedLot'}));
+
   } else if (state.type === 'exportProductProfile' && !!state.productProfileExport) {//create selection
     console.info('^^^ trigger effect exportProductProfile')
     const { productProfileExport } = state
