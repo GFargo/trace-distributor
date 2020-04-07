@@ -25,7 +25,7 @@ const App = () => {
   useEffect(() => userEffects(state, dispatch), [state]);
 
   const [fbLots, loading, error] = useLots(state.email);
-  const lots = (!!fbLots?.length) ? [ ...state.allLots, ...fbLots ] : state.allLots;
+  const lots = (!!fbLots?.length && !loading && !error) ? [ ...state.allLots, ...fbLots ] : state.allLots;
 
   /* State Action Dispatch */
   const dispatchLogin = (email, password) => dispatch({
