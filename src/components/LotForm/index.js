@@ -16,7 +16,7 @@ const inflateLot = (data) => {
   Object.keys(data).filter((each) => !!each && !!data[each]).forEach((key) => {
     const keyParts = key.split('-')
     const [lotField, cat, entry] = keyParts 
-    const value = data[key]?.value ? data[key].value : ''
+    const value = data[key] ? data[key] : ''
     if (!value || !lotField || !cat || !entry) return
     if (lotField === 'parentLot' && !lot.parentLot) lot.parentLot = {};
     const lotRef = (lotField === 'lot') ? lot : lot.parentLot
