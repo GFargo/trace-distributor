@@ -1,4 +1,4 @@
-import { /*receiveUserLots,*/ loginUser } from './traceAPI';
+import { receiveUserLots, loginUser } from './traceAPI';
 import { setProductProfile, setLot } from './traceFirebase';
 
 const APP_CACHE = 'trace-app'
@@ -162,14 +162,14 @@ export const userEffects = (state, dispatch) => {
       dispatch({ type: 'requireAuth' })
     }
 
-  /*} else if (!state.timestamp && !!state.authToken) {//auth'd user refreshed browser
+  } else if (!state.timestamp && !!state.authToken) {//auth'd user refreshed browser
     console.info('^^^ trigger effect lots refresh')
     dispatch({ type: 'receivingLots' })
     receiveUserLots(
       state.authToken, 
       (lots) => (!lots) ? dispatch({ type: 'requireAuth', authError: '' }) : 
         dispatch({ type: 'receivedLots', lots })
-    )*/
+    )
 
   } else if (state.type === 'exportLot' && !!state.lotExport) {//create selection
     console.info('^^^ trigger effect exportLot')
