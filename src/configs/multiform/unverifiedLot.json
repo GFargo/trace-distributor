@@ -1,6 +1,6 @@
 {
   "title": "LotForm @core/components/MultiForm",
-  "sidebar": "false",
+  "sidebar": false,
   "steps": [
     {
       "title": {
