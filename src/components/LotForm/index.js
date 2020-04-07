@@ -21,35 +21,25 @@ class LotForm extends PureComponent {
       formData: {},
     };
 
-    //console.log('CONST populateLot: ', populateLot)
-    //console.log('CONST STATE ', this.state)
+    //console.log('CONSTR populateLot: ', populateLot)
+    //console.log('CONSTR STATE ', this.state)
   }
 
   render() {
-    const { 
-      lots, 
-      handleSubmit,
-      invertColor,
-      errorMessage
-    } = this.props;
-
-    const {
-      id,
-      formData
-    } = this.state;
-
+    const { handleSubmit } = this.props;
+    const { id, formData } = this.state;
     const isDisabled = (!formData || !formData['lot-lot-name'])
-    //console.log('STATE ', this.state)
-    //console.log('RENDER formData ', formData)
-    //console.log('$$$$$$$$$$$LOT ', inflateLot(formData))
+    //console.log('RENDER STATE ', this.state)
+    //console.log('RENDER LOT ', inflateLot(formData))
 
     return (
       <div>
         <MultiForm
           enableDebug
+          disabled
           onCloseRedirect="/distributor/lots"
           onUpdate={ data => this.setState({ ...this.state, formData: data })}
-          onSubmit={ data => !!formData['lot-lot-name'] && handleSubmit({ id, ...inflateLot(data) }) }
+          onSubmit={ data => { !isDisabled && handleSubmit({ id, ...inflateLot(data) }) }}
           saveOnStepChange={true}
           formData={formData}
           sidebar={false}
