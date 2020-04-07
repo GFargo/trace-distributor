@@ -61,6 +61,7 @@ const UserLayout = ({
               <ul className="flex flex items-center font-body">
                 <Button 
                   type="link"
+                  LinkComponent={Link}
                   color="green"
                   className=""
                   to="/distributor/lot-form/"
