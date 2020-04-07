@@ -2,6 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import LotForm from '../components/LotForm';
 
+/* TODO clarify language to use beloe */
+
 const CreateLotPage = ({ 
   populateFromID, 
   lots, 
