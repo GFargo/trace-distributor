@@ -30,6 +30,11 @@ const inflateLot = (data) => {
 
     } else {
       const state = cat;
+      if (state === 'harvest') {
+        lotRef.state = 'harvest';
+        if (!lotRef.stateDetails) lotRef.stateDetails = { state, data: {} }
+        lotRef.stateDetails.data[entry] = value
+      }
       if (!lotRef.details) lotRef.details = {}
       if (!lotRef.details[state]) lotRef.details[state] = { state, data: {} }
       lotRef.details[state].data[entry] = value
@@ -72,37 +77,27 @@ const deflateLot = (lot) => {
     })
   }
   */
-
-  const formData = combineFormDataStructures(parts, unverifiedLot);
-  console.log('MOUNT formData ', formData)
-  return formData;
+  return parts;
 }
 
 class LotForm extends PureComponent {
-  state = {
-    id: '',
-    formData: {},
-    errors: {
-      name: '',
-      parentLot: '',
-    }
-  }
 
-  componentDidMount() {
-    const { populateFromID, lots } = this.props;
-    console.log('MOUNT STATE ', this.state)
-
+  constructor(props) {
+    super(props);
+    //console.log('CONST PROPS ', props)
+    const { populateFromID, lots } = props;
     const populateLot = (!!populateFromID) ? lots.find(lot => populateFromID === lot.id) : null;
 
-    if (!!populateLot) {
-      this.setState( state => ({ ...state, id: populateLot.id, formData: deflateLot(populateLot) }))
-      //console.log('populateLot: ', populateLot)
+    this.state = (!!populateLot) ? {
+      id: populateLot.id,
+      formData: deflateLot(populateLot),
+    } : {
+      id: genLotID(),
+      formData: {},
+    };
 
-    } else {
-      const id = genLotID();
-      this.setState({ ...this.state, id })
-      //console.log('New Lot ID: ', newID)
-    }
+    //console.log('CONST populateLot: ', populateLot)
+    //console.log('CONST STATE ', this.state)
   }
 
   render() {
@@ -115,13 +110,13 @@ class LotForm extends PureComponent {
 
     const {
       id,
-      formData,
-      errors
+      formData
     } = this.state;
 
-    const isDisabled = (!formData || !formData['lot-lot-name'] || !Object.values(errors).every((one) => !one))
-    console.log('STATE ', this.state)
-    console.log('LOT ', inflateLot(formData))
+    const isDisabled = (!formData || !formData['lot-lot-name'])
+    //console.log('STATE ', this.state)
+    //console.log('RENDER formData ', formData)
+    //console.log('$$$$$$$$$$$LOT ', inflateLot(formData))
 
     return (
       <div>
