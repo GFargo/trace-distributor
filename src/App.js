@@ -36,12 +36,7 @@ const App = () => {
   const dispatchLogout = () => dispatch({
     type: 'releaseAuth'
   });
-
-  const dispatchToggleProductProfile = ({ address, cat, entry, value }) => dispatch({
-    type: 'toggleProductProfile',
-    address, cat, entry, value
-  });
-
+  
   const dispatchExportProductProfile = (product) => dispatch({
     type: 'exportProductProfile',
     product
