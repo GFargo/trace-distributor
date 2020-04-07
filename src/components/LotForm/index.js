@@ -129,9 +129,10 @@ class LotForm extends PureComponent {
           enableDebug
           onCloseRedirect="/distributor/lots"
           onUpdate={ data => this.setState({ ...this.state, formData: data })}
-          onSubmit={ data => !!formData['lot-lot-name'] && handleSubmit({ id, state: 'harvest', ...inflateLot(data) }) }
+          onSubmit={ data => !!formData['lot-lot-name'] && handleSubmit({ id, ...inflateLot(data) }) }
           saveOnStepChange={true}
           formData={formData}
+          sidebar={false}
           {...unverifiedLot}
         />
       </div>
