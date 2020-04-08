@@ -5,10 +5,13 @@ export const inflateLot = (data) => {
   Object.keys(data).filter((each) => !!each && !!data[each]).forEach((key) => {
     const keyParts = key.split('-')
     const [lotField, cat, entry] = keyParts 
-    const value = data[key] ? data[key] : ''
+    const value = !!data[key]?.value ? data[key].value : ''
     if (!value || !lotField || !cat || !entry) return
     if (lotField === 'parentLot' && !lot.parentLot) lot.parentLot = {};
     const lotRef = (lotField === 'lot') ? lot : lot.parentLot
+
+    lotRef.state = 'harvest';
+    lotRef.address = 'unverified';
 
     if (cat === 'lot') {
       lotRef[entry] = value
@@ -19,8 +22,7 @@ export const inflateLot = (data) => {
 
     } else {
       const state = cat;
-      if (state === 'harvest') {
-        lotRef.state = 'harvest';
+      if (state === lotRef.state) {
         if (!lotRef.stateDetails) lotRef.stateDetails = { state, data: {} }
         lotRef.stateDetails.data[entry] = value
       }
