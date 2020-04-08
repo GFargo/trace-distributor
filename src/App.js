@@ -2,6 +2,7 @@ import React, { useReducer, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
 import { reducer, loadState, userEffects } from './services/stateMachine';
+import { useLots } from './services/traceFirebase';
 import UserLayout from './layouts/UserLayout';
 import Pending from './core/src/components/Elements/Loader';
 import { Layout as CoreLayout } from './core/src/layouts';
@@ -11,6 +12,7 @@ import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import LotDetailPage from './pages/LotDetailPage';
 import LotsIndexPage from './pages/LotsIndexPage';
+import CreateLotPage from './pages/CreateLotPage';
 import ProductProfilesPage from './pages/ProductProfilesPage';
 import CreateProductProfilePage from './pages/CreateProductProfilePage';
 import SettingsPage from './pages/SettingsPage';
@@ -22,6 +24,9 @@ const App = () => {
   const [state, dispatch] = useReducer(reducer, loadState());
   useEffect(() => userEffects(state, dispatch), [state]);
 
+  const [fbLots, loading, error] = useLots(state.email);
+  const lots = (!!fbLots?.length && !loading && !error) ? [ ...state.allLots, ...fbLots ] : state.allLots;
+
   /* State Action Dispatch */
   const dispatchLogin = (email, password) => dispatch({
     type: 'loginUser',
@@ -31,15 +36,15 @@ const App = () => {
   const dispatchLogout = () => dispatch({
     type: 'releaseAuth'
   });
-
-  const dispatchToggleProductProfile = ({ address, cat, entry, value }) => dispatch({
-    type: 'toggleProductProfile',
-    address, cat, entry, value
-  });
-
+  
   const dispatchExportProductProfile = (product) => dispatch({
     type: 'exportProductProfile',
     product
+  });
+
+  const dispatchExportLot = (lot) => dispatch({
+    type: 'exportLot',
+    lot
   });
 
   /* Page Renderers */
@@ -91,17 +96,13 @@ const App = () => {
     </TracePattern>
   );
 
-  const renderLotIndexPage = () => (!state.allLots) ? (
+  const renderLotIndexPage = () => (!lots) ? (
     <Pending />
   ) : (
-      <UserLayout username={state.username} onLogout={dispatchLogout}>
-        <LotsIndexPage
-          lots={state.allLots}
-          selection={state.selection}
-          onToggleSelection={dispatchToggleProductProfile}
-        />
-      </UserLayout>
-    );
+    <UserLayout username={state.username} onLogout={dispatchLogout} showCreateLotButton>
+      <LotsIndexPage lots={lots} />
+    </UserLayout>
+  );
 
   const renderLotDetailsPage = (props) => (!!props?.match?.params?.address && !!state.lotDir[props.match.params.address]) ? (
     <UserLayout username={state.username} onLogout={dispatchLogout}>
@@ -112,7 +113,7 @@ const App = () => {
     );
 
   const renderProductProfilesPage = () => (
-    <UserLayout username={state.username} onLogout={dispatchLogout} showCreateButton>
+    <UserLayout username={state.username} onLogout={dispatchLogout} showCreateProductButton>
       <ProductProfilesPage email={state.email} />
     </UserLayout>
   );
@@ -128,6 +129,22 @@ const App = () => {
         handleSubmitProfile={(product) => {
           props.history.push("/distributor/product-profiles");
           dispatchExportProductProfile(product);
+        }}
+      />
+    </UserLayout>
+  );
+
+  const renderCreateLotPage = (props) => (
+    <UserLayout username={state.username} onLogout={dispatchLogout}>
+      <CreateLotPage
+        populateFromID={(!!props?.match?.params?.id) ? props.match.params.id : ''}
+        lots={lots.map(lot => ({
+          ...lot,
+          parentLot: (!lot.parentLot) ? null : state.lotDir[lot.parentLot.address],
+        }))}
+        handleSubmitLot={lot => {
+          props.history.push("/distributor/lots");
+          dispatchExportLot(lot);
         }}
       />
     </UserLayout>
@@ -156,10 +173,12 @@ const App = () => {
   const UserRouter = () => (
     <Router>
       <Switch>
-        <Route exact path="/" render={() => <Redirect to="/distributor/products" />} />
-        <Route exact path="/distributor/products" render={renderLotIndexPage} />
+        <Route exact path="/" render={() => <Redirect to="/distributor/lots" />} />
+        <Route exact path="/distributor/lots" render={renderLotIndexPage} />
         <Route path="/cultivating/:address" render={renderLotDetailsPage} />
         <Route path="/processing/:address" render={renderLotDetailsPage} />
+        <Route exact path="/distributor/lot-form" render={renderCreateLotPage} />
+        <Route exact path="/distributor/lot-form/:id" render={renderCreateLotPage} />
         <Route exact path="/distributor/product-profiles" render={renderProductProfilesPage} />
         <Route exact path="/distributor/product-profile-form" render={renderCreateProductProfilePage} />
         <Route exact path="/distributor/product-profile-form/:id" render={renderCreateProductProfilePage} />
@@ -168,7 +187,7 @@ const App = () => {
            window.location.href = 'https://tracevt.com/contact/'; 
            return null;
         }}/>
-        <Route render={() => <Redirect to="/distributor/products" />} />
+        <Route render={() => <Redirect to="/distributor/lots" />} />
       </Switch>
     </Router>
   );

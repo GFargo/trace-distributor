@@ -9,7 +9,8 @@ const UserLayout = ({
   hasBackground, 
   onLogout, 
   username, 
-  showCreateButton, 
+  showCreateLotButton,
+  showCreateProductButton,
   children 
 }) => {
   const footerNav = () => (
@@ -55,7 +56,23 @@ const UserLayout = ({
             </div>
           )}
 
-          {!!username && showCreateButton && (
+          {!!username && showCreateLotButton && (
+            <div className="ml-32">
+              <ul className="flex flex items-center font-body">
+                <Button 
+                  type="link"
+                  LinkComponent={Link}
+                  color="green"
+                  className=""
+                  to="/distributor/lot-form/"
+                >
+                  Create New Lot
+                </Button>
+              </ul>
+            </div>
+          )}
+
+          {!!username && showCreateProductButton && (
             <div className="ml-32">
               <ul className="flex flex items-center font-body">
                 <Button 
@@ -73,7 +90,7 @@ const UserLayout = ({
       )}
       sidebarContent={(
         <ul className="sidenav-nav text-white font-body font-light list-none">
-          <SidebarLink to="/distributor/products" icon="processing" title="Products" />
+          <SidebarLink to="/distributor/lots" icon="processing" title="Lots" />
           <SidebarLink to="/distributor/product-profiles/" icon="organizations" title="Product Profiles" />
           <SidebarLink to="/distributor/settings/" icon="settings" title="Settings" />
           <li>
@@ -95,14 +112,16 @@ const UserLayout = ({
 }
 
 UserLayout.defaultProps = {
-  showCreateButton: false,
+  showCreateLotButton: false,
+  showCreateProductButton: false,
   hasBackground: false,
 }
 
 UserLayout.propTypes = {
   username: PropTypes.string.isRequired,
   onLogout: PropTypes.func.isRequired,
-  showCreateButton: PropTypes.bool,
+  showCreateLotButton: PropTypes.bool,
+  showCreateProductButton: PropTypes.bool,
   hasBackground: PropTypes.bool,
   children: PropTypes.object.isRequired,
 }

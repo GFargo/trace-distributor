@@ -1,0 +1,233 @@
+{
+  "title": "LotForm @core/components/MultiForm",
+  "sidebar": false,
+  "steps": [
+    {
+      "title": {
+        "value": "Lot Information",
+        "type": "step_header"
+      },
+      "parts": [
+        {
+          "type": "text_input",
+          "name": "lot-lot-name",
+          "label": "Lot Name",
+          "required": true
+        },
+        {
+          "type": "text_input",
+          "name": "lot-org-name",
+          "label": "Organization Name"
+        },
+        {
+          "type": "numeric_input",
+          "name": "lot-lot-totalSupply",
+          "label": "Total Supply"
+        },
+        {
+          "type": "radiobutton_input",
+          "name": "lot-lot-forSale",
+          "label": "For Sale",
+          "options": ["Yes", "No"]
+        }
+      ]
+    },
+    {
+      "title": {
+        "value": "Intitial State",
+        "type": "step_header"
+      },
+      "parts": [
+        {
+          "type": "text_input",
+          "name": "lot-initial-strain",
+          "label": "Strain"
+        },
+        {
+          "type": "select_dropdown_input",
+          "name": "lot-initial-strainType",
+          "label": "Strain Type",
+          "options": [
+            {
+              "label": "sativa",
+              "value": "sativa"
+            },
+            {
+              "label": "indica",
+              "value": "indica"
+            },
+            {
+              "label": "hybrid",
+              "value": "hybrid"
+            },
+            {
+              "label": "hemp",
+              "value": "hemp"
+            }
+          ]
+        },
+        {
+          "type": "text_input",
+          "name": "lot-initial-datePlanted",
+          "label": "Date Planted"
+        },
+        {
+          "type": "text_input",
+          "name": "lot-initial-location",
+          "label": "Grow Location"
+        },
+        {
+          "type": "radiobutton_input",
+          "name": "lot-initial-cloned",
+          "label": "Cloned",
+          "options": ["Yes", "No"]
+        },
+        {
+          "type": "select_dropdown_input",
+          "name": "lot-initial-growType",
+          "label": "Grow Type",
+          "options": [
+            {
+              "label": "indoor",
+              "value": "indoor"
+            },
+            {
+              "label": "outdoor",
+              "value": "outdoor"
+            },
+            {
+              "label": "greenhouse",
+              "value": "greenhouse"
+            }
+          ]
+        },
+        {
+          "type": "select_dropdown_input",
+          "name": "lot-initial-growMedium",
+          "label": "Grow Medium",
+          "options": [
+            {
+              "label": "soil",
+              "value": "soil"
+            },
+            {
+              "label": "hydroponic",
+              "value": "hydroponic"
+            }
+          ]
+        },
+        {
+          "type": "numeric_input",
+          "name": "lot-initial-seedOrCloneAmount",
+          "label": "Seed or Clone Amount"
+        }
+      ]
+    },
+    {
+      "title": {
+        "value": "Grow State",
+        "type": "step_header"
+      },
+      "parts": [
+        {
+          "type": "text_input",
+          "name": "lot-grow-minTemp",
+          "label": "Minimum Temperature"
+        },
+        {
+          "type": "text_input",
+          "name": "lot-grow-maxTemp",
+          "label": "Maximum Temperature"
+        },
+        {
+          "type": "text_input",
+          "name": "lot-grow-floweringDate",
+          "label": "Flowering Date"
+        },
+        {
+          "type": "textarea_input",
+          "name": "lot-grow-notes",
+          "label": "Farming Notes"
+        },
+        {
+          "type": "text_input",
+          "name": "lot-grow-minHumidity",
+          "label": "Minimum Humidity"
+        },
+        {
+          "type": "text_input",
+          "name": "lot-grow-maxHumidity",
+          "label": "Maximum Humidity"
+        },
+        {
+          "type": "textarea_input",
+          "name": "lot-grow-nutrientCycle",
+          "label": "Nutrient Cycle Notes"
+        }
+      ]
+    },
+    {
+      "title": {
+        "value": "Harvest State",
+        "type": "step_header"
+      },
+      "parts": [
+        {
+          "type": "text_input",
+          "name": "lot-harvest-lastMaturityDate",
+          "label": "Last Maturity Date"
+        },
+        {
+          "type": "text_input",
+          "name": "lot-harvest-minTemp",
+          "label": "Minimum Temperature"
+        },
+        {
+          "type": "text_input",
+          "name": "lot-harvest-maxTemp",
+          "label": "Maximum Temperature"
+        },
+        {
+          "type": "text_input",
+          "name": "lot-harvest-averageTemperature",
+          "label": "Average Temperature"
+        },
+        {
+          "type": "text_input",
+          "name": "lot-harvest-lastDateDrying",
+          "label": "Last Date Drying"
+        },
+        {
+          "type": "text_input",
+          "name": "lot-harvest-firstDateDrying",
+          "label": "First Date Drying"
+        },
+        {
+          "type": "text_input",
+          "name": "lot-harvest-minHumidity",
+          "label": "Minimum Humidity"
+        },
+        {
+          "type": "text_input",
+          "name": "lot-harvest-maxHumidity",
+          "label": "Maximum Humidity"
+        },
+        {
+          "type": "text_input",
+          "name": "lot-harvest-averageHumidity",
+          "label": "Average Humidity"
+        },
+        {
+          "type": "text_input",
+          "name": "lot-harvest-yield",
+          "label": "Yield"
+        },
+        {
+          "type": "text_input",
+          "name": "lot-harvest-dryingMethod",
+          "label": "Drying Method"
+        }
+      ]
+    }
+  ]
+}
