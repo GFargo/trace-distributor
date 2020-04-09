@@ -51,7 +51,7 @@ export const useLots = (email) => {
     ...doc.data(),
     id: doc.id,
   }));
-  console.log('useLots, lots: ', lots);
+  //console.log('useLots, lots: ', lots);
 
   return [
     lots,
