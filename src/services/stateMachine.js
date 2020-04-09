@@ -1,5 +1,7 @@
 import { receiveUserLots, loginUser } from './traceAPI';
 import { setProductProfile, setLot } from './traceFirebase';
+import { ipfsAddLotState } from './traceIPFS';
+
 
 const APP_CACHE = 'trace-app'
 
@@ -18,7 +20,6 @@ const initUserState = (username = '', email, authToken = null) => ({
   allLots: [],
   parentLots: [],
   subLots: [],
-  selection: {},
   timestamp: undefined
 })
 
@@ -105,13 +106,24 @@ export const reducer = (state = loadState(), action = {}) => {
           created: Date.now(), 
         }
       }
-    case 'exportingLot':
+    case 'hashingLot':
+      return { ...state, type: action.type }
+    case 'hashedLot':
       return { ...state, type: action.type,
-        lotExport: null
+        hashedLot: {
+          ...action.hashedLot
+        }
       }
+    case 'exportingLot':
+      return { ...state, type: action.type }
     case 'exportedLot':
+      return { ...state, type: action.type }
+    case 'ipfsUploadingLot':
+      return { ...state, type: action.type }
+    case 'ipfsUploadedLot':
       return { ...state, type: action.type,
-        lotExport: undefined
+        lotExport: undefined,
+        hashedLot: undefined
       }
     case 'exportProductProfile':
       return { ...state, type: action.type,
@@ -127,8 +139,7 @@ export const reducer = (state = loadState(), action = {}) => {
       }
     case 'exportedProductProfile':
       return { ...state, type: action.type,
-        productProfileExport: undefined,
-        selection: {}
+        productProfileExport: undefined
       }
     default: return state
   }
@@ -171,13 +182,25 @@ export const userEffects = (state, dispatch) => {
         dispatch({ type: 'receivedLots', lots })
     )
 
-  } else if (state.type === 'exportLot' && !!state.lotExport) {//create selection
-    console.info('^^^ trigger effect exportLot')
+  } else if (state.type === 'exportLot' && !!state.lotExport) {
+    console.info('^^^ trigger effect ipfs hash')
     const { lotExport } = state
-    dispatch({ type: 'exportingLot' })
-    setLot(lotExport, () => dispatch({ type: 'exportedLot'}));
+    dispatch({ type: 'hashingLot' })
+    ipfsAddLotState(lotExport, true, (hashedLot) => dispatch({ type: 'hashedLot', hashedLot }));
 
-  } else if (state.type === 'exportProductProfile' && !!state.productProfileExport) {//create selection
+  } else if (state.type === 'hashedLot' && !!state.hashedLot) {
+    console.info('^^^ trigger effect hashedLot')
+    const { hashedLot } = state
+    dispatch({ type: 'exportingLot' })
+    setLot(hashedLot, () => dispatch({ type: 'exportedLot'}));
+
+  } else if (state.type === 'exportedLot' && !!state.lotExport) {
+    console.info('^^^ trigger effect ipfs upload')
+    const { lotExport } = state
+    dispatch({ type: 'ipfsUploadingLot' })
+    ipfsAddLotState(lotExport, false, () => dispatch({ type: 'ipfsUploadedLot' }));
+
+  } else if (state.type === 'exportProductProfile' && !!state.productProfileExport) {
     console.info('^^^ trigger effect exportProductProfile')
     const { productProfileExport } = state
     dispatch({ type: 'exportingProductProfile' })
