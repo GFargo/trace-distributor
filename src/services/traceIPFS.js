@@ -1,10 +1,12 @@
 const ipfsClient = require('ipfs-http-client');
 const ipfs = new ipfsClient({ host: 'ipfs.infura.io', port: 5001, protocol: 'https' });
 
-const lotPath = (lot) => `trace-data/${lot.created}`
+const DEGUG = false;
+
+const lotPath = (lot) => `trace-data/${lot.id}`
 const lotContent = (lot) => ipfsClient.Buffer.from(JSON.stringify(lot))
 
-export const ipfsAddLotState = async (lot, onlyHash = false, callback) => {
+export const ipfsAddLotState = async (lot, onlyHash, callback) => {
   if (!lot) return null;
   let hashedLot = { ...lot };
   if (!!hashedLot.infoFileHash) hashedLot.prevInfoFileHash = hashedLot.infoFileHash;
@@ -13,20 +15,20 @@ export const ipfsAddLotState = async (lot, onlyHash = false, callback) => {
     path: lotPath(hashedLot),
     content: lotContent(hashedLot)
   }]
-  //console.log('ipfsAddLot, files ==> ', files);
+  DEGUG && console.log('ipfsAddLot, files ==> ', files);
   
   let infoFileHash;
   try {
     for await (const result of ipfs.add(files, {onlyHash})) {
-      //console.log('ipfsAddLot, result ==> ', result);
+      DEGUG && console.log('ipfsAddLot, result ==> ', result);
       if (!!result?.cid?.string && result.path === lotPath(hashedLot)) {
         infoFileHash = result.cid.string;
       }
     }
     if (!!infoFileHash) {
-      //console.log('ipfsAddLot, infoFileHash ==> ', infoFileHash);
+      DEGUG && console.log('ipfsAddLot, infoFileHash ==> ', infoFileHash);
       hashedLot = {...hashedLot, infoFileHash};
-      console.log('ipfsAddLot, hashedLot ==> ', hashedLot);
+      DEGUG && console.log('ipfsAddLot, hashedLot ==> ', hashedLot);
     } else {
       console.error('ipfsAddLot, Uh oh infoFileHash is null!');
     }

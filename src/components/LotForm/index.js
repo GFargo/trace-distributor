@@ -36,8 +36,6 @@ class LotForm extends PureComponent {
     return (
       <div>
         <MultiForm
-          enableDebug={false}
-          disabled
           onCloseRedirect="/distributor/lots"
           onUpdate={ data => this.setState({ ...this.state, formData: data })}
           onSubmit={ () => { !isDisabled && handleSubmit({ id, infoFileHash, ...inflateLot(formData) }) }}
