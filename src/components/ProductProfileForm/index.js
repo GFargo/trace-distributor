@@ -271,7 +271,7 @@ class ProductProfileForm extends PureComponent {
     const { productLot, additionalLots } = this.state;
     const lotsIncluded = [ productLot, ...additionalLots ]
 
-    return lots.filter(lot => lot.address === selected || (
+    return lots.filter(lot => lot.address !== selected && (
         !lotsIncluded.find(address => address === lot.address)
         && !(!!lot.parentLot && lotsIncluded.find(address => address === lot.parentLot.address))
         && !(!!lot.subLots?.length && lot.subLots.find(sublot => 
