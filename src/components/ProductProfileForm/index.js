@@ -535,7 +535,7 @@ class ProductProfileForm extends PureComponent {
               updateValueAndError={(name, value) => this.setState({ ...this.state, productLot: value, productLotParts: {} })}
               options={this.remainingLotsToSelect(productLot).map(lot => ({
                 label: lot.name,
-                value: lot.address,
+                value: (lot.address !== 'unverified') ? lot.address : lot.id,
               }))}
               padding={'.5em'}
             />
@@ -619,7 +619,7 @@ class ProductProfileForm extends PureComponent {
                   }}
                   options={this.remainingLotsToSelect(address).map(lot => ({
                     label: lot.name,
-                    value: lot.address,
+                    value: (lot.address !== 'unverified') ? lot.address : lot.id,
                   }))}
                   padding={'.5em'}
                 />
