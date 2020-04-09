@@ -7,10 +7,8 @@ const lotContent = (lot) => ipfsClient.Buffer.from(JSON.stringify(lot))
 export const ipfsAddLotState = async (lot, onlyHash = false, callback) => {
   if (!lot) return null;
   let hashedLot = { ...lot };
-  if (hashedLot.hasOwnProperty('infoFileHash')) {
-    if (!!hashedLot.infoFileHash) hashedLot.prevInfoFileHash = hashedLot.infoFileHash;
-    delete hashedLot.infoFileHash;
-  }
+  if (!!hashedLot.infoFileHash) hashedLot.prevInfoFileHash = hashedLot.infoFileHash;
+  delete hashedLot.infoFileHash;
   const files = [{
     path: lotPath(hashedLot),
     content: lotContent(hashedLot)
@@ -36,6 +34,5 @@ export const ipfsAddLotState = async (lot, onlyHash = false, callback) => {
     console.error('ipfsAddLot error:', e);
   } finally {
     if (!!callback) callback(hashedLot);
-    return hashedLot;
   }
 }
