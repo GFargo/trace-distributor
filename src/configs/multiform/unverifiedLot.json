@@ -67,9 +67,10 @@
           ]
         },
         {
-          "type": "text_input",
+          "type": "date_input",
           "name": "lot-initial-datePlanted",
-          "label": "Date Planted"
+          "label": "Date Planted",
+          "required": true
         },
         {
           "type": "text_input",
@@ -130,19 +131,20 @@
       },
       "parts": [
         {
-          "type": "text_input",
+          "type": "numeric_input",
           "name": "lot-grow-minTemp",
           "label": "Minimum Temperature"
         },
         {
-          "type": "text_input",
+          "type": "numeric_input",
           "name": "lot-grow-maxTemp",
           "label": "Maximum Temperature"
         },
         {
-          "type": "text_input",
+          "type": "date_input",
           "name": "lot-grow-floweringDate",
-          "label": "Flowering Date"
+          "label": "Flowering Date",
+          "required": true
         },
         {
           "type": "textarea_input",
@@ -150,12 +152,12 @@
           "label": "Farming Notes"
         },
         {
-          "type": "text_input",
+          "type": "numeric_input",
           "name": "lot-grow-minHumidity",
           "label": "Minimum Humidity"
         },
         {
-          "type": "text_input",
+          "type": "numeric_input",
           "name": "lot-grow-maxHumidity",
           "label": "Maximum Humidity"
         },
@@ -173,52 +175,52 @@
       },
       "parts": [
         {
-          "type": "text_input",
+          "type": "date_input",
           "name": "lot-harvest-lastMaturityDate",
           "label": "Last Maturity Date"
         },
         {
-          "type": "text_input",
+          "type": "numeric_input",
           "name": "lot-harvest-minTemp",
           "label": "Minimum Temperature"
         },
         {
-          "type": "text_input",
+          "type": "numeric_input",
           "name": "lot-harvest-maxTemp",
           "label": "Maximum Temperature"
         },
         {
-          "type": "text_input",
+          "type": "numeric_input",
           "name": "lot-harvest-averageTemperature",
           "label": "Average Temperature"
         },
         {
-          "type": "text_input",
+          "type": "date_input",
           "name": "lot-harvest-lastDateDrying",
           "label": "Last Date Drying"
         },
         {
-          "type": "text_input",
+          "type": "date_input",
           "name": "lot-harvest-firstDateDrying",
           "label": "First Date Drying"
         },
         {
-          "type": "text_input",
+          "type": "numeric_input",
           "name": "lot-harvest-minHumidity",
           "label": "Minimum Humidity"
         },
         {
-          "type": "text_input",
+          "type": "numeric_input",
           "name": "lot-harvest-maxHumidity",
           "label": "Maximum Humidity"
         },
         {
-          "type": "text_input",
+          "type": "numeric_input",
           "name": "lot-harvest-averageHumidity",
           "label": "Average Humidity"
         },
         {
-          "type": "text_input",
+          "type": "numeric_input",
           "name": "lot-harvest-yield",
           "label": "Yield"
         },
