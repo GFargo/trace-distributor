@@ -1,14 +1,19 @@
 import firebase from 'firebase/app';
 // Required for side-effects
+import 'firebase/auth';
 import 'firebase/firestore';
 import 'firebase/storage';
 import { useDocument, useCollection } from 'react-firebase-hooks/firestore';
 
-const { REACT_APP_FIREBASE_APIKEY, REACT_APP_FIRESTORE_DB_NAME } = process.env;
+const { 
+  REACT_APP_FIREBASE_APIKEY, 
+  REACT_APP_FIRESTORE_DB_NAME,
+  REACT_APP_FIREBASE_AUTH_EMAIL,
+  REACT_APP_FIREBASE_AUTH_PW 
+} = process.env;
 //console.log('firebase init, process.env: ', process.env);
 
 // TODO move secrets to env vars
-//const TRACE_PW = 'trace$_ 2020'
 const firebaseConfig = {
   apiKey: REACT_APP_FIREBASE_APIKEY,
   authDomain: "trace-public-product-backend.firebaseapp.com",
@@ -23,8 +28,18 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 //console.log('firebase init, firebase: ', firebase);
 
+const auth = firebase.auth();
+//console.log('firebase init, auth: ', auth);
+auth.signInWithEmailAndPassword(
+  REACT_APP_FIREBASE_AUTH_EMAIL, 
+  REACT_APP_FIREBASE_AUTH_PW
+).catch( error => {
+  console.error('firebase auth error: ', error.message);
+});
+
 const store = firebase.storage().ref();
 const db = firebase.firestore();
+
 const productsRef = db.collection(REACT_APP_FIRESTORE_DB_NAME || 'product-profiles');
 const lotsRef = db.collection('lots');
 const lotRef = (id) => lotsRef.doc(id);
