@@ -40,7 +40,7 @@ class LotForm extends PureComponent {
           disabled
           onCloseRedirect="/distributor/lots"
           onUpdate={ data => this.setState({ ...this.state, formData: data })}
-          onSubmit={ data => { !isDisabled && handleSubmit({ id, infoFileHash, ...inflateLot(formData) }) }}
+          onSubmit={ () => { !isDisabled && handleSubmit({ id, infoFileHash, ...inflateLot(formData) }) }}
           saveOnStepChange={true}
           formData={formData}
           sidebar={false}
