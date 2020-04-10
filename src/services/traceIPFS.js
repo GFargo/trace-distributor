@@ -1,7 +1,7 @@
 const ipfsClient = require('ipfs-http-client');
 const ipfs = new ipfsClient({ host: 'ipfs.infura.io', port: 5001, protocol: 'https' });
 
-const DEBUG = true;
+const DEBUG = false;
 
 const lotPath = (lot) => `trace-data/${lot.id}`
 const lotContent = (lot) => ipfsClient.Buffer.from(JSON.stringify(lot))

@@ -5,7 +5,7 @@ import 'firebase/firestore';
 import 'firebase/storage';
 import { useDocument, useCollection } from 'react-firebase-hooks/firestore';
 
-const DEBUG = true;
+const DEBUG = false;
 
 const { 
   REACT_APP_FIREBASE_APIKEY, 

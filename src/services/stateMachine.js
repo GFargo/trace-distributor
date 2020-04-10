@@ -1,8 +1,8 @@
 import { receiveUserLots, loginUser } from './traceAPI';
-import { setProductProfile, setLot } from './traceFirebase';
+import { setProductProfile, setLot, updateLots } from './traceFirebase';
 import { ipfsAddLotState } from './traceIPFS';
 
-const DEBUG = true;
+const DEBUG = false;
 
 const APP_CACHE = 'trace-app';
 
