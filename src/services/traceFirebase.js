@@ -169,7 +169,7 @@ export const setLot = async (lot, calback) => {
   if (!doc || doc.id !== id) return;
 
   cleanObjectProps(lot);
-  DEGUG && console.log('firebase setLot, lot: ', lot);
+  DEBUG && console.log('firebase setLot, lot: ', lot);
   await doc.set(lot);
 
   //console.log('firebase setProduct complete, id: ', id);
@@ -187,7 +187,7 @@ export const setProductProfile = async (product, calback) => {
     console.error('firebase setProduct MUST HAVE QR CODE, product: ', product);
     return;
   } 
-  DEGUG && console.log('firebase setProduct, product: ', product);
+  DEBUG && console.log('firebase setProduct, product: ', product);
   const id = product.id;
 
   const qrcodeDataURL = product.qrcode;
@@ -204,7 +204,7 @@ export const setProductProfile = async (product, calback) => {
     product.image.url = await addImageFile(id, 'productImage', product.productImage.file);
   } else if (!!product.productImage?.url && product.productImage.type === 'data') {
     product.image.url = await addImageDataURL(id, 'productImage', product.productImage.url);
-    DEGUG && console.log('firebase setProduct, product.image.url: ', product.image.url);
+    DEBUG && console.log('firebase setProduct, product.image.url: ', product.image.url);
   } else if (!!product.productImage?.url && product.productImage.type === 'firebase') {
     product.image.url = product.productImage.url
   } else {
@@ -231,7 +231,7 @@ export const setProductProfile = async (product, calback) => {
   if (!doc || doc.id !== id) return;
   await doc.set(product);
 
-  DEGUG && console.log('firebase setProduct complete, id: ', id);
+  DEBUG && console.log('firebase setProduct complete, id: ', id);
   if (!!calback) calback(id)
   return id;
 }
@@ -242,22 +242,22 @@ export const deleteProductProfile = async (id) => {
     return;
   } 
   await store.child(`${id}/productImage`).delete().then(() => {
-    DEGUG && console.log('firebase file deleted - productImage, for ID: ', id);
+    DEBUG && console.log('firebase file deleted - productImage, for ID: ', id);
   }).catch(error => {
-    DEGUG && console.log('firebase file does not exist - productImage, for ID: ', id, error);
+    DEBUG && console.log('firebase file does not exist - productImage, for ID: ', id, error);
   });
   await store.child(`${id}/companyLogo`).delete().then(() => {
-    DEGUG && console.log('firebase file deleted - companyLogo, for ID: ', id);
+    DEBUG && console.log('firebase file deleted - companyLogo, for ID: ', id);
   }).catch(error => {
-    DEGUG && console.log('firebase file does not exist - companyLogo, for ID: ', id, error);
+    DEBUG && console.log('firebase file does not exist - companyLogo, for ID: ', id, error);
   });
   await store.child(`${id}/qrcode.png`).delete().then(() => {
-    DEGUG && console.log('firebase file deleted - qrcode.png, for ID: ', id);
+    DEBUG && console.log('firebase file deleted - qrcode.png, for ID: ', id);
   }).catch(error => {
-    DEGUG && console.log('firebase file does not exist - qrcode.png, for ID: ', id, error);
+    DEBUG && console.log('firebase file does not exist - qrcode.png, for ID: ', id, error);
   });
   await productRef(id).delete().then(function() {
-    DEGUG && console.log('firebase doc deleted, for ID: ', id);
+    DEBUG && console.log('firebase doc deleted, for ID: ', id);
   }).catch(function(error) {
     console.error('firebase error deleting doc, for ID: ', id);
     console.error('firebase error: ', error);
