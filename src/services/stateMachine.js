@@ -1,7 +1,10 @@
 import { receiveUserLots, loginUser } from './traceAPI';
 import { setProductProfile, setLot } from './traceFirebase';
+import { ipfsAddLotState } from './traceIPFS';
 
-const APP_CACHE = 'trace-app'
+const DEBUG = false;
+
+const APP_CACHE = 'trace-app';
 
 const initGuestState = () => ({
   username: 'guest',
@@ -18,7 +21,6 @@ const initUserState = (username = '', email, authToken = null) => ({
   allLots: [],
   parentLots: [],
   subLots: [],
-  selection: {},
   timestamp: undefined
 })
 
@@ -49,8 +51,8 @@ export const loadState = (state = localStorage.getItem(APP_CACHE)) => (!!state) 
   {...initGuestState()}
 
 export const reducer = (state = loadState(), action = {}) => {
-  console.group(action.type)
-  console.info('<<< action: ', action)
+  DEBUG && console.group(action.type);
+  DEBUG && console.info('<<< action: ', action);
   switch (action.type) {
     case 'requireAuth': 
       return { ...state, type: action.type,
@@ -105,13 +107,24 @@ export const reducer = (state = loadState(), action = {}) => {
           created: Date.now(), 
         }
       }
-    case 'exportingLot':
+    case 'hashingLot':
+      return { ...state, type: action.type }
+    case 'hashedLot':
       return { ...state, type: action.type,
-        lotExport: null
+        hashedLot: {
+          ...action.hashedLot
+        }
       }
+    case 'exportingLot':
+      return { ...state, type: action.type }
     case 'exportedLot':
+      return { ...state, type: action.type }
+    case 'ipfsUploadingLot':
+      return { ...state, type: action.type }
+    case 'ipfsUploadedLot':
       return { ...state, type: action.type,
-        lotExport: undefined
+        lotExport: undefined,
+        hashedLot: undefined
       }
     case 'exportProductProfile':
       return { ...state, type: action.type,
@@ -127,27 +140,26 @@ export const reducer = (state = loadState(), action = {}) => {
       }
     case 'exportedProductProfile':
       return { ...state, type: action.type,
-        productProfileExport: undefined,
-        selection: {}
+        productProfileExport: undefined
       }
     default: return state
   }
 }
 
 export const appEffects = () => { 
-  console.info('mounted')
+  DEBUG && console.info('mounted');
   return () => {
-    console.info('unmounted')
+    DEBUG && console.info('unmounted');
   }
 }
 
 export const userEffects = (state, dispatch) => {
-  if (!state.type) console.group('initialState')
-  console.info('>>> state: ', state)
-  console.groupEnd()
+  if (!state.type) DEBUG && console.group('initialState')
+  DEBUG && console.info('>>> state: ', state);
+  DEBUG && console.groupEnd();
 
   if (state.type === 'loginUser' && !!state.creds) {//user is logging in
-    console.info('^^^ trigger effect user login')
+    DEBUG && console.info('^^^ trigger effect on state: '+state.type);
     const { email, password } = state.creds
     if (!!email && !!password) {
       dispatch({ type: 'awaitingAuth' })
@@ -163,7 +175,7 @@ export const userEffects = (state, dispatch) => {
     }
 
   } else if (!state.timestamp && !!state.authToken) {//auth'd user refreshed browser
-    console.info('^^^ trigger effect lots refresh')
+    DEBUG && console.info('^^^ trigger effect on state: '+state.type);
     dispatch({ type: 'receivingLots' })
     receiveUserLots(
       state.authToken, 
@@ -171,14 +183,26 @@ export const userEffects = (state, dispatch) => {
         dispatch({ type: 'receivedLots', lots })
     )
 
-  } else if (state.type === 'exportLot' && !!state.lotExport) {//create selection
-    console.info('^^^ trigger effect exportLot')
+  } else if (state.type === 'exportLot' && !!state.lotExport) {
+    DEBUG && console.info('^^^ trigger effect on state: '+state.type);
     const { lotExport } = state
-    dispatch({ type: 'exportingLot' })
-    setLot(lotExport, () => dispatch({ type: 'exportedLot'}));
+    dispatch({ type: 'hashingLot' })
+    ipfsAddLotState(lotExport, true, (hashedLot) => dispatch({ type: 'hashedLot', hashedLot }));
 
-  } else if (state.type === 'exportProductProfile' && !!state.productProfileExport) {//create selection
-    console.info('^^^ trigger effect exportProductProfile')
+  } else if (state.type === 'hashedLot' && !!state.hashedLot) {
+    DEBUG && console.info('^^^ trigger effect on state: '+state.type);
+    const { hashedLot } = state
+    dispatch({ type: 'exportingLot' })
+    setLot(hashedLot, () => dispatch({ type: 'exportedLot'}));
+
+  } else if (state.type === 'exportedLot' && !!state.lotExport) {
+    DEBUG && console.info('^^^ trigger effect on state: '+state.type);
+    const { lotExport } = state
+    dispatch({ type: 'ipfsUploadingLot' })
+    ipfsAddLotState(lotExport, false, () => dispatch({ type: 'ipfsUploadedLot' }));
+
+  } else if (state.type === 'exportProductProfile' && !!state.productProfileExport) {
+    DEBUG && console.info('^^^ trigger effect on state: '+state.type);
     const { productProfileExport } = state
     dispatch({ type: 'exportingProductProfile' })
     setProductProfile(productProfileExport, () => dispatch({ type: 'exportedProductProfile'}));

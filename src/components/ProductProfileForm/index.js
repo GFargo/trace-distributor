@@ -271,7 +271,7 @@ class ProductProfileForm extends PureComponent {
     const { productLot, additionalLots } = this.state;
     const lotsIncluded = [ productLot, ...additionalLots ]
 
-    return lots.filter(lot => lot.address === selected || (
+    return lots.filter(lot => lot.address !== selected && (
         !lotsIncluded.find(address => address === lot.address)
         && !(!!lot.parentLot && lotsIncluded.find(address => address === lot.parentLot.address))
         && !(!!lot.subLots?.length && lot.subLots.find(sublot => 
@@ -535,7 +535,7 @@ class ProductProfileForm extends PureComponent {
               updateValueAndError={(name, value) => this.setState({ ...this.state, productLot: value, productLotParts: {} })}
               options={this.remainingLotsToSelect(productLot).map(lot => ({
                 label: lot.name,
-                value: lot.address,
+                value: (lot.address !== 'unverified') ? lot.address : lot.id,
               }))}
               padding={'.5em'}
             />
@@ -619,7 +619,7 @@ class ProductProfileForm extends PureComponent {
                   }}
                   options={this.remainingLotsToSelect(address).map(lot => ({
                     label: lot.name,
-                    value: lot.address,
+                    value: (lot.address !== 'unverified') ? lot.address : lot.id,
                   }))}
                   padding={'.5em'}
                 />

@@ -12,6 +12,7 @@
     "dotenv": "^8.2.0",
     "firebase": "^7.9.1",
     "google-map-react": "^1.1.5",
+    "ipfs-http-client": "^43.0.1",
     "nuka-carousel": "^4.6.6",
     "prop-types": "^15.7.2",
     "qrcode.react": "^1.0.0",
