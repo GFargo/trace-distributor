@@ -5,7 +5,7 @@ import 'firebase/firestore';
 import 'firebase/storage';
 import { useDocument, useCollection } from 'react-firebase-hooks/firestore';
 
-const DEGUG = false;
+const DEBUG = true;
 
 const { 
   REACT_APP_FIREBASE_APIKEY, 
@@ -28,7 +28,7 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
-DEGUG && console.log('firebase init, firebase: ', firebase);
+DEBUG && console.log('firebase init, firebase: ', firebase);
 
 const auth = firebase.auth();
 auth.signInWithEmailAndPassword(
@@ -78,7 +78,7 @@ export const useProducts = (email) => {
     ...doc.data(),
     id: doc.id,
   }));
-  DEGUG && console.log('useProducts, products: ', products);
+  DEBUG && console.log('useProducts, products: ', products);
 
   return [
     products,
@@ -91,7 +91,7 @@ export const useProduct = (id) => {
   const [value, loading, error] = useDocument(productRef(id)); 
   const product = (!value || !value.data) ? null : value.data();
   if (!!product && !product.id) product.id = value.id;
-  DEGUG && console.log('useProduct, product: ', product);
+  DEBUG && console.log('useProduct, product: ', product);
 
   return [
     product,
@@ -124,17 +124,17 @@ export const useLatestLotProduct = (address) => {
 
 const addImageDataURL = async (id, name, imageDataURL) => {
   const uploadTask = await store.child(`${id}/${name}`).putString(imageDataURL, 'data_url');
-  DEGUG && console.log('firebase addImageDataURL, uploadTask: ', uploadTask);
+  DEBUG && console.log('firebase addImageDataURL, uploadTask: ', uploadTask);
   const url = await uploadTask.ref.getDownloadURL();
-  DEGUG && console.log('firebase addImageDataURL, url: ', url);
+  DEBUG && console.log('firebase addImageDataURL, url: ', url);
   return url;
 }
 
 const addImageFile = async (id, name, imageFile) => {
   const uploadTask = await store.child(`${id}/${name}`).put(imageFile);
-  DEGUG && console.log('firebase addImageFile, uploadTask: ', uploadTask);
+  DEBUG && console.log('firebase addImageFile, uploadTask: ', uploadTask);
   const url = await uploadTask.ref.getDownloadURL();
-  DEGUG && console.log('firebase addImageFile, url: ', url);
+  DEBUG && console.log('firebase addImageFile, url: ', url);
   return url;
 }
 

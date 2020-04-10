@@ -1,6 +1,6 @@
 import 'whatwg-fetch'
 
-const DEGUG = false;
+const DEBUG = true;
 
 const {
   REACT_APP_API_ENDPOINT: ENDPOINT_HOST = 'https://trace-backend-dev-pr-204.herokuapp.com',
@@ -377,8 +377,9 @@ const productQuery = (id) => `{
 /* Query Controllers */
 
 const receiveAllLots = async () => {
-  DEGUG && console.log('traceAPI >>> receiveAllLots... ')
+  DEBUG && console.log('traceAPI >>> receiveAllLots... ')
   const result = await fetchQuery(allLotsQuery)
+  DEBUG && console.log('traceAPI - allLotsQuery result: ', result)
 
   /* TODO No access to org owner name - injecting temp data to prevent core component error  */
   const lots = !(!!result?.lots?.length) ? [] : 
@@ -390,28 +391,28 @@ const receiveAllLots = async () => {
       }
     }))
 
-  DEGUG && console.log('traceAPI - receiveAllLots lots: ', lots)
+  DEBUG && console.log('traceAPI - receiveAllLots lots: ', lots)
   return lots
 }
 
 const receiveMeOrgLots = async (authToken) => {
-  DEGUG && console.log('traceAPI >>> receiveMeOrgLots... ')
+  DEBUG && console.log('traceAPI >>> receiveMeOrgLots... ')
   const result = await fetchQuery(meOrgLotsQuery, authToken)
-  DEGUG && console.log('traceAPI - receiveMeOrgLots result: ', result)
+  DEBUG && console.log('traceAPI - receiveMeOrgLots result: ', result)
   let lots = (!!result.error) ? null : (!!result?.me?.organization?.lots) ? result.me.organization.lots : []
-  DEGUG && console.log('traceAPI - receiveMeOrgLots lots: ', lots)
+  DEBUG && console.log('traceAPI - receiveMeOrgLots lots: ', lots)
 
   /* TODO Failsafe data for testing - Remove after dev server setup */
   if (!!lots && !lots.length) {//empty lots, fill with test data
     const allLots = await receiveAllLots()
     lots = allLots.filter((lot) => lot?.organization?.domain === 'iostesthemp.com')
-    DEGUG && console.log('traceAPI - receiveMeOrgLots test Lot empty, so POPULATING lots: ', lots)
+    DEBUG && console.log('traceAPI - receiveMeOrgLots test Lot empty, so POPULATING lots: ', lots)
   }
   return lots
 }
 
 export const loginUser = async (email, password, callback) => {
-  DEGUG && console.log('loginUser - creds: ', email, password)
+  DEBUG && console.log('loginUser - creds: ', email, password)
   const user = {}
   const result = await fetchQuery(loginQuery(email, password))
 
@@ -423,7 +424,7 @@ export const loginUser = async (email, password, callback) => {
     user.username = (result.login.firstName || '')+' '+(result.login.lastName || '')
     user.authToken = result.login.authToken
     user.lots = await receiveMeOrgLots(result.login.authToken)
-    DEGUG && console.log('traceAPI - loginUser user: ', user)
+    DEBUG && console.log('traceAPI - loginUser user: ', user)
   }
   
   if(!!callback) callback(user) 
@@ -431,9 +432,9 @@ export const loginUser = async (email, password, callback) => {
 }
 
 export const receiveUserLots = async (authToken, callback) => {
-  DEGUG && console.log('traceAPI - receiveUserLots authToken: ', authToken)
+  DEBUG && console.log('traceAPI - receiveUserLots authToken: ', authToken)
   const lots = await receiveMeOrgLots(authToken)
-  DEGUG && console.log('traceAPI - receiveUserLots lots: ', lots)
+  DEBUG && console.log('traceAPI - receiveUserLots lots: ', lots)
 
   if(!!callback) callback(lots)
   return {lots}

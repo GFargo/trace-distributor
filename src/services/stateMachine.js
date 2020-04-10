@@ -2,7 +2,7 @@ import { receiveUserLots, loginUser } from './traceAPI';
 import { setProductProfile, setLot } from './traceFirebase';
 import { ipfsAddLotState } from './traceIPFS';
 
-const DEGUG = false;
+const DEBUG = true;
 
 const APP_CACHE = 'trace-app';
 
@@ -51,8 +51,8 @@ export const loadState = (state = localStorage.getItem(APP_CACHE)) => (!!state) 
   {...initGuestState()}
 
 export const reducer = (state = loadState(), action = {}) => {
-  DEGUG && console.group(action.type);
-  DEGUG && console.info('<<< action: ', action);
+  DEBUG && console.group(action.type);
+  DEBUG && console.info('<<< action: ', action);
   switch (action.type) {
     case 'requireAuth': 
       return { ...state, type: action.type,
@@ -147,19 +147,19 @@ export const reducer = (state = loadState(), action = {}) => {
 }
 
 export const appEffects = () => { 
-  DEGUG && console.info('mounted');
+  DEBUG && console.info('mounted');
   return () => {
-    DEGUG && console.info('unmounted');
+    DEBUG && console.info('unmounted');
   }
 }
 
 export const userEffects = (state, dispatch) => {
-  if (!state.type) DEGUG && console.group('initialState')
-  DEGUG && console.info('>>> state: ', state);
-  DEGUG && console.groupEnd();
+  if (!state.type) DEBUG && console.group('initialState')
+  DEBUG && console.info('>>> state: ', state);
+  DEBUG && console.groupEnd();
 
   if (state.type === 'loginUser' && !!state.creds) {//user is logging in
-    DEGUG && console.info('^^^ trigger effect on state: '+state.type);
+    DEBUG && console.info('^^^ trigger effect on state: '+state.type);
     const { email, password } = state.creds
     if (!!email && !!password) {
       dispatch({ type: 'awaitingAuth' })
@@ -175,7 +175,7 @@ export const userEffects = (state, dispatch) => {
     }
 
   } else if (!state.timestamp && !!state.authToken) {//auth'd user refreshed browser
-    DEGUG && console.info('^^^ trigger effect on state: '+state.type);
+    DEBUG && console.info('^^^ trigger effect on state: '+state.type);
     dispatch({ type: 'receivingLots' })
     receiveUserLots(
       state.authToken, 
@@ -184,25 +184,25 @@ export const userEffects = (state, dispatch) => {
     )
 
   } else if (state.type === 'exportLot' && !!state.lotExport) {
-    DEGUG && console.info('^^^ trigger effect on state: '+state.type);
+    DEBUG && console.info('^^^ trigger effect on state: '+state.type);
     const { lotExport } = state
     dispatch({ type: 'hashingLot' })
     ipfsAddLotState(lotExport, true, (hashedLot) => dispatch({ type: 'hashedLot', hashedLot }));
 
   } else if (state.type === 'hashedLot' && !!state.hashedLot) {
-    DEGUG && console.info('^^^ trigger effect on state: '+state.type);
+    DEBUG && console.info('^^^ trigger effect on state: '+state.type);
     const { hashedLot } = state
     dispatch({ type: 'exportingLot' })
     setLot(hashedLot, () => dispatch({ type: 'exportedLot'}));
 
   } else if (state.type === 'exportedLot' && !!state.lotExport) {
-    DEGUG && console.info('^^^ trigger effect on state: '+state.type);
+    DEBUG && console.info('^^^ trigger effect on state: '+state.type);
     const { lotExport } = state
     dispatch({ type: 'ipfsUploadingLot' })
     ipfsAddLotState(lotExport, false, () => dispatch({ type: 'ipfsUploadedLot' }));
 
   } else if (state.type === 'exportProductProfile' && !!state.productProfileExport) {
-    DEGUG && console.info('^^^ trigger effect on state: '+state.type);
+    DEBUG && console.info('^^^ trigger effect on state: '+state.type);
     const { productProfileExport } = state
     dispatch({ type: 'exportingProductProfile' })
     setProductProfile(productProfileExport, () => dispatch({ type: 'exportedProductProfile'}));
