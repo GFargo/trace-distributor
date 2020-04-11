@@ -267,21 +267,27 @@ class ProductProfileForm extends PureComponent {
     existingQRCode: this.state.existingQRCode
   })
 
-  remainingLotsToSelect = (myID = 'NOT') => {
+  remainingLotsToSelect = (myID) => {
     const { lots } = this.props;
     const { productLot, additionalLots } = this.state;
-    const lotsIncluded = !!productLot ? [ productLot, ...additionalLots ] : []
-
-    const lotsLeft = (!lots || !lots.length) ? [] : (!lotsIncluded || !lotsIncluded.length) ? lots :
-      lots.filter(lot => lot.id === myID || (
-        !lotsIncluded.find(id => id === lot.id)
-        && !(!!lot.parentLot && lotsIncluded.find(id => id === lot.parentLot.id))
-        && !(!!lot.subLots?.length && lot.subLots.find(sublot => 
-          lotsIncluded.find(id => id === sublot.id)))
-      ));
-
-    const lotSelectionsLeft = lotsLeft.map(lot => ({ label: lot.name, value: lot.id }));
-    return lotSelectionsLeft;
+    let remainingLots = [];
+    if (!lots || !lots.length) {
+      return remainingLots;
+    } else if (!productLot) {
+      remainingLots = lots;
+    } else {
+      const lotsIncluded = [ productLot, ...additionalLots ];
+      remainingLots = lots
+        .filter(lot => 
+          (!!myID && lot.id === myID) || (
+            !lotsIncluded.find(id => id === lot.id)
+            && !(!!lot.parentLot && lotsIncluded.find(id => id === lot.parentLot.id))
+            && !(!!lot.subLots?.length && lot.subLots.find(sublot => 
+              lotsIncluded.find(id => id === sublot.id))
+          ))
+        );
+    }
+    return remainingLots.map(lot => ({ label: lot.name, value: lot.id }));
   }
 
   render() {
