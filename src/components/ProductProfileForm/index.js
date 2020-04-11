@@ -6,7 +6,7 @@ import TextAreaInput from '../../core/src/components/MultiForm/parts/TextAreaInp
 import SelectDropdownInput from '../../core/src/components/MultiForm/parts/SelectDropdownInput';
 import USStates from '../../core/src/components/MultiForm/constants/USStates';
 import InputWrapper from '../../core/src/components/MultiForm/parts/InputWrapper';
-import { genProductID, getProduct } from '../../services/traceFirebase';
+import { genProductID } from '../../services/traceFirebase';
 import FileUpload from '../FileUpload'
 import QRCodeView from '../QRCodeView';
 import ImageCropper from '../ImageCropper';

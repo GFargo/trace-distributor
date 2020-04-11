@@ -25,10 +25,10 @@ const App = () => {
   useEffect(() => userEffects(state, dispatch), [state]);
 
   const lotsCollection = useLots(state.email);
-  const [ lots, lotsLoading, lotsError ] = lotsCollection;
+  const [ lots ] = lotsCollection;
 
   const productsCollection = useProducts(state.email);
-  const [ products, productsLoading, productsError ] = productsCollection;
+  const [ products ] = productsCollection;
 
   /* State Action Dispatch */
   const dispatchLogin = (email, password) => dispatch({
