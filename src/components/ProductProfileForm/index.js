@@ -194,14 +194,14 @@ class ProductProfileForm extends PureComponent {
     const { populateFromProduct } = props;
 
     if (!!populateFromProduct) {
-      console.log('CONSTR populateFromProduct: ', populateFromProduct)
+      // console.log('CONSTR populateFromProduct: ', populateFromProduct)
       this.state = { ...this.state, ...productToState(populateFromProduct) }
     } else {
       this.state.productID = genProductID();
-      console.log('CONSTR new product ID: ', this.state.productID)
+      // console.log('CONSTR new product ID: ', this.state.productID)
     }
 
-    console.log('CONSTR STATE ', this.state)
+    // console.log('CONSTR STATE ', this.state)
   }
 
   inflateLots = () => {
@@ -321,11 +321,11 @@ class ProductProfileForm extends PureComponent {
     const isDisabled = (!name || !productLot || !Object.values(errors).every((one) => !one))
 
     const product = isDisabled ? null : this.stateToProduct();
-    console.log('STATE ', this.state)
-    console.log('PRODUCT ', product)
+    // console.log('STATE ', this.state)
+    // console.log('PRODUCT ', product)
 
     const lotsLeft = this.remainingLotsToSelect();
-    //console.log('lotsLeft ', lotsLeft)
+    // console.log('lotsLeft ', lotsLeft)
 
     const selectedLots = [...additionalLots]
     if (!!lotsLeft.length) {
