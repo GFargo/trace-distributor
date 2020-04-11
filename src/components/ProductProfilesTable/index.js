@@ -6,11 +6,12 @@ import Button from '../../core/src/components/Elements/Button'
 import Pending from '../../core/src/components/Elements/Loader'
 import ConfirmationModal from '../../core/src/components/Elements/Modal/Confirmation'
 import { localizeDateFromString } from '../../core/src/utils/date-time/utils'
-import { useProducts, deleteProductProfile } from '../../services/traceFirebase';
+import { deleteProductProfile } from '../../services/traceFirebase';
 
 
-const ProductProfilesTable = ({ email }) => {
-  const [products, loading, error] = useProducts(email); 
+const ProductProfilesTable = ({ productsCollection }) => {
+  
+  const [ products, loading, error ] = productsCollection;
   //console.log('ProductProfilesTable, products: ', products);
 
   const [ deleteThisProductID, setDeleteModal ] = useState(false);
@@ -117,7 +118,7 @@ const ProductProfilesTable = ({ email }) => {
 }
 
 ProductProfilesTable.propTypes = {
-  email: PropTypes.string.isRequired,
+  productsCollection: PropTypes.array.isRequired,
 }
 
 export default ProductProfilesTable;

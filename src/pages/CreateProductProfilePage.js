@@ -5,7 +5,7 @@ import ProductProfileForm from '../components/ProductProfileForm';
 const { REACT_APP_TRACE_DIRECTORY } = process.env;
 
 const CreateProductProfilePage = ({ 
-  populateFromID, 
+  populateFromProduct, 
   lots, 
   handleSubmitProfile,
 }) => (
@@ -29,19 +29,18 @@ const CreateProductProfilePage = ({
     </div>
 
     <ProductProfileForm 
-      populateFromID={populateFromID}
+      populateFromProduct={populateFromProduct}
       lots={lots}
       handleSubmit={handleSubmitProfile}
     />
   </div>
 )
 
-CreateProductProfilePage.defaultProps = {
-  populateFromID: '',
-}
-
 CreateProductProfilePage.propTypes = {
-  populateFromID: PropTypes.string,
+  populateFromProduct: PropTypes.oneOfType([
+    PropTypes.shape({}),
+    PropTypes.bool,
+  ]).isRequired,
   lots: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   handleSubmitProfile: PropTypes.func.isRequired,
 }

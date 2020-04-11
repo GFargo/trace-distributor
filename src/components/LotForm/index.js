@@ -10,13 +10,11 @@ class LotForm extends PureComponent {
 
   constructor(props) {
     super(props);
-    const { populateFromID, lots } = props;
-    const populateLot = (!!populateFromID) ? lots.find(lot => populateFromID === lot.id) : null;
-
-    this.state = (!!populateLot) ? {
-      id: populateLot.id,
-      infoFileHash: !!populateLot.infoFileHash ? populateLot.infoFileHash : null,
-      formData: deflateLot(populateLot),
+    const { populateFromLot } = props;
+    this.state = (!!populateFromLot) ? {
+      id: populateFromLot.id,
+      infoFileHash: !!populateFromLot.infoFileHash ? populateFromLot.infoFileHash : null,
+      formData: deflateLot(populateFromLot),
     } : {
       id: genLotID(),
       formData: {},
@@ -50,14 +48,15 @@ class LotForm extends PureComponent {
 }
 
 LotForm.defaultProps = {
-  populateFromID: '',
   invertColor: false,
   errorMessage: '',
 };
 
 LotForm.propTypes = {
-  populateFromID: PropTypes.string,
-  lots: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  populateFromLot: PropTypes.oneOfType([
+    PropTypes.shape({}),
+    PropTypes.bool,
+  ]).isRequired,
   handleSubmit: PropTypes.func.isRequired,
   errorMessage: PropTypes.string,
   invertColor: PropTypes.bool,

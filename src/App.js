@@ -2,7 +2,7 @@ import React, { useReducer, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
 import { reducer, loadState, userEffects } from './services/stateMachine';
-import { useLots } from './services/traceFirebase';
+import { useLots, useProducts } from './services/traceFirebase';
 import UserLayout from './layouts/UserLayout';
 import Pending from './core/src/components/Elements/Loader';
 import { Layout as CoreLayout } from './core/src/layouts';
@@ -24,8 +24,11 @@ const App = () => {
   const [state, dispatch] = useReducer(reducer, loadState());
   useEffect(() => userEffects(state, dispatch), [state]);
 
-  const [fbLots, loading, error] = useLots(state.email);
-  const lots = (!!fbLots?.length && !loading && !error) ? [ ...state.allLots, ...fbLots ] : state.allLots;
+  const lotsCollection = useLots(state.email);
+  const [ lots, lotsLoading, lotsError ] = lotsCollection;
+
+  const productsCollection = useProducts(state.email);
+  const [ products, productsLoading, productsError ] = productsCollection;
 
   /* State Action Dispatch */
   const dispatchLogin = (email, password) => dispatch({
@@ -47,6 +50,17 @@ const App = () => {
     lot
   });
 
+  const footerNav = (
+    <div>
+      Need Help?
+      <a className={`ml-2 font-bold underline hover:text-gold-500`}
+        href="https://tracevt.com/contact" target="_blank" rel="noopener noreferrer"
+      >
+        Contact Us
+      </a>
+    </div>
+  );
+
   /* Page Renderers */
   const renderLandingPage = () => (
     <CoreLayout
@@ -54,16 +68,7 @@ const App = () => {
       headerLogoWidth="215px"
       layoutId="layout_root"
       footerPadding="py-4 md:py-8"
-      footerNav={(
-        <div>
-          Need Help?
-          <a className={`ml-2 font-bold underline hover:text-gold-500`}
-            href="https://tracevt.com/contact" target="_blank" rel="noopener noreferrer"
-          >
-            Contact Us
-        </a>
-        </div>
-      )}
+      footerNav={footerNav}
     >
       <LandingPage />
     </CoreLayout>
@@ -76,16 +81,7 @@ const App = () => {
         headerLogoWidth="215px"
         layoutId="layout_root"
         footerPadding="py-4 md:py-8"
-        footerNav={(
-          <div>
-            Need Help?
-            <a className={`ml-2 font-bold underline hover:text-gold-500`}
-              href="https://tracevt.com/contact" target="_blank" rel="noopener noreferrer"
-            >
-              Contact Us
-        </a>
-          </div>
-        )}
+        footerNav={footerNav}
       >
         <LoginPage
           onLoginSubmit={dispatchLogin}
@@ -96,55 +92,52 @@ const App = () => {
     </TracePattern>
   );
 
-  const renderLotIndexPage = () => (!lots) ? (
-    <Pending />
-  ) : (
+  const renderLotIndexPage = () => (
     <UserLayout username={state.username} onLogout={dispatchLogout} showCreateLotButton>
-      <LotsIndexPage lots={lots} />
+      <LotsIndexPage lotsCollection={lotsCollection} />
     </UserLayout>
   );
 
-  const renderLotDetailsPage = (props) => (!!props?.match?.params?.address && !!state.lotDir[props.match.params.address]) ? (
+  const renderLotDetailsPage = (props) => (
+    !!props?.match?.params?.address && !!lots && 
+    !!lots.find(one => one.address === props.match.params.address)) ? (
     <UserLayout username={state.username} onLogout={dispatchLogout}>
-      <LotDetailPage lot={state.lotDir[props.match.params.address]} />
+      <LotDetailPage lot={lots.find(one => one.address === props.match.params.address)} />
     </UserLayout>
   ) : (
-      <NotFound />
-    );
+    <NotFound />
+  );
+
+  const renderCreateLotPage = (props) => (
+    <UserLayout username={state.username} onLogout={dispatchLogout}>
+      <CreateLotPage
+        populateFromLot={(!!props?.match?.params?.id && !!lots && 
+          !!lots.find(one => one.id === props.match.params.id)) ? 
+            lots.find(one => one.id === props.match.params.id) : false}
+        handleSubmitLot={lot => {
+          props.history.push("/distributor/lots");
+          dispatchExportLot(lot);
+        }}
+      />
+    </UserLayout>
+  );
 
   const renderProductProfilesPage = () => (
     <UserLayout username={state.username} onLogout={dispatchLogout} showCreateProductButton>
-      <ProductProfilesPage email={state.email} />
+      <ProductProfilesPage productsCollection={productsCollection} />
     </UserLayout>
   );
 
   const renderCreateProductProfilePage = (props) => (
     <UserLayout username={state.username} onLogout={dispatchLogout}>
       <CreateProductProfilePage
-        populateFromID={(!!props?.match?.params?.id) ? props.match.params.id : ''}
-        lots={lots.map(lot => ({
-          ...lot,
-          parentLot: (!lot.parentLot) ? null : state.lotDir[lot.parentLot.address],
-        }))}
+        populateFromProduct={(!!props?.match?.params?.id && !!products && 
+          !!products.find(one => one.id === props.match.params.id)) ? 
+            products.find(one => one.id === props.match.params.id) : false}
+        lots={lots || []}
         handleSubmitProfile={(product) => {
           props.history.push("/distributor/product-profiles");
           dispatchExportProductProfile(product);
-        }}
-      />
-    </UserLayout>
-  );
-
-  const renderCreateLotPage = (props) => (
-    <UserLayout username={state.username} onLogout={dispatchLogout}>
-      <CreateLotPage
-        populateFromID={(!!props?.match?.params?.id) ? props.match.params.id : ''}
-        lots={lots.map(lot => ({
-          ...lot,
-          parentLot: (!lot.parentLot) ? null : state.lotDir[lot.parentLot.address],
-        }))}
-        handleSubmitLot={lot => {
-          props.history.push("/distributor/lots");
-          dispatchExportLot(lot);
         }}
       />
     </UserLayout>

@@ -98,9 +98,9 @@ const deflateCerts = (certs) => {
 
 const deflateLabels = (labelOverrides) => {
   const overrides = {};
-  Object.keys(labelOverrides).forEach(address => { 
-    if (!!labelOverrides[address]) {
-      overrides[address] = deflateLotSelection(labelOverrides[address]); 
+  Object.keys(labelOverrides).forEach(id => { 
+    if (!!labelOverrides[id]) {
+      overrides[id] = deflateLotSelection(labelOverrides[id]); 
     }
   })
   return overrides;
@@ -108,9 +108,9 @@ const deflateLabels = (labelOverrides) => {
 
 const deflateLots = (lotIDs, lots) => {
   const parts = {};
-  lotIDs.forEach(address => { 
-    if (!!lots && !!lots[address]) {
-      parts[address] = deflateLotSelection(lots[address]);
+  lotIDs.forEach(id => { 
+    if (!!lots && !!lots[id]) {
+      parts[id] = deflateLotSelection(lots[id]);
     }
   })
   return parts;
@@ -145,62 +145,63 @@ const productToState = (product) => ({
 });
 
 class ProductProfileForm extends PureComponent {
-  state = {
-    productID: '',
-    existingQRCode: '',
-    name: '',
-    description: '',
-    productImage: {
-      file: null,
-      url: '',
-      type: '',
-    },
-    productImageModal: false,
-    packagingDate: '',
-    certifications: {},
-    companyName: '',
-    companyDescription: '',
-    companyLogo: {
-      file: null,
-      url: '',
-      type: '',
-    },
-    manufacturerLocation: '',
-    productLot: null,
-    productLotParts: {},
-    additionalLots: [],
-    additionalLotsParts: {},
-    labelOverrides: {},
-    previewProduct: false,
-    errors: {
+
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      productID: '',
+      existingQRCode: '',
       name: '',
       description: '',
-      productImage: '',
+      productImage: {
+        file: null,
+        url: '',
+        type: '',
+      },
+      productImageModal: false,
       packagingDate: '',
-      certifications: '',
+      certifications: {},
       companyName: '',
       companyDescription: '',
-      companyLogo: '',
+      companyLogo: {
+        file: null,
+        url: '',
+        type: '',
+      },
       manufacturerLocation: '',
-      productLot: '',
-      additionalLot: '',
+      productLot: null,
+      productLotParts: {},
+      additionalLots: [],
+      additionalLotsParts: {},
+      labelOverrides: {},
+      previewProduct: false,
+      errors: {
+        name: '',
+        description: '',
+        productImage: '',
+        packagingDate: '',
+        certifications: '',
+        companyName: '',
+        companyDescription: '',
+        companyLogo: '',
+        manufacturerLocation: '',
+        productLot: '',
+        additionalLot: '',
+      }
     }
-  }
 
-  componentDidMount() {
-    const { populateFromID } = this.props;
+    const { populateFromProduct } = props;
 
-    if (!!populateFromID) {
-      
-      getProduct(populateFromID, 
-        (product) => this.setState( state => ({ ...state, ...productToState(product) }))
-        //(product) => console.log('Cloning from Product: ', product)
-      );
+    if (!!populateFromProduct) {
+      console.log('CONSTR populateFromProduct: ', populateFromProduct)
+      this.state = { ...this.state, ...productToState(populateFromProduct) }
     } else {
-      const productID = genProductID();
-      this.setState({ ...this.state, productID })
-      //console.log('New Product ID: ', newID)
+      this.state.productID = genProductID();
+      console.log('CONSTR new product ID: ', this.state.productID)
     }
+
+    console.log('CONSTR STATE ', this.state)
   }
 
   inflateLots = () => {
@@ -210,18 +211,18 @@ class ProductProfileForm extends PureComponent {
       lots[this.state.productLot] = inflateLotSelection(this.state.productLotParts || {});
     }
     
-    this.state.additionalLots.forEach(address => {
-      const selection = address !== 'IGNORE' && inflateLotSelection(this.state.additionalLotsParts[address])
-      if (!!selection) lots[address] = selection;
+    this.state.additionalLots.forEach(id => {
+      const selection = id !== 'IGNORE' && inflateLotSelection(this.state.additionalLotsParts[id])
+      if (!!selection) lots[id] = selection;
     })
     return lots;
   }
 
   inflateLabels = () => {
     const overrides = {};
-    Object.keys(this.state.labelOverrides).forEach(address => {
-      if (address !== 'IGNORE') {
-        overrides[address] = inflateLotSelection(this.state.labelOverrides[address] || {});
+    Object.keys(this.state.labelOverrides).forEach(id => {
+      if (id !== 'IGNORE') {
+        overrides[id] = inflateLotSelection(this.state.labelOverrides[id] || {});
       }
     })
     return overrides;
@@ -266,18 +267,21 @@ class ProductProfileForm extends PureComponent {
     existingQRCode: this.state.existingQRCode
   })
 
-  remainingLotsToSelect = (selected) => {
+  remainingLotsToSelect = (myID = 'NOT') => {
     const { lots } = this.props;
     const { productLot, additionalLots } = this.state;
-    const lotsIncluded = [ productLot, ...additionalLots ]
+    const lotsIncluded = !!productLot ? [ productLot, ...additionalLots ] : []
 
-    return lots.filter(lot => lot.address !== selected && (
-        !lotsIncluded.find(address => address === lot.address)
-        && !(!!lot.parentLot && lotsIncluded.find(address => address === lot.parentLot.address))
+    const lotsLeft = (!lots || !lots.length) ? [] : (!lotsIncluded || !lotsIncluded.length) ? lots :
+      lots.filter(lot => lot.id === myID || (
+        !lotsIncluded.find(id => id === lot.id)
+        && !(!!lot.parentLot && lotsIncluded.find(id => id === lot.parentLot.id))
         && !(!!lot.subLots?.length && lot.subLots.find(sublot => 
-          lotsIncluded.find(address => address === sublot.address)))
-      )
-    )
+          lotsIncluded.find(id => id === sublot.id)))
+      ));
+
+    const lotSelectionsLeft = lotsLeft.map(lot => ({ label: lot.name, value: lot.id }));
+    return lotSelectionsLeft;
   }
 
   render() {
@@ -311,10 +315,10 @@ class ProductProfileForm extends PureComponent {
     const isDisabled = (!name || !productLot || !Object.values(errors).every((one) => !one))
 
     const product = isDisabled ? null : this.stateToProduct();
-    //console.log('STATE ', this.state)
-    //console.log('PRODUCT ', product)
+    console.log('STATE ', this.state)
+    console.log('PRODUCT ', product)
 
-    const lotsLeft = this.remainingLotsToSelect()
+    const lotsLeft = this.remainingLotsToSelect();
     //console.log('lotsLeft ', lotsLeft)
 
     const selectedLots = [...additionalLots]
@@ -533,10 +537,7 @@ class ProductProfileForm extends PureComponent {
               className="w-100 h-200 hover:border-gray-500"
               error={errors.productLot}
               updateValueAndError={(name, value) => this.setState({ ...this.state, productLot: value, productLotParts: {} })}
-              options={this.remainingLotsToSelect(productLot).map(lot => ({
-                label: lot.name,
-                value: (lot.address !== 'unverified') ? lot.address : lot.id,
-              }))}
+              options={this.remainingLotsToSelect(productLot)}
               padding={'.5em'}
             />
           </div>
@@ -555,9 +556,9 @@ class ProductProfileForm extends PureComponent {
           </div>
         )}
 
-        {!!productLot && (
+        {!!lots && !!productLot && (
           <LotDetailSelector
-            lot={lots.find(one => one.address === productLot)}
+            lot={lots.find(one => one.id === productLot) || {}}
             labelOverrides={labelOverrides[productLot] || {}}
             onOverrideLabel={(name, value) => {
               const overrides = (!!labelOverrides[productLot]) ? { ...labelOverrides[productLot] } : {}
@@ -581,7 +582,7 @@ class ProductProfileForm extends PureComponent {
         )}
 
         {!!productLot && (
-          selectedLots.map((address, index) => address !== 'IGNORE' && (
+          selectedLots.map((id, index) => id !== 'IGNORE' && (
             <div key={index.toString()}>
               <div className="my-4">
                 <h3 className="text-xl text-left mb-2 mt-4">
@@ -593,11 +594,11 @@ class ProductProfileForm extends PureComponent {
               <span>
                 <SelectDropdownInput
                   name={"additionalLot"+index}
-                  value={address}
+                  value={id}
                   label="Additional Lot"
                   error={''}
                   updateValueAndError={(name, value) => {
-                    if (!!value && value !== address && name === "additionalLot"+index) {
+                    if (!!value && value !== id && name === "additionalLot"+index) {
                       this.setState(state => {
                         const _lots = [
                           ...state.additionalLots
@@ -617,13 +618,10 @@ class ProductProfileForm extends PureComponent {
                       })
                     }
                   }}
-                  options={this.remainingLotsToSelect(address).map(lot => ({
-                    label: lot.name,
-                    value: (lot.address !== 'unverified') ? lot.address : lot.id,
-                  }))}
+                  options={this.remainingLotsToSelect(id)}
                   padding={'.5em'}
                 />
-                {!!address && (
+                {!!id && (
                   <span className="" data-toggle="tooltip" data-placement="top" title="Remove Lot">
                     <Button
                       className="-ml-2 text-sm text-gold-500 hover:text-gold-900"
@@ -647,7 +645,7 @@ class ProductProfileForm extends PureComponent {
                 )}
               </span>
 
-              {!!address && (
+              {!!id && (
                 <div className="mb-4">
                   <h3 className="text-xl text-left mb-2 mt-4">
                     Select Additional Lot Information
@@ -660,28 +658,28 @@ class ProductProfileForm extends PureComponent {
                 </div>
               )}
 
-              {!!address && (
+              {!!lots && !!id && (
                 <LotDetailSelector
-                  lot={lots.find(one => one.address === address)}
-                  labelOverrides={labelOverrides[address] || {}}
+                  lot={lots.find(one => one.id === id) || {}}
+                  labelOverrides={labelOverrides[id] || {}}
                   onOverrideLabel={(name, value) => {
-                    const overrides = (!!labelOverrides[address]) ? { ...labelOverrides[address] } : {}
+                    const overrides = (!!labelOverrides[id]) ? { ...labelOverrides[id] } : {}
                     overrides[name] = value || '';
                     this.setState({ ...this.state, 
                       labelOverrides: {
                         ...labelOverrides,
-                        [address]: overrides
+                        [id]: overrides
                       } 
                     })
                   }}
-                  selection={additionalLotsParts[address] || {}}
+                  selection={additionalLotsParts[id] || {}}
                   onToggleSelection={(key, value) => this.setState(state => ({
                     ...state,
                     additionalLotsParts: { 
                       ...state.additionalLotsParts,
-                      [address]: (!!state.additionalLotsParts[address]) ? {
-                        ...state.additionalLotsParts[address],
-                        [key]: (!state.additionalLotsParts[address][key]) ? value : undefined
+                      [id]: (!!state.additionalLotsParts[id]) ? {
+                        ...state.additionalLotsParts[id],
+                        [key]: (!state.additionalLotsParts[id][key]) ? value : undefined
                       } : {
                         [key]: value
                       }
@@ -774,13 +772,15 @@ class ProductProfileForm extends PureComponent {
 }
 
 ProductProfileForm.defaultProps = {
-  populateFromID: '',
   invertColor: false,
   errorMessage: '',
 };
 
 ProductProfileForm.propTypes = {
-  populateFromID: PropTypes.string,
+  populateFromProduct: PropTypes.oneOfType([
+    PropTypes.shape({}),
+    PropTypes.bool,
+  ]).isRequired,
   lots: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   handleSubmit: PropTypes.func.isRequired,
   errorMessage: PropTypes.string,
