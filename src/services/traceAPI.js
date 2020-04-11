@@ -265,6 +265,7 @@ const LOT_TYPE = `
   fragment LotType on Lot {
     name
     address
+    infoFileHash
     organization {
       ...OrgStub
     }
