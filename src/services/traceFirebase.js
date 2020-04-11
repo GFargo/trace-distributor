@@ -151,9 +151,10 @@ const addImageFile = async (id, name, imageFile) => {
   return url;
 }
 
-const cleanObjectProps = (obj) => {
+const cleanObjectProps = (o) => {
   //console.log('firebase cleanProductFields, object: ', obj);
-  if (!obj) return;
+  if (!o || typeof o !== 'object') return o;
+  const obj = {...o}; // TODO replace with deep copy function if needed
   Object.keys(obj).forEach((key) => {
     const objType = typeof obj[key];
     if (!obj[key]) {
@@ -167,6 +168,7 @@ const cleanObjectProps = (obj) => {
       delete obj[key]
     }
   })
+  return obj;
 }
 
 export const genLotID = () => lotsRef.doc().id;
@@ -187,8 +189,8 @@ export const updateLots = async (lots, email, calback) => {
   lotUpdates = lotUpdates.filter(each => !(!each.infoFileHash && fbLotAddresses.includes(each.address)));
   DEBUG && console.log('firebase updateLots, B lotUpdates: ', lotUpdates);
 
-  lotUpdates.forEach(lot => {
-    cleanObjectProps(lot);
+  lotUpdates.forEach(lotData => {
+    const lot = cleanObjectProps(lotData);
     if (!lot.owner) lot.owner = email;
     if (!lot.infoFileHash) lot.infoFileHash = 'new';
     if (fbLotAddresses.includes(lot.address)) {
@@ -201,8 +203,7 @@ export const updateLots = async (lots, email, calback) => {
       DEBUG && console.log('firebase add Lot, lot: ', lot);
     }
   });
-
-  //console.log('firebase setProduct complete, id: ', id);
+  DEBUG && console.log('firebase setProduct lotUpdates complete.');
   if (!!calback) calback()
 }
 
@@ -216,9 +217,9 @@ export const setLot = async (lot, calback) => {
   const doc = await lotRef(id);
   if (!doc || doc.id !== id) return;
 
-  cleanObjectProps(lot);
-  DEBUG && console.log('firebase setLot, lot: ', lot);
-  await doc.set(lot);
+  const cleaned = cleanObjectProps(lot);
+  DEBUG && console.log('firebase setLot, lot: ', cleaned);
+  await doc.set(cleaned);
 
   //console.log('firebase setProduct complete, id: ', id);
   if (!!calback) calback(id)
@@ -273,11 +274,10 @@ export const setProductProfile = async (product, calback) => {
   }
   delete product.companyLogo;
 
-  cleanObjectProps(product);
-
   const doc = await productRef(id);
   if (!doc || doc.id !== id) return;
-  await doc.set(product);
+  const cleaned = cleanObjectProps(product);
+  await doc.set(cleaned);
 
   DEBUG && console.log('firebase setProduct complete, id: ', id);
   if (!!calback) calback(id)
