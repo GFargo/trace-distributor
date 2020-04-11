@@ -1,5 +1,5 @@
 import { receiveUserLots, loginUser } from './traceAPI';
-import { setProductProfile, setLot } from './traceFirebase';
+import { setProductProfile, setLot, updateLots } from './traceFirebase';
 import { ipfsAddLotState } from './traceIPFS';
 
 const DEBUG = false;
