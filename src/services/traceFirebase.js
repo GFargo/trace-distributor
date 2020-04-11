@@ -169,8 +169,43 @@ const cleanObjectProps = (obj) => {
   })
 }
 
-
 export const genLotID = () => lotsRef.doc().id;
+
+export const updateLots = async (lots, email, calback) => {
+  if (!lots || !lots.length) return;
+
+  DEBUG && console.log('firebase updateLots, lots: ', lots);
+
+  const snap = await userLotsRef(email).get();
+  DEBUG && console.log('firebase updateLots, snap: ', snap);
+  const fbLotHashs = (!!snap?.docs?.length) ? snap.docs.map(doc => doc.data().infoFileHash) : [];
+  const fbLotAddresses = (!!snap?.docs?.length) ? snap.docs.map(doc => doc.data().address) : [];
+  DEBUG && console.log('firebase updateLots, fbLotHashs: ', fbLotHashs);
+
+  let lotUpdates = lots.filter(each => !fbLotHashs.includes(each.infoFileHash || 'NOT'));
+  DEBUG && console.log('firebase updateLots, A lotUpdates: ', lotUpdates);
+  lotUpdates = lotUpdates.filter(each => !(!each.infoFileHash && fbLotAddresses.includes(each.address)));
+  DEBUG && console.log('firebase updateLots, B lotUpdates: ', lotUpdates);
+
+  lotUpdates.forEach(lot => {
+    cleanObjectProps(lot);
+    if (!lot.owner) lot.owner = email;
+    if (!lot.infoFileHash) lot.infoFileHash = 'new';
+    if (fbLotAddresses.includes(lot.address)) {
+      const doc = snap.docs.find(one => one.data().address === lot.address);
+      if (!!lot.infoFileHash && !!doc.data().infoFileHash) lot.prevInfoFileHash = doc.data().infoFileHash;
+      doc.set(lot);
+      DEBUG && console.log('firebase update Lot, lot: ', lot);
+    } else {
+      lotsRef.add(lot);
+      DEBUG && console.log('firebase add Lot, lot: ', lot);
+    }
+  });
+
+  //console.log('firebase setProduct complete, id: ', id);
+  if (!!calback) calback()
+}
+
 export const setLot = async (lot, calback) => {
   if (!lot || !lot.id) {
     console.error('firebase setLot MUST HAVE LOT ID, lot: ', lot);
