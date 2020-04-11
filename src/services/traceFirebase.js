@@ -42,8 +42,7 @@ auth.signInWithEmailAndPassword(
 const store = firebase.storage().ref();
 const db = firebase.firestore();
 
-const productsRef = db.collection(REACT_APP_FIRESTORE_DB_NAME || 'product-profiles');
-const lotsRef = db.collection('lots');
+const lotsRef = db.collection(REACT_APP_FIRESTORE_LOTS_DB_NAME);
 const lotRef = (id) => lotsRef.doc(id);
 
 const userLotsRef = (email) => !!email && lotsRef.where("owner", "==", email);
