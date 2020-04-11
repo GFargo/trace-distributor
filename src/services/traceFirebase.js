@@ -48,11 +48,22 @@ const lotRef = (id) => lotsRef.doc(id);
 const userLotsRef = (email) => !!email && lotsRef.where("owner", "==", email);
 export const useLots = (email) => {
   const [value, loading, error] = useCollection(userLotsRef(email)); 
-  const lots = (!value || !value.docs) ? null : (!value.docs.length) ? [] : value.docs.map(doc => ({
+  let lots = (!value || !value.docs) ? null : (!value.docs.length || loading) ? [] : value.docs.map(doc => ({
     ...doc.data(),
-    id: doc.id,
+    id: doc.id
   }));
-  //console.log('useLots, lots: ', lots);
+  if (!!lots?.length) {
+    lots = lots.map(lot => ({
+      ...lot,
+      parentLot: (!!lot.parentLot) ? lots.find(
+        one => one.address === lot.parentLot.address) || lot.parentLot : null,
+      subLots: (!!lot.subLots?.length) ? lot.subLots.map(
+        subLot => lots.find(one => one.address === subLot.address) || subLot) : [],
+      details: lot.details || [],
+    }));
+  }
+  
+  DEBUG && console.log('useLots, lots: ', lots);
 
   return [
     lots,
