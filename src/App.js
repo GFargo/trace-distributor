@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-d
 import { reducer, loadState, userEffects } from './services/stateMachine';
 import { useLots, useProducts } from './services/traceFirebase';
 import UserLayout from './layouts/UserLayout';
+import TraceFooterNav from './components/TraceFooterNav';
 import Pending from './core/src/components/Elements/Loader';
 import { Layout as CoreLayout } from './core/src/layouts';
 import { TracePattern } from './core/src/components/Elements'
@@ -50,17 +51,6 @@ const App = () => {
     lot
   });
 
-  const footerNav = (
-    <div>
-      Need Help?
-      <a className={`ml-2 font-bold underline hover:text-gold-500`}
-        href="https://tracevt.com/contact" target="_blank" rel="noopener noreferrer"
-      >
-        Contact Us
-      </a>
-    </div>
-  );
-
   /* Page Renderers */
   const renderLandingPage = () => (
     <CoreLayout
@@ -68,7 +58,7 @@ const App = () => {
       headerLogoWidth="215px"
       layoutId="layout_root"
       footerPadding="py-4 md:py-8"
-      footerNav={footerNav}
+      footerNav={TraceFooterNav}
     >
       <LandingPage />
     </CoreLayout>
@@ -81,7 +71,7 @@ const App = () => {
         headerLogoWidth="215px"
         layoutId="layout_root"
         footerPadding="py-4 md:py-8"
-        footerNav={footerNav}
+        footerNav={TraceFooterNav}
       >
         <LoginPage
           onLoginSubmit={dispatchLogin}
