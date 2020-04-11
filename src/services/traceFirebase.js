@@ -61,6 +61,8 @@ export const useLots = (email) => {
   ]
 }
 
+const productsRef = db.collection(REACT_APP_FIRESTORE_PRODUCTS_DB_NAME);
+
 const userProductsRef = (email) => productsRef.where("owner", "==", email);
 const lotProductsRef = (address) => productsRef.where("productLot", "==", address);
 const productRef = (id) => productsRef.doc(id);
