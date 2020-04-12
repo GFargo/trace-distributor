@@ -2,11 +2,14 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
 import Button from '../core/src/components/Elements/Button'
+import Pending from '../core/src/components/Elements/Loader'
 import SortableTable from '../core/src/components/SortableTable'
 import { localizeDateFromString } from '../core/src/utils/date-time/utils'
 
 
-const LotsIndex = ({ lots }) => {
+const LotsIndex = ({ lotsCollection }) => {
+
+  const [ lots, loading, error ] = lotsCollection;
 
   const targetInfoLink = (lot) => (
     <Button color="black" variant="outline" to={"/" + (!lot.parentLot ? "cultivating" : "processing") + "/" + lot.address}>
@@ -45,8 +48,8 @@ const LotsIndex = ({ lots }) => {
     {
       name: 'type',
       displayName: 'Type',
-      displayValue: (lot) => (lot.parentLot === null) ? "cultivating" : "processing",
-      sortable: (lot) => (lot.parentLot === null) ? "cultivating" : "processing"
+      displayValue: (lot) => (!lot.parentLot) ? "cultivating" : "processing",
+      sortable: (lot) => (!lot.parentLot) ? "cultivating" : "processing"
     },
     {
       name: 'state',
@@ -55,11 +58,17 @@ const LotsIndex = ({ lots }) => {
       sortable: (lot) => lot.state
     },
     {
+        name: 'verified',
+        displayName: 'Verified',
+        displayValue: lot => (lot.address !== 'unverified' ? <i className="icon-check verified-mark" aria-hidden="true" /> : <i className="" aria-hidden="true" />),
+        sortable: lot => (lot.address !== 'unverified' ? 'yes' : 'no'),
+    },
+    {
       name: 'address',
       displayName: 'Blockchain Address',
       displayValue: (lot) => lot.address === 'unverified' ? (
         <Link to={'/distributor/lot-form/'+lot.id}>
-          {lot.id.substr(0, 20) + " …"}
+          unverified
         </Link>
       ) : (
         <Link to={"/" + (!lot.parentLot ? "cultivating" : "processing") + "/" + lot.address}>
@@ -70,27 +79,35 @@ const LotsIndex = ({ lots }) => {
     },
   ])
 
+  const ErrorView = () => (
+    <h3>{`Error Loading lots: ${error || ''}`}</h3>
+  );
+
   return (
-    <SortableTable
-      columns={tableColumns()}
-      filters={tableFilters()}
-      data={lots}
-      defaultSort='name'
-      filterFn={(lot) => lot.name + lot.state + lot.address}
-      filterPlaceholder='Filter by Lot name, state or blockchain address...'
-      targetLink={targetInfoLink}
-      noSearch={false}
-      maxRows={0}
-      noFilter={false}
-      keyFn={(lot) => lot.address}
-      pagination={true}
-      pageSize={10}
-    />
+    (!lots && loading) ? <Pending /> : 
+    (!lots || !!error) ? <ErrorView /> : 
+    !!lots?.length ? (
+      <SortableTable
+        columns={tableColumns()}
+        filters={tableFilters()}
+        data={lots}
+        defaultSort='name'
+        filterFn={(lot) => lot.name + lot.state + lot.address}
+        filterPlaceholder='Filter by Lot name, state or blockchain address...'
+        targetLink={targetInfoLink}
+        noSearch={false}
+        maxRows={0}
+        noFilter={false}
+        keyFn={(lot) => lot.address}
+        pagination={true}
+        pageSize={10}
+      />
+    ) : false
   )
 }
 
 LotsIndex.propTypes = {
-  lots: PropTypes.array.isRequired,
+  lotsCollection: PropTypes.array.isRequired,
 }
 
 export default LotsIndex

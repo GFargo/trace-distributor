@@ -9,7 +9,8 @@ const DEBUG = false;
 
 const { 
   REACT_APP_FIREBASE_APIKEY, 
-  REACT_APP_FIRESTORE_DB_NAME,
+  REACT_APP_FIRESTORE_PRODUCTS_DB_NAME = 'product-profiles-dev',
+  REACT_APP_FIRESTORE_LOTS_DB_NAME = 'lots-dev',
   REACT_APP_FIREBASE_AUTH_EMAIL,
   REACT_APP_FIREBASE_AUTH_PW 
 } = process.env;
@@ -41,18 +42,28 @@ auth.signInWithEmailAndPassword(
 const store = firebase.storage().ref();
 const db = firebase.firestore();
 
-const productsRef = db.collection(REACT_APP_FIRESTORE_DB_NAME || 'product-profiles');
-const lotsRef = db.collection('lots');
+const lotsRef = db.collection(REACT_APP_FIRESTORE_LOTS_DB_NAME);
 const lotRef = (id) => lotsRef.doc(id);
 
 const userLotsRef = (email) => !!email && lotsRef.where("owner", "==", email);
 export const useLots = (email) => {
   const [value, loading, error] = useCollection(userLotsRef(email)); 
-  const lots = (!value || !value.docs) ? null : (!value.docs.length) ? [] : value.docs.map(doc => ({
+  let lots = (!value || !value.docs) ? null : (!value.docs.length || loading) ? [] : value.docs.map(doc => ({
     ...doc.data(),
-    id: doc.id,
+    id: doc.id
   }));
-  //console.log('useLots, lots: ', lots);
+  if (!!lots?.length) {
+    lots = lots.map(lot => ({
+      ...lot,
+      parentLot: (!!lot.parentLot) ? lots.find(
+        one => one.address === lot.parentLot.address) || lot.parentLot : null,
+      subLots: (!!lot.subLots?.length) ? lot.subLots.map(
+        subLot => lots.find(one => one.address === subLot.address) || subLot) : [],
+      details: lot.details || [],
+    }));
+  }
+  
+  DEBUG && console.log('useLots, lots: ', lots);
 
   return [
     lots,
@@ -61,7 +72,9 @@ export const useLots = (email) => {
   ]
 }
 
-const userProductsRef = (email) => productsRef.where("owner", "==", email);
+const productsRef = db.collection(REACT_APP_FIRESTORE_PRODUCTS_DB_NAME);
+
+const userProductsRef = (email) => !!email && productsRef.where("owner", "==", email);
 const lotProductsRef = (address) => productsRef.where("productLot", "==", address);
 const productRef = (id) => productsRef.doc(id);
 
@@ -138,9 +151,10 @@ const addImageFile = async (id, name, imageFile) => {
   return url;
 }
 
-const cleanObjectProps = (obj) => {
+const cleanObjectProps = (o) => {
   //console.log('firebase cleanProductFields, object: ', obj);
-  if (!obj) return;
+  if (!o || typeof o !== 'object') return o;
+  const obj = {...o}; // TODO replace with deep copy function if needed
   Object.keys(obj).forEach((key) => {
     const objType = typeof obj[key];
     if (!obj[key]) {
@@ -154,10 +168,45 @@ const cleanObjectProps = (obj) => {
       delete obj[key]
     }
   })
+  return obj;
 }
 
-
 export const genLotID = () => lotsRef.doc().id;
+
+export const updateLots = async (lots, email, calback) => {
+  if (!lots || !lots.length) return;
+
+  DEBUG && console.log('firebase updateLots, lots: ', lots);
+
+  const snap = await userLotsRef(email).get();
+  DEBUG && console.log('firebase updateLots, snap: ', snap);
+  const fbLotHashs = (!!snap?.docs?.length) ? snap.docs.map(doc => doc.data().infoFileHash) : [];
+  const fbLotAddresses = (!!snap?.docs?.length) ? snap.docs.map(doc => doc.data().address) : [];
+  DEBUG && console.log('firebase updateLots, fbLotHashs: ', fbLotHashs);
+
+  let lotUpdates = lots.filter(each => !fbLotHashs.includes(each.infoFileHash || 'NOT'));
+  DEBUG && console.log('firebase updateLots, A lotUpdates: ', lotUpdates);
+  lotUpdates = lotUpdates.filter(each => !(!each.infoFileHash && fbLotAddresses.includes(each.address)));
+  DEBUG && console.log('firebase updateLots, B lotUpdates: ', lotUpdates);
+
+  lotUpdates.forEach(lotData => {
+    const lot = cleanObjectProps(lotData);
+    if (!lot.owner) lot.owner = email;
+    if (!lot.infoFileHash) lot.infoFileHash = 'new';
+    if (fbLotAddresses.includes(lot.address)) {
+      const doc = snap.docs.find(one => one.data().address === lot.address);
+      if (!!lot.infoFileHash && !!doc.data().infoFileHash) lot.prevInfoFileHash = doc.data().infoFileHash;
+      doc.set(lot);
+      DEBUG && console.log('firebase update Lot, lot: ', lot);
+    } else {
+      lotsRef.add(lot);
+      DEBUG && console.log('firebase add Lot, lot: ', lot);
+    }
+  });
+  DEBUG && console.log('firebase setProduct lotUpdates complete.');
+  if (!!calback) calback()
+}
+
 export const setLot = async (lot, calback) => {
   if (!lot || !lot.id) {
     console.error('firebase setLot MUST HAVE LOT ID, lot: ', lot);
@@ -168,9 +217,9 @@ export const setLot = async (lot, calback) => {
   const doc = await lotRef(id);
   if (!doc || doc.id !== id) return;
 
-  cleanObjectProps(lot);
-  DEBUG && console.log('firebase setLot, lot: ', lot);
-  await doc.set(lot);
+  const cleaned = cleanObjectProps(lot);
+  DEBUG && console.log('firebase setLot, lot: ', cleaned);
+  await doc.set(cleaned);
 
   //console.log('firebase setProduct complete, id: ', id);
   if (!!calback) calback(id)
@@ -225,11 +274,10 @@ export const setProductProfile = async (product, calback) => {
   }
   delete product.companyLogo;
 
-  cleanObjectProps(product);
-
   const doc = await productRef(id);
   if (!doc || doc.id !== id) return;
-  await doc.set(product);
+  const cleaned = cleanObjectProps(product);
+  await doc.set(cleaned);
 
   DEBUG && console.log('firebase setProduct complete, id: ', id);
   if (!!calback) calback(id)

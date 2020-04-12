@@ -1,5 +1,5 @@
 import { receiveUserLots, loginUser } from './traceAPI';
-import { setProductProfile, setLot } from './traceFirebase';
+import { setProductProfile, setLot, updateLots } from './traceFirebase';
 import { ipfsAddLotState } from './traceIPFS';
 
 const DEBUG = false;
@@ -12,35 +12,14 @@ const initGuestState = () => ({
   authToken: undefined
 })
 
-const initUserState = (username = '', email, authToken = null) => ({
+const initUserState = ({username, email, authToken, lots}) => ({
   username,
   email,
+  lots,
   authToken,
   authError: '',
-  lotDir: {},
-  allLots: [],
-  parentLots: [],
-  subLots: [],
-  timestamp: undefined
+  timestamp: Date.now()
 })
-
-const userToState = ({ username, email, authToken, lots }) => {
-  const state = {
-    ...initUserState(username, email, authToken),
-    timestamp: (!!lots) ? Date.now() : null 
-  }
-  if (!!lots?.length) {
-    lots.forEach((lot) => {
-      if (!!lot?.address) {
-        state.lotDir[lot.address] = lot
-        state.allLots.push(lot)
-        if (!lot.parentLot) state.parentLots.push(lot)
-        else state.subLots.push(lot)
-      }
-    })
-  }
-  return state
-}
 
 const persistState = async (state) => { 
   !!state && localStorage.setItem(APP_CACHE, JSON.stringify(state)) 
@@ -54,6 +33,8 @@ export const reducer = (state = loadState(), action = {}) => {
   DEBUG && console.group(action.type);
   DEBUG && console.info('<<< action: ', action);
   switch (action.type) {
+    case 'idle':
+      return { ...state, type: action.type }
     case 'requireAuth': 
       return { ...state, type: action.type,
         authError: action.authError || undefined,
@@ -78,8 +59,7 @@ export const reducer = (state = loadState(), action = {}) => {
       }
     case 'authUser': 
       return { ...state, type: action.type,
-        ...userToState(action.user),
-        timestamp: Date.now()
+        ...initUserState(action.user)
       }
     case 'releaseAuth': 
       return { ...state, type: action.type,
@@ -91,13 +71,7 @@ export const reducer = (state = loadState(), action = {}) => {
       }
     case 'receivedLots':
       return { ...state, type: action.type,
-        ...userToState({
-          username: state.username, 
-          email: state.email,
-          authToken: state.authToken,
-          lots: action.lots || []
-        }),
-        timestamp: Date.now()
+        lots: action.lots || []
       }
     case 'exportLot':
       return { ...state, type: action.type,
@@ -174,9 +148,15 @@ export const userEffects = (state, dispatch) => {
       dispatch({ type: 'requireAuth' })
     }
 
+  } else if ((state.type === 'authUser' || state.type === 'receivedLots') && !!state.lots) {
+    DEBUG && console.info('^^^ trigger effect on state: '+state.type);
+    const { lots, email } = state;
+    dispatch({ type: 'idle' });
+    updateLots(lots, email, () => {});//dispatch({ type: 'hashedLot', hashedLot }));
+
   } else if (!state.timestamp && !!state.authToken) {//auth'd user refreshed browser
     DEBUG && console.info('^^^ trigger effect on state: '+state.type);
-    dispatch({ type: 'receivingLots' })
+    dispatch({ type: 'receivingLots' });
     receiveUserLots(
       state.authToken, 
       (lots) => (!lots) ? dispatch({ type: 'requireAuth', authError: '' }) : 

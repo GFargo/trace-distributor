@@ -5,8 +5,7 @@ import LotForm from '../components/LotForm';
 /* TODO clarify language to use beloe */
 
 const CreateLotPage = ({ 
-  populateFromID, 
-  lots, 
+  populateFromLot,
   handleSubmitLot,
 }) => (
   <div className="mb-24 w-160 text-left">
@@ -20,20 +19,17 @@ const CreateLotPage = ({
     </div>
 
     <LotForm 
-      populateFromID={populateFromID}
-      lots={lots}
+      populateFromLot={populateFromLot}
       handleSubmit={handleSubmitLot}
     />
   </div>
 )
 
-CreateLotPage.defaultProps = {
-  populateFromID: '',
-}
-
 CreateLotPage.propTypes = {
-  populateFromID: PropTypes.string,
-  lots: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  populateFromLot: PropTypes.oneOfType([
+    PropTypes.shape({}),
+    PropTypes.bool,
+  ]).isRequired,
   handleSubmitLot: PropTypes.func.isRequired,
 }
 

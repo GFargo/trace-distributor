@@ -103,7 +103,7 @@ const HARVEST_STATE_TYPE = `
     dryingMethod
   }
 `
-
+/*
 const EXTRACTING_STATE_TYPE = `
   fragment ExtractingType on ExtractingData {
     extractionType
@@ -129,6 +129,35 @@ const EXTRACTED_STATE_TYPE = `
     postWinterizationMass
     solventVolume
     winterizationEfficiency
+    additionalExtraction
+    preAdditionalExtractionMass
+    postAdditionalExtractionMass
+    additionalExtractionEfficiency
+    addedTerpenesDescription
+    terpenesVolume
+    terpenesWeight
+    images {
+      image {
+        hash
+        url
+      }
+      caption
+    }
+  }
+`
+*/
+const EXTRACTING_STATE_TYPE = `
+  fragment ExtractingType on ExtractingData {
+    mailingDate
+    notes
+  }
+`
+
+const EXTRACTED_STATE_TYPE = `
+  fragment ExtractedType on ExtractedData {
+    postGrindingMass
+    notes
+    solventVolume
     additionalExtraction
     preAdditionalExtractionMass
     postAdditionalExtractionMass
@@ -265,6 +294,7 @@ const LOT_TYPE = `
   fragment LotType on Lot {
     name
     address
+    infoFileHash
     organization {
       ...OrgStub
     }
