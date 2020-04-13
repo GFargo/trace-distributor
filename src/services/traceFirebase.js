@@ -4,6 +4,7 @@ import 'firebase/auth';
 import 'firebase/firestore';
 import 'firebase/storage';
 import { useDocument, useCollection } from 'react-firebase-hooks/firestore';
+import { cleanObjectProps } from '../helpers/utils';
 
 const DEBUG = false;
 
@@ -151,29 +152,43 @@ const addImageFile = async (id, name, imageFile) => {
   return url;
 }
 
-const cleanObjectProps = (o) => {
-  //console.log('firebase cleanProductFields, object: ', obj);
-  if (!o || typeof o !== 'object') return o;
-  const obj = {...o}; // TODO replace with deep copy function if needed
-  Object.keys(obj).forEach((key) => {
-    const objType = typeof obj[key];
-    if (!obj[key]) {
-      delete obj[key]
-    } else if (objType === 'object') {
-      cleanObjectProps(obj[key])
-      if (!Object.keys(obj[key]).length) {
-        delete obj[key]
+const uploadImage = async (id, name, image) => {
+  let url = '';
+  if (!!image?.file && image.type === 'file') {
+    url = await addImageFile(id, name, image.file);
+  } else if (!!image?.url && image.type === 'data') {
+    url = await addImageDataURL(id, name, image.url);
+    DEBUG && console.log('firebase uploadImage, url: ', url);
+  } else if (!!image?.url) {
+    url = image.url;
+  }
+  return url;
+}
+
+export const uploadLotImages = async (lot) => {
+  if (!lot.details) return lot;
+  const details = [ ...lot.details ];// Deep copy maybe
+  for (let i=0; i<lot.details.length; i++) {
+    if (!!lot.details[i]?.data?.images?.length){
+      for (let j=0; j<lot.details[i].data.images.length; j++) {
+        if (!!details[i].data.images[j]?.image && (
+            details[i].data.images[j].image.type === 'file' || 
+            details[i].data.images[j].image.type === 'data' )) {
+          const url = await uploadImage(lot.id, details[i].state+j, details[i].data.images[j].image);
+          details[i].data.images[j].image = {url};
+          DEBUG && console.log('firebase uploadLotImages uploaded:', details[i].data.images[j].image);
+        }
       }
-    } else if (objType === 'array' && !obj[key].length) {
-      delete obj[key]
     }
-  })
-  return obj;
+  }
+  const uploadedLot = { ...lot, details };
+  DEBUG && console.log('firebase uploadLotImages uploadedLot: ', uploadedLot);
+  return uploadedLot;
 }
 
 export const genLotID = () => lotsRef.doc().id;
 
-export const updateLots = async (lots, email, calback) => {
+export const updateLots = async (lots, email, callback) => {
   if (!lots || !lots.length) return;
 
   DEBUG && console.log('firebase updateLots, lots: ', lots);
@@ -196,34 +211,27 @@ export const updateLots = async (lots, email, calback) => {
     if (fbLotAddresses.includes(lot.address)) {
       const doc = snap.docs.find(one => one.data().address === lot.address);
       if (!!lot.infoFileHash && !!doc.data().infoFileHash) lot.prevInfoFileHash = doc.data().infoFileHash;
-      doc.set(lot);
+      lotRef(doc.id).set(lot);
       DEBUG && console.log('firebase update Lot, lot: ', lot);
     } else {
       lotsRef.add(lot);
       DEBUG && console.log('firebase add Lot, lot: ', lot);
     }
   });
-  DEBUG && console.log('firebase setProduct lotUpdates complete.');
-  if (!!calback) calback()
+  DEBUG && console.log('firebase lotUpdates complete.');
+  if (!!callback) callback()
 }
 
-export const setLot = async (lot, calback) => {
+export const setLot = async (lot, callback) => {
   if (!lot || !lot.id) {
     console.error('firebase setLot MUST HAVE LOT ID, lot: ', lot);
     return;
   } 
-  const id = lot.id;
 
-  const doc = await lotRef(id);
-  if (!doc || doc.id !== id) return;
+  await lotRef(lot.id).set(lot);
 
-  const cleaned = cleanObjectProps(lot);
-  DEBUG && console.log('firebase setLot, lot: ', cleaned);
-  await doc.set(cleaned);
-
-  //console.log('firebase setProduct complete, id: ', id);
-  if (!!calback) calback(id)
-  return id;
+  if (!!callback) callback()
+  return;
 }
 
 export const genProductID = () => productsRef.doc().id;
@@ -248,36 +256,27 @@ export const setProductProfile = async (product, calback) => {
     product.qrcode.url = await addImageDataURL(id, 'qrcode.png', qrcodeDataURL);
   }
 
-  if (!product.image) product.image = {};
-  if (!!product.productImage?.file && product.productImage.type === 'file') {
-    product.image.url = await addImageFile(id, 'productImage', product.productImage.file);
-  } else if (!!product.productImage?.url && product.productImage.type === 'data') {
-    product.image.url = await addImageDataURL(id, 'productImage', product.productImage.url);
-    DEBUG && console.log('firebase setProduct, product.image.url: ', product.image.url);
-  } else if (!!product.productImage?.url && product.productImage.type === 'firebase') {
-    product.image.url = product.productImage.url
-  } else {
-    product.image.url = '';
+  if (!!product.companyLogo) {
+    if (!product.image || !product.image.url) {
+      product.image = {};
+      product.image.url = await uploadImage(id, 'productImage', product.productImage);
+    }
   }
   delete product.productImage;
 
-  if (!product.company) product.company = {};
-  if (!product.company.logo) product.company.logo = {};
-  if (!!product.companyLogo?.file && product.companyLogo.type === 'file') {
-    product.company.logo.url = await addImageFile(id, 'companyLogo', product.companyLogo.file);
-  } else if (!!product.companyLogo?.url && product.companyLogo.type === 'data') {
-    product.company.logo.url = await addImageDataURL(id, 'companyLogo', product.companyLogo.url);
-  } else if (!!product.companyLogo?.url && product.companyLogo.type === 'firebase') {
-    product.company.logo.url = product.companyLogo.url
-  } else {
-    product.company.logo.url = '';
+  if (!!product.companyLogo) {
+    if (!product.company) product.company = {};
+    if (!product.company.logo || !product.company.logo.url) {
+      product.company.logo = {};
+      product.company.logo.url = await uploadImage(id, 'companyLogo', product.companyLogo);
+    }
   }
   delete product.companyLogo;
 
-  const doc = await productRef(id);
+  const doc = await productRef(id).get();
   if (!doc || doc.id !== id) return;
   const cleaned = cleanObjectProps(product);
-  await doc.set(cleaned);
+  await productRef(id).set(cleaned);
 
   DEBUG && console.log('firebase setProduct complete, id: ', id);
   if (!!calback) calback(id)
@@ -292,17 +291,17 @@ export const deleteProductProfile = async (id) => {
   await store.child(`${id}/productImage`).delete().then(() => {
     DEBUG && console.log('firebase file deleted - productImage, for ID: ', id);
   }).catch(error => {
-    DEBUG && console.log('firebase file does not exist - productImage, for ID: ', id, error);
+    console.error('firebase file does not exist - productImage, for ID: ', id, error);
   });
   await store.child(`${id}/companyLogo`).delete().then(() => {
     DEBUG && console.log('firebase file deleted - companyLogo, for ID: ', id);
   }).catch(error => {
-    DEBUG && console.log('firebase file does not exist - companyLogo, for ID: ', id, error);
+    console.error('firebase file does not exist - companyLogo, for ID: ', id, error);
   });
   await store.child(`${id}/qrcode.png`).delete().then(() => {
     DEBUG && console.log('firebase file deleted - qrcode.png, for ID: ', id);
   }).catch(error => {
-    DEBUG && console.log('firebase file does not exist - qrcode.png, for ID: ', id, error);
+    console.error('firebase file does not exist - qrcode.png, for ID: ', id, error);
   });
   await productRef(id).delete().then(function() {
     DEBUG && console.log('firebase doc deleted, for ID: ', id);
@@ -321,4 +320,5 @@ export default {
   genProductID,
   setProductProfile,
   deleteProductProfile,
+  uploadLotImages,
 }
