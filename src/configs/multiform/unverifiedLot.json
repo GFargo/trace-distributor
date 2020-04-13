@@ -124,7 +124,11 @@
         {
           "type": "image_upload_input",
           "name": "lot-initial-image",
-          "label": "Image"
+          "label": "Image",
+          "options": {
+            "enableCropping": false,
+            "mimeTypes": "image/png, image/jpeg"
+          }
         }
       ]
     },
@@ -168,6 +172,15 @@
           "type": "textarea_input",
           "name": "lot-grow-nutrientCycle",
           "label": "Nutrient Cycle Notes"
+        },
+        {
+          "type": "image_upload_input",
+          "name": "lot-grow-image",
+          "label": "Image",
+          "options": {
+            "enableCropping": false,
+            "mimeTypes": "image/png, image/jpeg"
+          }
         }
       ]
     },
@@ -231,6 +244,24 @@
           "type": "text_input",
           "name": "lot-harvest-dryingMethod",
           "label": "Drying Method"
+        },
+        {
+          "type": "image_upload_input",
+          "name": "lot-harvest-image",
+          "label": "Image",
+          "options": {
+            "enableCropping": false,
+            "mimeTypes": "image/png, image/jpeg"
+          }
+        },
+        {
+          "type": "image_upload_input",
+          "name": "lot-harvest-coa",
+          "label": "COA",
+          "options": {
+            "enableCropping": false,
+            "mimeTypes": "application/pdf, image/pdf, image/png, image/jpeg"
+          }
         }
       ]
     }
