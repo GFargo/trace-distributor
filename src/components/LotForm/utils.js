@@ -10,9 +10,6 @@ export const inflateLot = (data) => {
     if (lotField === 'parentLot' && !lot.parentLot) lot.parentLot = {};
     const lotRef = (lotField === 'lot') ? lot : lot.parentLot
 
-    lotRef.state = 'harvest';
-    lotRef.address = 'unverified';
-
     if (cat === 'lot') {
       lotRef[entry] = value
 
@@ -24,11 +21,19 @@ export const inflateLot = (data) => {
       const state = cat;
       if (state === lotRef.state) {
         if (!lotRef.stateDetails) lotRef.stateDetails = { state, data: {} }
-        lotRef.stateDetails.data[entry] = value
+        if (entry === 'image') {
+          lotRef.stateDetails.data.images = [{ image: value }]
+        } else {
+          lotRef.stateDetails.data[entry] = value
+        }
       }
       if (!lotRef.details) lotRef.details = {}
       if (!lotRef.details[state]) lotRef.details[state] = { state, data: {} }
-      lotRef.details[state].data[entry] = value
+      if (entry === 'image') {
+        lotRef.details[state].data.images = [{ image: value }]
+      } else {
+        lotRef.details[state].data[entry] = value
+      }
     }
   })
 
@@ -51,7 +56,13 @@ export const deflateLot = (lot) => {
     lot.details.forEach((detail) => {
       if (!detail.state || !detail.data) return;
       Object.keys(detail.data).forEach((key) => {
-        if (!!detail.data[key]) parts[`lot-${detail.state}-${key}`] = detail.data[key];
+        if (!!detail.data[key]) {
+          if (key === 'images' && !!detail.data.images.length) {
+            parts[`lot-${detail.state}-image`] = detail.data.images[0].image || {};
+          } else {
+            parts[`lot-${detail.state}-${key}`] = detail.data[key];
+          }
+        }
       })
     })
   }
