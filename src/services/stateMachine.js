@@ -1,6 +1,7 @@
 import { receiveUserLots, loginUser } from './traceAPI';
-import { setProductProfile, setLot, updateLots } from './traceFirebase';
-import { ipfsAddLotState } from './traceIPFS';
+import { setProductProfile, setLot, updateLots, uploadLotImages } from './traceFirebase';
+import { ipfsAddFile } from './traceIPFS';
+import { cleanObjectProps } from '../helpers/utils';
 
 const DEBUG = false;
 
@@ -77,29 +78,14 @@ export const reducer = (state = loadState(), action = {}) => {
       return { ...state, type: action.type,
         lotExport: { 
           ...action.lot,
-          owner: state.email, 
-          created: Date.now(), 
-        }
-      }
-    case 'hashingLot':
-      return { ...state, type: action.type }
-    case 'hashedLot':
-      return { ...state, type: action.type,
-        hashedLot: {
-          ...action.hashedLot
+          owner: (!action.lot.owner ? state.email : action.lot.owner), 
+          created: (!action.lot.created ? Date.now() : action.lot.created), 
         }
       }
     case 'exportingLot':
       return { ...state, type: action.type }
     case 'exportedLot':
       return { ...state, type: action.type }
-    case 'ipfsUploadingLot':
-      return { ...state, type: action.type }
-    case 'ipfsUploadedLot':
-      return { ...state, type: action.type,
-        lotExport: undefined,
-        hashedLot: undefined
-      }
     case 'exportProductProfile':
       return { ...state, type: action.type,
         productProfileExport: { 
@@ -125,6 +111,40 @@ export const appEffects = () => {
   return () => {
     DEBUG && console.info('unmounted');
   }
+}
+
+const exportLot = async (lotExport, callback) => {
+  console.log('stateMachine exportLot lotExport: ', lotExport);
+  let lot = await uploadLotImages(lotExport);
+  DEBUG && console.log('stateMachine exportLot uploadLotImages: ', lot);
+  const prevInfoFileHash = lot.infoFileHash;
+  delete lot.infoFileHash;
+  lot = cleanObjectProps(lot);
+  DEBUG && console.log('stateMachine exportLot cleaned: ', lot);
+  let infoFileHash = await ipfsAddFile(lot, true);
+  if (!!prevInfoFileHash && infoFileHash === prevInfoFileHash) {
+    DEBUG && console.log('stateMachine exportLot NO CHANGES');
+    if (!!callback) callback();
+    return;
+  } else if (!!prevInfoFileHash) {
+    lot.prevInfoFileHash = prevInfoFileHash;
+    DEBUG && console.log('stateMachine exportLot Existing: ', lot);
+    infoFileHash = await ipfsAddFile(lot, true);
+  } else {
+    DEBUG && console.log('stateMachine exportLot New: ', lot);
+  }
+  const updateLot = {...lot, infoFileHash}
+  DEBUG && console.log('stateMachine exportLot updateLot: ', updateLot);
+  
+  await setLot(updateLot);
+
+  if (!!callback) callback();
+
+  const checkInfoFileHash = await ipfsAddFile(lot, false);
+
+  DEBUG && (checkInfoFileHash === infoFileHash) 
+    ? console.log('stateMachine exportLot CHECK PASS')
+    : console.log('stateMachine exportLot CHECK FAIL');
 }
 
 export const userEffects = (state, dispatch) => {
@@ -166,20 +186,8 @@ export const userEffects = (state, dispatch) => {
   } else if (state.type === 'exportLot' && !!state.lotExport) {
     DEBUG && console.info('^^^ trigger effect on state: '+state.type);
     const { lotExport } = state
-    dispatch({ type: 'hashingLot' })
-    ipfsAddLotState(lotExport, true, (hashedLot) => dispatch({ type: 'hashedLot', hashedLot }));
-
-  } else if (state.type === 'hashedLot' && !!state.hashedLot) {
-    DEBUG && console.info('^^^ trigger effect on state: '+state.type);
-    const { hashedLot } = state
     dispatch({ type: 'exportingLot' })
-    setLot(hashedLot, () => dispatch({ type: 'exportedLot'}));
-
-  } else if (state.type === 'exportedLot' && !!state.lotExport) {
-    DEBUG && console.info('^^^ trigger effect on state: '+state.type);
-    const { lotExport } = state
-    dispatch({ type: 'ipfsUploadingLot' })
-    ipfsAddLotState(lotExport, false, () => dispatch({ type: 'ipfsUploadedLot' }));
+    exportLot(lotExport, () => dispatch({ type: 'exportedLot'}));
 
   } else if (state.type === 'exportProductProfile' && !!state.productProfileExport) {
     DEBUG && console.info('^^^ trigger effect on state: '+state.type);
