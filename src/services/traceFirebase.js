@@ -171,14 +171,26 @@ export const uploadLotImages = async (lot) => {
   for (let i=0; i<lot.details.length; i++) {
     if (!!lot.details[i]?.data?.images?.length){
       for (let j=0; j<lot.details[i].data.images.length; j++) {
-        if (!!details[i].data.images[j]?.image && (
-            details[i].data.images[j].image.type === 'file' || 
-            details[i].data.images[j].image.type === 'data' )) {
-          const url = await uploadImage(lot.id, details[i].state+j, details[i].data.images[j].image);
+        if (!!details[i].data.images[j]?.image &&
+            details[i].data.images[j].image.type === 'file') {
+          const url = await uploadImage(
+            lot.id,
+            details[i].state+'-image-'+details[i].data.images[j].image.name,
+            details[i].data.images[j].image
+          );
           details[i].data.images[j].image = {url};
-          DEBUG && console.log('firebase uploadLotImages uploaded:', details[i].data.images[j].image);
+          DEBUG && console.log('firebase uploadLotImages IMAGE uploaded:', details[i].data.images[j].image);
         }
       }
+    }
+    if (!!lot.details[i].data.coa && lot.details[i].data.coa.type === 'file') {
+      const url = await uploadImage(
+        lot.id,
+        details[i].state+'-coa-'+details[i].data.coa.name,
+        details[i].data.coa
+      );
+      details[i].data.coa = {url};
+      DEBUG && console.log('firebase uploadLotImages COA uploaded:', details[i].data.coa);
     }
   }
   const uploadedLot = { ...lot, details };
