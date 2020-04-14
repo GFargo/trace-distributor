@@ -7,9 +7,9 @@ import SelectDropdownInput from '../../core/src/components/MultiForm/parts/Selec
 import USStates from '../../core/src/components/MultiForm/constants/USStates';
 import InputWrapper from '../../core/src/components/MultiForm/parts/InputWrapper';
 import { genProductID } from '../../services/traceFirebase';
-import FileUpload from '../../core/src/components/Forms/FileUpload';
+import FileUpload from '../../core/src/components/Elements/FileUpload';
 import QRCodeView from '../QRCodeView';
-import ImageCropper from '../../core/src/components/Forms/ImageCropper';
+import ImageCropper from '../../core/src/components/Elements/ImageCropper';
 import LotDetailSelector from './components/LotDetailSelector';
 import CertificationCheckboxes from './components/CertificationCheckboxes';
 import PackagingDatePicker from './components/PackagingDatePicker';
