@@ -122,7 +122,7 @@
           "label": "Seed or Clone Amount"
         },
         {
-          "type": "image_upload_input",
+          "type": "file_upload_input",
           "name": "lot-initial-image",
           "label": "Image",
           "options": {
@@ -174,7 +174,7 @@
           "label": "Nutrient Cycle Notes"
         },
         {
-          "type": "image_upload_input",
+          "type": "file_upload_input",
           "name": "lot-grow-image",
           "label": "Image",
           "options": {
@@ -246,7 +246,7 @@
           "label": "Drying Method"
         },
         {
-          "type": "image_upload_input",
+          "type": "file_upload_input",
           "name": "lot-harvest-image",
           "label": "Image",
           "options": {
@@ -255,7 +255,7 @@
           }
         },
         {
-          "type": "image_upload_input",
+          "type": "file_upload_input",
           "name": "lot-harvest-coa",
           "label": "COA",
           "options": {
