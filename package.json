@@ -23,6 +23,7 @@
     "react-dom": "^16.12.0",
     "react-easy-crop": "^2.1.0",
     "react-firebase-hooks": "^2.1.1",
+    "react-lottie-wrapper": "^1.1.4",
     "react-modal": "^3.11.1",
     "react-pose": "^4.0.10",
     "react-router-dom": "^5.1.2",
