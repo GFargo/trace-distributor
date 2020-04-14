@@ -59,9 +59,6 @@
     ],
     "coveragePathIgnorePatterns": [
       "**/core/**"
-    ],
-    "setupFiles": [
-      "jest-canvas-mock"
     ]
   },
   "browserslist": {
