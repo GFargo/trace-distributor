@@ -69,8 +69,7 @@
         {
           "type": "date_input",
           "name": "lot-initial-datePlanted",
-          "label": "Date Planted",
-          "required": true
+          "label": "Date Planted"
         },
         {
           "type": "text_input",
@@ -121,6 +120,15 @@
           "type": "numeric_input",
           "name": "lot-initial-seedOrCloneAmount",
           "label": "Seed or Clone Amount"
+        },
+        {
+          "type": "file_upload_input",
+          "name": "lot-initial-image",
+          "label": "Image",
+          "options": {
+            "enableCropping": false,
+            "mimeTypes": "image/png, image/jpeg"
+          }
         }
       ]
     },
@@ -143,8 +151,7 @@
         {
           "type": "date_input",
           "name": "lot-grow-floweringDate",
-          "label": "Flowering Date",
-          "required": true
+          "label": "Flowering Date"
         },
         {
           "type": "textarea_input",
@@ -165,6 +172,15 @@
           "type": "textarea_input",
           "name": "lot-grow-nutrientCycle",
           "label": "Nutrient Cycle Notes"
+        },
+        {
+          "type": "file_upload_input",
+          "name": "lot-grow-image",
+          "label": "Image",
+          "options": {
+            "enableCropping": false,
+            "mimeTypes": "image/png, image/jpeg"
+          }
         }
       ]
     },
@@ -228,6 +244,24 @@
           "type": "text_input",
           "name": "lot-harvest-dryingMethod",
           "label": "Drying Method"
+        },
+        {
+          "type": "file_upload_input",
+          "name": "lot-harvest-image",
+          "label": "Image",
+          "options": {
+            "enableCropping": false,
+            "mimeTypes": "image/png, image/jpeg"
+          }
+        },
+        {
+          "type": "file_upload_input",
+          "name": "lot-harvest-coa",
+          "label": "COA",
+          "options": {
+            "enableCropping": false,
+            "mimeTypes": "application/pdf, image/pdf, image/png, image/jpeg"
+          }
         }
       ]
     }

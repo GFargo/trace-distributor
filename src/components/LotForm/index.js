@@ -14,6 +14,9 @@ class LotForm extends PureComponent {
     this.state = (!!populateFromLot) ? {
       id: populateFromLot.id,
       infoFileHash: !!populateFromLot.infoFileHash ? populateFromLot.infoFileHash : null,
+      prevInfoFileHash: !!populateFromLot.prevInfoFileHash ? populateFromLot.prevInfoFileHash : null,
+      created: !!populateFromLot.created ? populateFromLot.created : null,
+      owner: !!populateFromLot.owner ? populateFromLot.owner : null,
       formData: deflateLot(populateFromLot),
     } : {
       id: genLotID(),
@@ -24,19 +27,37 @@ class LotForm extends PureComponent {
     //console.log('CONSTR STATE ', this.state)
   }
 
-  render() {
+  submitLot = () => { 
     const { handleSubmit } = this.props;
-    const { id, infoFileHash, formData } = this.state;
-    const isDisabled = (!formData || !formData['lot-lot-name'])
-    //console.log('RENDER STATE ', this.state)
-    //console.log('RENDER LOT ', inflateLot(formData))
+    const { id, infoFileHash, prevInfoFileHash, created, owner, formData } = this.state;
+    if (!formData || !formData['lot-lot-name']) return;
+
+    handleSubmit({ 
+      ...inflateLot(formData),
+      id, 
+      infoFileHash,
+      prevInfoFileHash,
+      created,
+      owner,
+      address: 'unverified',
+      state: 'harvest',
+    });
+
+    this.setState({ ...this.state, formData: {} });//clear data
+  }
+
+  render() {
+    const { formData } = this.state;
+    
+    console.log('RENDER STATE ', this.state)
+    console.log('RENDER LOT ', inflateLot(formData))
 
     return (
       <div>
         <MultiForm
           onCloseRedirect="/distributor/lots"
-          onUpdate={ data => this.setState({ ...this.state, formData: data })}
-          onSubmit={ () => { !isDisabled && handleSubmit({ id, infoFileHash, ...inflateLot(formData) }) }}
+          onUpdate={data => this.setState({ ...this.state, formData: data })}
+          onSubmit={this.submitLot}
           saveOnStepChange={true}
           formData={formData}
           sidebar={false}
