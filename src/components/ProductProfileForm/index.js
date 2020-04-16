@@ -22,8 +22,11 @@ import ProductCompany from '../../core/src/components/PublicProduct/Components/P
 import LotDetails from '../../core/src/components/PublicProduct/Components/LotDetails';
 
 
-const { REACT_APP_TRACE_DIRECTORY } = process.env;
-const productProfileAddress = (id) => `${REACT_APP_TRACE_DIRECTORY}${id}`;
+const TRACE_DIRECTORY =
+  process.env.REACT_APP_TRACE_DIRECTORY ||
+  'https://trace.directory/lot/';
+  
+const productProfileAddress = (id) => `${TRACE_DIRECTORY}${id}`;
 
 const inflateLotSelection = (selection) => {
   const lot = {}

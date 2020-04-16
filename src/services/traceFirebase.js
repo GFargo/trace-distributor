@@ -8,18 +8,16 @@ import { cleanObjectProps } from '../helpers/utils';
 
 const DEBUG = false;
 
-const { 
-  REACT_APP_FIREBASE_APIKEY, 
-  REACT_APP_FIRESTORE_PRODUCTS_DB_NAME = 'product-profiles-dev',
-  REACT_APP_FIRESTORE_LOTS_DB_NAME = 'lots-dev',
-  REACT_APP_FIREBASE_AUTH_EMAIL,
-  REACT_APP_FIREBASE_AUTH_PW 
-} = process.env;
-//console.log('firebase init, process.env: ', process.env);
+const PRODUCTS_COLLECTION_NAME =
+  process.env.REACT_APP_FIRESTORE_PRODUCTS_COLLECTION_NAME || 
+  'product-profiles-dev';
 
-// TODO move secrets to env vars
+const LOTS_COLLECTION_NAME =
+  process.env.REACT_APP_FIRESTORE_LOTS_COLLECTION_NAME || 
+  'lots-dev';
+
 const firebaseConfig = {
-  apiKey: REACT_APP_FIREBASE_APIKEY,
+  apiKey: process.env.REACT_APP_FIREBASE_APIKEY,
   authDomain: "trace-public-product-backend.firebaseapp.com",
   databaseURL: "https://trace-public-product-backend.firebaseio.com",
   projectId: "trace-public-product-backend",
@@ -34,8 +32,8 @@ DEBUG && console.log('firebase init, firebase: ', firebase);
 
 const auth = firebase.auth();
 auth.signInWithEmailAndPassword(
-  REACT_APP_FIREBASE_AUTH_EMAIL, 
-  REACT_APP_FIREBASE_AUTH_PW
+  process.env.REACT_APP_FIREBASE_AUTH_EMAIL,
+  process.env.REACT_APP_FIREBASE_AUTH_PW
 ).catch( error => {
   console.error('firebase auth error: ', error.message);
 });
@@ -43,7 +41,7 @@ auth.signInWithEmailAndPassword(
 const store = firebase.storage().ref();
 const db = firebase.firestore();
 
-const lotsRef = db.collection(REACT_APP_FIRESTORE_LOTS_DB_NAME);
+const lotsRef = db.collection(LOTS_COLLECTION_NAME);
 const lotRef = (id) => lotsRef.doc(id);
 
 const userLotsRef = (email) => !!email && lotsRef.where("owner", "==", email);
@@ -73,7 +71,7 @@ export const useLots = (email) => {
   ]
 }
 
-const productsRef = db.collection(REACT_APP_FIRESTORE_PRODUCTS_DB_NAME);
+const productsRef = db.collection(PRODUCTS_COLLECTION_NAME);
 
 const userProductsRef = (email) => !!email && productsRef.where("owner", "==", email);
 const lotProductsRef = (address) => productsRef.where("productLot", "==", address);

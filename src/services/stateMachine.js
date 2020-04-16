@@ -5,7 +5,9 @@ import { cleanObjectProps } from '../helpers/utils';
 
 const DEBUG = false;
 
-const APP_CACHE = 'trace-app';
+const LOCAL_CACHE_NAME =
+  process.env.REACT_APP_LOCAL_CACHE_NAME ||
+  'trace-product-portal-dev';
 
 const initGuestState = () => ({
   username: 'guest',
@@ -23,10 +25,10 @@ const initUserState = ({username, email, authToken, lots}) => ({
 })
 
 const persistState = async (state) => { 
-  !!state && localStorage.setItem(APP_CACHE, JSON.stringify(state)) 
+  !!state && localStorage.setItem(LOCAL_CACHE_NAME, JSON.stringify(state)) 
 }
 
-export const loadState = (state = localStorage.getItem(APP_CACHE)) => (!!state) ? 
+export const loadState = (state = localStorage.getItem(LOCAL_CACHE_NAME)) => (!!state) ? 
   {...JSON.parse(state), timestamp: undefined, type: undefined} : 
   {...initGuestState()}
 
@@ -172,7 +174,7 @@ export const userEffects = (state, dispatch) => {
     DEBUG && console.info('^^^ trigger effect on state: '+state.type);
     const { lots, email } = state;
     dispatch({ type: 'idle' });
-    updateLots(lots, email, () => {});//dispatch({ type: 'hashedLot', hashedLot }));
+    updateLots(lots, email, () => {});
 
   } else if (!state.timestamp && !!state.authToken) {//auth'd user refreshed browser
     DEBUG && console.info('^^^ trigger effect on state: '+state.type);
