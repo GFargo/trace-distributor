@@ -2,15 +2,40 @@
   functions = "functions-build"
   command = "yarn build"
   publish = "build"
+  environment = { 
+    REACT_APP_TRACE_DIRECTORY='https://trace.directory/lot/',
+    REACT_APP_FIREBASE_APIKEY='AIzaSyA50fd2T2VVBORsYFCGIRBfwamCGJhoRiM',
+    REACT_APP_FIREBASE_AUTH_EMAIL='dev@tracevt.com',
+    REACT_APP_FIREBASE_AUTH_PW='trace2020',
+    REACT_APP_IPFS_SERVER='ipfs.infura.io',
+    REACT_APP_IPFS_PORT=5001,
+    REACT_APP_IPFS_PROTOCOL='https',
+    REACT_APP_IPFS_PATH='trace-data/'
+  }
   
+[context.develop.environment]
   REACT_APP_API_ENDPOINT='https://trace-backend-dev-pr-204.herokuapp.com'
   REACT_APP_FIRESTORE_PRODUCTS_DB_NAME='product-profiles-dev'
   REACT_APP_FIRESTORE_LOTS_DB_NAME='lots-dev'
+  REACT_APP_LOCAL_CACHE_NAME='trace-product-portal-dev'
 
-[context.production]
+[context.deploy-preview.environment]
+  REACT_APP_API_ENDPOINT='https://trace-backend-dev-pr-204.herokuapp.com'
+  REACT_APP_FIRESTORE_PRODUCTS_DB_NAME='product-profiles-dev'
+  REACT_APP_FIRESTORE_LOTS_DB_NAME='lots-dev'
+  REACT_APP_LOCAL_CACHE_NAME='trace-product-portal-dev'
+
+[context.deploy-preview.processing]
+  skip_processing = true
+
+[context.production.environment]
   REACT_APP_API_ENDPOINT='https://trace-backend-prod.herokuapp.com'
   REACT_APP_FIRESTORE_PRODUCTS_DB_NAME='product-profiles'
   REACT_APP_FIRESTORE_LOTS_DB_NAME='lots'
+  REACT_APP_LOCAL_CACHE_NAME='trace-product-portal'
 
 [context.production.processing]
   skip_processing = false
+
+[context.production.processing.images]
+  compress = false
