@@ -53,13 +53,13 @@ const LotDetailSelector = ({ lot, labelOverrides, onOverrideLabel, selection, on
         <input 
           type="checkbox" 
           className="w-auto mr-2"
-          id={lot.id+name} 
+          id={`${lot.id}-${name}`} 
           checked={!!selection[name]} 
           onChange={() => onToggleSelection(name, value)}
         />
         <label
           className={"custom-control-label " + (!selection[name] ? "text-gray-500" : "")}
-          htmlFor={lot.id+name}
+          htmlFor={`${lot.id}-${name}`}
         >
           <strong className={((!!labelOverrides[name] && !!selection[name]) ? "text-gold-500" : (!!labelOverrides[name]) ? "text-gold-200" : "")}>
             {labelOverrides[name] ? labelOverrides[name]+':' : label+':'}
