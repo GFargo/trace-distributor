@@ -14,13 +14,13 @@
   REACT_APP_IPFS_PATH = 'trace-data/'
   
 [context.develop.environment]
-  REACT_APP_API_ENDPOINT = 'https://trace-backend-dev-pr-204.herokuapp.com'
+  REACT_APP_API_ENDPOINT = 'https://trace-backend-dev.herokuapp.com'
   REACT_APP_FIRESTORE_PRODUCTS_COLLECTION_NAME = 'product-profiles-dev'
   REACT_APP_FIRESTORE_LOTS_COLLECTION_NAME = 'lots-dev'
   REACT_APP_LOCAL_CACHE_NAME = 'trace-product-portal-dev'
 
 [context.deploy-preview.environment]
-  REACT_APP_API_ENDPOINT = 'https://trace-backend-dev-pr-204.herokuapp.com'
+  REACT_APP_API_ENDPOINT = 'https://trace-backend-dev.herokuapp.com'
   REACT_APP_FIRESTORE_PRODUCTS_COLLECTION_NAME = 'product-profiles-dev'
   REACT_APP_FIRESTORE_LOTS_COLLECTION_NAME = 'lots-dev'
   REACT_APP_LOCAL_CACHE_NAME = 'trace-product-portal-dev'
