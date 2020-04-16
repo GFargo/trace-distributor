@@ -5,7 +5,9 @@ import { cleanObjectProps } from '../helpers/utils';
 
 const DEBUG = false;
 
-const APP_CACHE = 'trace-app';
+const LOCAL_CACHE_NAME =
+  process.env.REACT_APP_LOCAL_CACHE_NAME ||
+  'trace-product-portal-dev';
 
 const initGuestState = () => ({
   username: 'guest',
@@ -23,10 +25,10 @@ const initUserState = ({username, email, authToken, lots}) => ({
 })
 
 const persistState = async (state) => { 
-  !!state && localStorage.setItem(APP_CACHE, JSON.stringify(state)) 
+  !!state && localStorage.setItem(LOCAL_CACHE_NAME, JSON.stringify(state)) 
 }
 
-export const loadState = (state = localStorage.getItem(APP_CACHE)) => (!!state) ? 
+export const loadState = (state = localStorage.getItem(LOCAL_CACHE_NAME)) => (!!state) ? 
   {...JSON.parse(state), timestamp: undefined, type: undefined} : 
   {...initGuestState()}
 
