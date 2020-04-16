@@ -174,7 +174,7 @@ export const userEffects = (state, dispatch) => {
     DEBUG && console.info('^^^ trigger effect on state: '+state.type);
     const { lots, email } = state;
     dispatch({ type: 'idle' });
-    updateLots(lots, email, () => {});//dispatch({ type: 'hashedLot', hashedLot }));
+    updateLots(lots, email, () => {});
 
   } else if (!state.timestamp && !!state.authToken) {//auth'd user refreshed browser
     DEBUG && console.info('^^^ trigger effect on state: '+state.type);
