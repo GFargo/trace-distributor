@@ -2,9 +2,9 @@ import 'whatwg-fetch'
 
 const DEBUG = false;
 
-const {
-  REACT_APP_API_ENDPOINT: ENDPOINT_HOST = 'https://trace-backend-dev-pr-204.herokuapp.com',
-} = process.env;
+const ENDPOINT_HOST =
+  process.env.REACT_APP_API_ENDPOINT ||
+  'https://trace-backend-dev.herokuapp.com';
 
 const GRAPHQL_PATH = ENDPOINT_HOST + "/graphql/"
 
