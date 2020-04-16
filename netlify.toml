@@ -2,16 +2,16 @@
   functions = "functions-build"
   command = "yarn build"
   publish = "build"
-  environment = { 
-    REACT_APP_TRACE_DIRECTORY='https://trace.directory/lot/',
-    REACT_APP_FIREBASE_APIKEY='AIzaSyA50fd2T2VVBORsYFCGIRBfwamCGJhoRiM',
-    REACT_APP_FIREBASE_AUTH_EMAIL='dev@tracevt.com',
-    REACT_APP_FIREBASE_AUTH_PW='trace2020',
-    REACT_APP_IPFS_SERVER='ipfs.infura.io',
-    REACT_APP_IPFS_PORT=5001,
-    REACT_APP_IPFS_PROTOCOL='https',
-    REACT_APP_IPFS_PATH='trace-data/'
-  }
+
+[build.environment]
+  REACT_APP_TRACE_DIRECTORY='https://trace.directory/lot/'
+  REACT_APP_FIREBASE_APIKEY='AIzaSyA50fd2T2VVBORsYFCGIRBfwamCGJhoRiM'
+  REACT_APP_FIREBASE_AUTH_EMAIL='dev@tracevt.com'
+  REACT_APP_FIREBASE_AUTH_PW='trace2020'
+  REACT_APP_IPFS_SERVER='ipfs.infura.io'
+  REACT_APP_IPFS_PORT=5001
+  REACT_APP_IPFS_PROTOCOL='https'
+  REACT_APP_IPFS_PATH='trace-data/'
   
 [context.develop.environment]
   REACT_APP_API_ENDPOINT='https://trace-backend-dev-pr-204.herokuapp.com'
