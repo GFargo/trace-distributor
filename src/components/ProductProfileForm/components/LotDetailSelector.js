@@ -53,13 +53,13 @@ const LotDetailSelector = ({ lot, labelOverrides, onOverrideLabel, selection, on
         <input 
           type="checkbox" 
           className="w-auto mr-2"
-          id={lot.address+name} 
+          id={`${lot.id}-${name}`} 
           checked={!!selection[name]} 
           onChange={() => onToggleSelection(name, value)}
         />
         <label
           className={"custom-control-label " + (!selection[name] ? "text-gray-500" : "")}
-          htmlFor={lot.address + name}
+          htmlFor={`${lot.id}-${name}`}
         >
           <strong className={((!!labelOverrides[name] && !!selection[name]) ? "text-gold-500" : (!!labelOverrides[name]) ? "text-gold-200" : "")}>
             {labelOverrides[name] ? labelOverrides[name]+':' : label+':'}
@@ -205,6 +205,7 @@ const LotDetailSelector = ({ lot, labelOverrides, onOverrideLabel, selection, on
 
 LotDetailSelector.defaultProps = {
   lot: {
+    id: '',
     address: '',
     name: '',
     parentLot: null,
@@ -217,6 +218,7 @@ LotDetailSelector.defaultProps = {
 
 LotDetailSelector.propTypes = {
   lot: PropTypes.shape({
+    id: PropTypes.string,
     address: PropTypes.string,
     name: PropTypes.string,
     parentLot: PropTypes.shape({}),
