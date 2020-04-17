@@ -24,7 +24,7 @@ import LotDetails from '../../core/src/components/PublicProduct/Components/LotDe
 
 const TRACE_DIRECTORY =
   process.env.REACT_APP_TRACE_DIRECTORY ||
-  'https://trace.directory/lot/';
+  'https://develop.trace.directory/lot/';
   
 const productProfileAddress = (id) => `${TRACE_DIRECTORY}${id}`;
 
