@@ -9,6 +9,10 @@ import { localizeDateFromString } from '../../core/src/utils/date-time/utils'
 import { deleteProductProfile } from '../../services/traceFirebase';
 
 
+const TRACE_DIRECTORY =
+  process.env.REACT_APP_TRACE_DIRECTORY ||
+  'https://develop.trace.directory/lot/';
+
 const ProductProfilesTable = ({ productsCollection }) => {
   
   const [ products, loading, error ] = productsCollection;
@@ -44,7 +48,7 @@ const ProductProfilesTable = ({ productsCollection }) => {
       name: 'page',
       displayName: 'Profile Page',
       displayValue: (product) => (
-        !!product?.id && !!product?.url && (
+        !!product?.id && (
           <span className="">
             <a className="" target="_blank" rel="noopener noreferrer" href={product.qrcode.url}>
               <span className="icon icon-qrcode mr-2 text-2xl text-gold-500 hover:text-gold-900" data-toggle="tooltip" data-placement="top" title="View QR Code"></span>
@@ -53,7 +57,7 @@ const ProductProfilesTable = ({ productsCollection }) => {
               className="" 
               target="_blank" 
               rel="noopener noreferrer" 
-              href={product.url}
+              href={`${TRACE_DIRECTORY}${product.id}`}
             >
               <span className="icon icon-file-o mr-2 text-2xl text-gold-500 hover:text-gold-900" data-toggle="tooltip" data-placement="top" title="View Profile"></span>
             </a>
