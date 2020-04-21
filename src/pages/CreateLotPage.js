@@ -14,7 +14,7 @@ const CreateLotPage = ({
         Create Lot
       </h3>
       <p className="text-sm text-left mb-2 pr-10">
-        Something something supply chain lot.
+        Enter lot information and cultivation details.
       </p>
     </div>
 
