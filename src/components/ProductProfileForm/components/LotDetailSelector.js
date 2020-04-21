@@ -181,6 +181,24 @@ const LotDetailSelector = ({ lot, labelOverrides, onOverrideLabel, selection, on
           label="Nutrient Cycle Notes"
           value={getLotStateField(cultLot, 'grow', 'nutrientCycle')}
         />}
+      {!!getLotStateField(cultLot, 'initial', 'images')?.length &&
+        <CheckboxListItem
+          name={`${lotRef}-initial-image`}
+          label="Initial Image"
+          value={getLotStateField(cultLot, 'initial', 'images')[0].image}
+        />}
+      {!!getLotStateField(cultLot, 'grow', 'images')?.length &&
+        <CheckboxListItem
+          name={`${lotRef}-grow-image`}
+          label="Grow Image"
+          value={getLotStateField(cultLot, 'grow', 'images')[0].image}
+        />}
+      {!!getLotStateField(cultLot, 'harvest', 'images')?.length &&
+        <CheckboxListItem
+          name={`${lotRef}-harvest-image`}
+          label="Harvest Image"
+          value={getLotStateField(cultLot, 'harvest', 'images')[0].image}
+        />}
       {!!getLotStateField(cultLot, 'harvest', 'coa') &&
         <CheckboxListItem
           name={`${lotRef}-harvest-coa`}

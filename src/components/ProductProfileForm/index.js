@@ -51,7 +51,11 @@ const inflateLotSelection = (selection) => {
       const state = cat;
       if (!lotRef.details) lotRef.details = {}
       if (!lotRef.details[state]) lotRef.details[state] = { state, data: {} }
-      lotRef.details[state].data[entry] = value
+      if (entry === 'image') {
+        lotRef.details[state].data.images = !!value ? [{ image: value }] : null
+      } else {
+        lotRef.details[state].data[entry] = value
+      }
     }
   })
 
@@ -74,7 +78,11 @@ const deflateLotSelection = (lot) => {
     lot.details.forEach((detail) => {
       if (!detail.state || !detail.data) return;
       Object.keys(detail.data).forEach((key) => {
-        if (!!detail.data[key]) parts[`lot-${detail.state}-${key}`] = detail.data[key];
+        if (key === 'images' && !!detail.data.images && !!detail.data.images.length) {
+          parts[`lot-${detail.state}-image`] = detail.data.images[0].image;
+        } else if (!!detail.data[key]) {
+          parts[`lot-${detail.state}-${key}`] = detail.data[key];
+        }
       })
     })
   }
@@ -86,7 +94,11 @@ const deflateLotSelection = (lot) => {
     lot.parentLot.details.forEach((detail) => {
       if (!detail.state || !detail.data) return;
       Object.keys(detail.data).forEach((key) => {
-        if (!!detail.data[key]) parts[`parentLot-${detail.state}-${key}`] = detail.data[key];
+        if (key === 'images' && !!detail.data.images && !!detail.data.images.length) {
+          parts[`parentLot-${detail.state}-image`] = detail.data.images[0].image;
+        } else if (!!detail.data[key]) {
+          parts[`parentLot-${detail.state}-${key}`] = detail.data[key];
+        }
       })
     })
   }
