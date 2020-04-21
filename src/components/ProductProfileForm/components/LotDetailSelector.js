@@ -73,7 +73,7 @@ const LotDetailSelector = ({ lot, labelOverrides, onOverrideLabel, selection, on
               target="_blank"
               rel="noopener noreferrer"
             >
-              PDF File
+              view
             </a>
           ) : value}
         </label>
