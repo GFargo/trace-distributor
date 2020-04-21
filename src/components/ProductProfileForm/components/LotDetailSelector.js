@@ -181,6 +181,12 @@ const LotDetailSelector = ({ lot, labelOverrides, onOverrideLabel, selection, on
           label="Nutrient Cycle Notes"
           value={getLotStateField(cultLot, 'grow', 'nutrientCycle')}
         />}
+      {!!getLotStateField(cultLot, 'harvest', 'coa') &&
+        <CheckboxListItem
+          name={`${lotRef}-harvest-coa`}
+          label="Harvest COA"
+          value={getLotStateField(cultLot, 'harvest', 'coa')}
+        />}
       {!!lot.parentLot &&
         <SectionTitle title="EXTRACTION INFORMATION" />}
       {!!lot.parentLot && !!lot.name &&
