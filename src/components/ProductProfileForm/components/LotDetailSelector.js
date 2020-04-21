@@ -64,7 +64,18 @@ const LotDetailSelector = ({ lot, labelOverrides, onOverrideLabel, selection, on
           <strong className={((!!labelOverrides[name] && !!selection[name]) ? "text-gold-500" : (!!labelOverrides[name]) ? "text-gold-200" : "")}>
             {labelOverrides[name] ? labelOverrides[name]+':' : label+':'}
           </strong>
-          &nbsp;{value}
+          &nbsp;
+          {(typeof value === 'object' && value.url) ? (
+            <a
+              key={name}
+              className="p-3 hover:text-gold-500 text-italic text-underline"
+              href={value.url}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              view
+            </a>
+          ) : value}
         </label>
         <span className="" data-toggle="tooltip" data-placement="top" title="Override Label">
           <Button
@@ -82,7 +93,10 @@ const LotDetailSelector = ({ lot, labelOverrides, onOverrideLabel, selection, on
   CheckboxListItem.propTypes = {
     name: PropTypes.string.isRequired,
     label: PropTypes.string.isRequired,
-    value: PropTypes.string.isRequired,
+    value: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.shape({}),
+    ]).isRequired,
   }
 
   const SectionTitle = ({ title }) => (
@@ -166,6 +180,12 @@ const LotDetailSelector = ({ lot, labelOverrides, onOverrideLabel, selection, on
           name={`${lotRef}-grow-nutrientCycle`}
           label="Nutrient Cycle Notes"
           value={getLotStateField(cultLot, 'grow', 'nutrientCycle')}
+        />}
+      {!!getLotStateField(cultLot, 'harvest', 'coa') &&
+        <CheckboxListItem
+          name={`${lotRef}-harvest-coa`}
+          label="Harvest COA"
+          value={getLotStateField(cultLot, 'harvest', 'coa')}
         />}
       {!!lot.parentLot &&
         <SectionTitle title="EXTRACTION INFORMATION" />}
