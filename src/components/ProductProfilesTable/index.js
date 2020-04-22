@@ -34,6 +34,16 @@ const ProductProfilesTable = ({ productsCollection }) => {
       sortable: (product) => localizeDateFromString(new Date(product.created))
     },
     {
+      name: 'lots',
+      displayName: '# of Lots',
+      displayValue: (product) => (!!product?.lots && !!Object.keys(product.lots).length) 
+        ? Object.keys(product.lots).length 
+        : 0,
+      sortable: (product) => (!!product?.lots && !!Object.keys(product.lots).length) 
+        ? Object.keys(product.lots).length 
+        : 0
+    },
+    {
       name: 'address',
       displayName: 'Blockchain Address',
       displayValue: (product) => (
