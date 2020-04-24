@@ -45,11 +45,11 @@ const UserLayout = ({
       type="sidebar"
       headerDisplayLogo={false}
       headerIsFluid
-      headerNavContainerClass="w-full"
+      headerNavContainerClass=""
       headerNav={(
-        <React.Fragment>
+        <>
           {!!username && (
-            <div className="mr-64">
+            <div className="w-full lg:-ml-8 mr-64">
               <p className="">
                 Hello, <Link className="text-gold-800" to="/distributor/settings/"><strong>{username}</strong></Link>
               </p>
@@ -57,7 +57,7 @@ const UserLayout = ({
           )}
 
           {!!username && showCreateLotButton && (
-            <div className="ml-32">
+            <div className="ml-32 lg:-mr-8">
               <ul className="flex flex items-center font-body">
                 <Button 
                   type="link"
@@ -66,14 +66,14 @@ const UserLayout = ({
                   className=""
                   to="/distributor/lot-form/"
                 >
-                  Create New Lot
+                  <span className="whitespace-no-wrap">Create New Lot</span>
                 </Button>
               </ul>
             </div>
           )}
 
           {!!username && showCreateProductButton && (
-            <div className="ml-32">
+            <div className="ml-32 lg:-mr-8">
               <ul className="flex flex items-center font-body">
                 <Button 
                   type="link"
@@ -81,12 +81,12 @@ const UserLayout = ({
                   className=""
                   to="/distributor/product-profile-form/"
                 >
-                  Create Product Profile
+                  <span className="whitespace-no-wrap">Create Product Profile</span>
                 </Button>
               </ul>
             </div>
           )}
-        </React.Fragment>
+        </>
       )}
       sidebarContent={(
         <ul className="sidenav-nav text-white font-body font-light list-none">

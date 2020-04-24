@@ -96,7 +96,7 @@ const ProductProfilesTable = ({ productsCollection }) => {
     (!products && loading) ? <Pending /> : 
     (!products || !!error) ? <ErrorView /> : 
     !!products?.length ? (
-      <div className="container">
+      <div className="">
         <ConfirmationModal
           modal={{ isOpen: !!deleteThisProductID, setOpen: setDeleteModal }}
           titleText={"Are you sure you want to delete this product?"}
