@@ -59,7 +59,6 @@ const initialState = {
   additionalLots: [],
   additionalLotsParts: {},
   labelOverrides: {},
-  previewProduct: false,
   errors: {
     name: '',
     description: '',
@@ -178,7 +177,6 @@ class ProductProfileForm extends PureComponent {
       additionalLots,
       additionalLotsParts,
       labelOverrides,
-      previewProduct,
       errors
     } = this.state;
 
