@@ -22,21 +22,30 @@ const dlProductQRImage = (name) => {
   dlProductQRImageURL(name, streamUrl)
 };
 
-const QRCodeView = ({ name, url }) => (
-  <div className="text-center" style={{ width: '320px' }}>
-    <QRCode
-      id={name}
-      value={url}
-      size={320}
-      level={"H"}
-      includeMargin={true}
-    />
-    <Button
-      color="transparent"
-      variant="outline"
-      onClickHandler={() => dlProductQRImage(name)}>
-      Download QR Code
-    </Button>
+const QRCodeView = ({ name, url, className }) => (
+  <div className={`text-center ${className}`}>
+    <div className="w-full flex flex-col items-center bg-white p-4 lg:p-6">
+      <div className="mx-auto">
+        <QRCode
+          id={name}
+          value={url}
+          size={340}
+          level={"H"}
+          includeMargin={true}
+        />
+      </div>
+
+      <Button
+        color="transparent"
+        variant="outline"
+        icon="download"
+        // size="icon"
+        // iconMargin="0"
+        onClickHandler={() => dlProductQRImage(name)}
+      >
+        Download
+      </Button>
+    </div>
   </div>
 );
 
