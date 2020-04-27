@@ -45,12 +45,12 @@ const UserLayout = ({
       type="sidebar"
       headerDisplayLogo={false}
       headerIsFluid
-      headerNavContainerClass=""
+      headerNavContainerClass="xl:py-0"
       headerNav={(
         <>
           {!!username && (
             <div className="w-full lg:-ml-8 mr-64">
-              <p className="">
+              <p className="py-4">
                 Hello, <Link className="text-gold-800" to="/distributor/settings/"><strong>{username}</strong></Link>
               </p>
             </div>
