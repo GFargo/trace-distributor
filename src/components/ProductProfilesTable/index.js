@@ -22,16 +22,16 @@ const ProductProfilesTable = ({ productsCollection }) => {
 
   const tableColumns = () => ([
     {
+      name: 'date',
+      displayName: 'Date',
+      displayValue: (product) => localizeDateFromString(new Date(product.created)),
+      sortable: (product) => localizeDateFromString(new Date(product.created))
+    },
+    {
       name: 'title',
       displayName: 'Product Name',
       displayValue: (product) => (<strong>{product.title}</strong>),
       sortable: (product) => product.title
-    },
-    {
-      name: 'date',
-      displayName: 'Profile Date',
-      displayValue: (product) => localizeDateFromString(new Date(product.created)),
-      sortable: (product) => localizeDateFromString(new Date(product.created))
     },
     {
       name: 'lots',
