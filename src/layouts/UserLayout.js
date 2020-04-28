@@ -45,7 +45,7 @@ const UserLayout = ({
       type="sidebar"
       headerDisplayLogo={false}
       headerIsFluid
-      headerNavContainerClass="xl:py-0"
+      headerNavContainerClassName="px-8 py-3"
       headerNav={(
         <>
           {!!username && (
@@ -75,10 +75,13 @@ const UserLayout = ({
           {!!username && showCreateProductButton && (
             <div className="ml-32 lg:-mr-8">
               <ul className="flex flex items-center font-body">
-                <Button 
+                <Button
                   type="link"
                   color="green"
-                  className=""
+                  className="uppercase"
+                  size="lg"
+                  icon="edit"
+                  iconSize="lg"
                   to="/distributor/product-profile-form/"
                 >
                   <span className="whitespace-no-wrap">Create Product Profile</span>
