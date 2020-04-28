@@ -157,7 +157,6 @@ class ProductProfileForm extends PureComponent {
     const { 
       lots, 
       handleSubmit,
-      invertColor,
       errorMessage
     } = this.props;
 
@@ -211,7 +210,6 @@ class ProductProfileForm extends PureComponent {
               name="name"
               placeholder="Enter product name"
               required
-              invertColor={invertColor}
               value={name}
               error={errors.name}
               className="w-100 hover:border-gray-500"
@@ -225,7 +223,6 @@ class ProductProfileForm extends PureComponent {
             <TextAreaInput
               label="Product Description"
               name="description"
-              invertColor={invertColor}
               placeholder="Enter product description"
               value={description}
               error={errors.description}
@@ -304,7 +301,6 @@ class ProductProfileForm extends PureComponent {
               label="Company Name"
               name="companyName"
               placeholder="Enter company name"
-              invertColor={invertColor}
               value={companyName}
               error={errors.companyName}
               className="w-100 hover:border-gray-500"
@@ -318,7 +314,6 @@ class ProductProfileForm extends PureComponent {
             <TextAreaInput
               label="Company Description"
               name="companyDescription"
-              invertColor={invertColor}
               placeholder="Enter company description"
               value={companyDescription}
               error={errors.companyDescription}
@@ -580,14 +575,17 @@ class ProductProfileForm extends PureComponent {
         </div>
         
         <div className="w-full order-1 lg:order-2 lg:w-1/2 lg:pl-12 xl:pl-32">
-          <div className="mx-auto lg:max-w-md lg:-mt-32">          
+          <div className="mx-auto lg:max-w-md lg:-mt-40">          
             <div className="flex flex-col lg:mb-8">
-              <div className="flex mb-t py-4 w-full justify-between">
+              <div className="flex mb-t p-4 w-full justify-between">
                 <Button
                     type="link"
                     size="lg"
                     to="/distributor/product-profiles/"
                     color="gold"
+                    variant="outline"
+                    icon="arrow-back"
+                    iconFirst
                     className="uppercase flex justify-center flex-grow mr-2"
                   >
                     Back
@@ -602,17 +600,19 @@ class ProductProfileForm extends PureComponent {
                     size="lg"
                     type="button"
                     color="green"
+                    icon="floppy-o"
                     className="uppercase flex justify-center flex-grow"
                     isDisabled={isDisabled}
                   >
                     Publish Profile
                 </Button>
               </div>
+              
               <div className="flex flex-col lg:mb-8 items-center">
                 <div className="w-full">
                   <Accordion
                     header="QR Code Preview"
-                    headerClassName="text-lg xl:text-xl mb-2 mt-4"
+                    headerClassName="px-4 text-lg xl:text-xl mb-2 mt-4"
                   >
                     <div className="p-4">
                       {product && !!product.url ? (
@@ -629,7 +629,7 @@ class ProductProfileForm extends PureComponent {
                 <div className="w-full hidden lg:block">
                   <Accordion
                     header="Product Profile Preview"
-                    headerClassName="text-lg xl:text-xl mb-2 mt-4"
+                    headerClassName="px-4 text-lg xl:text-xl mb-2 mt-4"
                   >
                     {product && (
                       <div className="p-4">
@@ -649,7 +649,6 @@ class ProductProfileForm extends PureComponent {
 }
 
 ProductProfileForm.defaultProps = {
-  invertColor: false,
   errorMessage: '',
 };
 
@@ -661,7 +660,6 @@ ProductProfileForm.propTypes = {
   lots: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   handleSubmit: PropTypes.func.isRequired,
   errorMessage: PropTypes.string,
-  invertColor: PropTypes.bool,
 }
 
 export default ProductProfileForm;
