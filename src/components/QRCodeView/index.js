@@ -52,6 +52,11 @@ const QRCodeView = ({ name, url, className }) => (
 QRCodeView.propTypes = {
   name: PropTypes.string.isRequired,
   url: PropTypes.string.isRequired,
+  className: PropTypes.string,
+};
+
+QRCodeView.defaultProps = {
+  className: '',
 };
 
 export default QRCodeView;
