@@ -1,8 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
-import Button from '../core/src/components/Elements/Button'
-import Pending from '../core/src/components/Elements/Loader'
+import { Button, PageLoader } from '../core/src/components/Elements'
 import SortableTable from '../core/src/components/SortableTable'
 import { localizeDateFromString } from '../core/src/utils/date-time/utils'
 
@@ -84,7 +83,13 @@ const LotsIndex = ({ lotsCollection }) => {
   );
 
   return (
-    (!lots && loading) ? <Pending /> : 
+    <>
+    <div className="row mb-2 -mt-4">
+      <h3 className="text-xl font-bold text-left">
+        Organization Lots
+      </h3>
+    </div>
+    {(!lots && loading) ? <PageLoader /> : 
     (!lots || !!error) ? <ErrorView /> : 
     !!lots?.length ? (
       <SortableTable
@@ -102,7 +107,8 @@ const LotsIndex = ({ lotsCollection }) => {
         pagination={true}
         pageSize={10}
       />
-    ) : false
+    ) : false}
+    </>
   )
 }
 

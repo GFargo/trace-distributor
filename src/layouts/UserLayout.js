@@ -61,10 +61,13 @@ const UserLayout = ({
               <ul className="flex flex items-center font-body">
                 <Button 
                   type="link"
-                  LinkComponent={Link}
                   color="green"
-                  className=""
+                  className="uppercase"
+                  size="lg"
+                  icon="edit"
+                  iconSize="lg"
                   to="/distributor/lot-form/"
+                  LinkComponent={Link}
                 >
                   <span className="whitespace-no-wrap">Create New Lot</span>
                 </Button>
@@ -83,6 +86,7 @@ const UserLayout = ({
                   icon="edit"
                   iconSize="lg"
                   to="/distributor/product-profile-form/"
+                  LinkComponent={Link}
                 >
                   <span className="whitespace-no-wrap">Create Product Profile</span>
                 </Button>
@@ -93,8 +97,8 @@ const UserLayout = ({
       )}
       sidebarContent={(
         <ul className="sidenav-nav text-white font-body font-light list-none">
-          <SidebarLink to="/distributor/lots" icon="processing" title="Lots" />
-          <SidebarLink to="/distributor/product-profiles/" icon="organizations" title="Product Profiles" />
+          <SidebarLink to="/distributor/lots" icon="box" title="Lots" />
+          <SidebarLink to="/distributor/product-profiles/" icon="file-text-o" title="Product Profiles" />
           <SidebarLink to="/distributor/settings/" icon="settings" title="Settings" />
           <li>
             <a onClick={onLogout} className="py-5 px-6 flex flex-row items-center hover:text-gold-400" href="/">
