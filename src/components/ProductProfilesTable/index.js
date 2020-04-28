@@ -2,9 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Link }  from 'react-router-dom';
 import SortableTable from '../../core/src/components/SortableTable'
-import Button from '../../core/src/components/Elements/Button'
-import Pending from '../../core/src/components/Elements/Loader'
-import ConfirmationModal from '../../core/src/components/Elements/Modal/Confirmation'
+import { Button, PageLoader, ConfirmationModal } from '../../core/src/components/Elements'
 import { localizeDateFromString } from '../../core/src/utils/date-time/utils'
 import { deleteProductProfile } from '../../services/traceFirebase';
 
@@ -30,7 +28,14 @@ const ProductProfilesTable = ({ productsCollection }) => {
     {
       name: 'title',
       displayName: 'Product Name',
-      displayValue: (product) => (<strong>{product.title}</strong>),
+      displayValue: (product) => (
+        <Link 
+          to={`/distributor/product-profile-form/${product.id}`}
+          className="hover:text-gold-400"
+        >
+          {product.title}
+        </Link>
+      ),
       sortable: (product) => product.title
     },
     {
@@ -48,7 +53,10 @@ const ProductProfilesTable = ({ productsCollection }) => {
       displayName: 'Blockchain Address',
       displayValue: (product) => (
         <span className="" data-toggle="tooltip" data-placement="top" title="View Product Lot">
-          <Link to={"/processing/"+product.productLot}>
+          <Link 
+            to={"/processing/"+product.productLot}
+            className="hover:text-gold-400"
+          >
             {`${product.productLot.substr(0, 20)}...`}
           </Link>
         </span>),
@@ -59,29 +67,58 @@ const ProductProfilesTable = ({ productsCollection }) => {
       displayName: 'Profile Page',
       displayValue: (product) => (
         !!product?.id && (
-          <span className="">
-            <a className="" target="_blank" rel="noopener noreferrer" href={product.qrcode.url}>
-              <span className="icon icon-qrcode mr-2 text-2xl text-gold-500 hover:text-gold-900" data-toggle="tooltip" data-placement="top" title="View QR Code"></span>
-            </a>
-            <a 
-              className="" 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              href={`${TRACE_DIRECTORY}${product.id}`}
-            >
-              <span className="icon icon-file-o mr-2 text-2xl text-gold-500 hover:text-gold-900" data-toggle="tooltip" data-placement="top" title="View Profile"></span>
-            </a>
-            <Link to={"/distributor/product-profile-form/"+product.id}>
-              <span className="icon icon-pencil mr-2 text-2xl text-gold-500 hover:text-gold-900" data-toggle="tooltip" data-placement="top" title="Edit Profile"></span>
-            </Link>
-            <span className="" data-toggle="tooltip" data-placement="top" title="Delete Profile">
+          <div className="flex items-center justify-start">
+            <span className="flex" data-toggle="tooltip" data-placement="top" title="View QR Code">
               <Button
-                className="icon icon-delete -ml-4 text-2xl text-gold-500 hover:text-gold-900"
+                type="external"
+                to={product.qrcode.url}
+                className="flex text-gray-500 mr-1"
                 color="transparent"
-                onClickHandler={() => setDeleteModal(product.id)}>
-              </Button>
+                size="icon"
+                icon="qrcode"
+                iconSize="lg"
+                iconMargin="0"
+              />
             </span>
-          </span>
+
+            <span className="flex" data-toggle="tooltip" data-placement="top" title="Edit Product Profile">
+              <Button
+                type="link"
+                to={`/distributor/product-profile-form/${product.id}`}
+                className="flex text-gray-500 mr-1"
+                color="transparent"
+                size="icon"
+                icon="edit"
+                iconSize="lg"
+                iconMargin="0"
+              />
+            </span>
+            <span className="flex" data-toggle="tooltip" data-placement="top" title="View Product Profile">
+              <Button
+                type="external"
+                to={`${TRACE_DIRECTORY}${product.id}`}
+                className="flex text-gray-500 mr-1"
+                color="transparent"
+                size="icon"
+                icon="file-o"
+                iconSize="lg"
+                iconMargin="0"
+              />
+            </span>
+            
+            <span className="flex" data-toggle="tooltip" data-placement="top" title="Delete Product Profile">
+              <Button
+                className="flex text-gray-500 hover:text-red-500 bg-transparent mr-1"
+                color="custom"
+                size="icon"
+                icon="delete"
+                iconSize="lg"
+                iconMargin="0"
+                onClickHandler={() => setDeleteModal(product.id)}
+              />
+            </span>
+
+          </div>
         )
       ),
       sortable: () => false,
@@ -93,7 +130,7 @@ const ProductProfilesTable = ({ productsCollection }) => {
   );
 
   return (
-    (!products && loading) ? <Pending /> : 
+    (!products && loading) ? <div className="py-16"><PageLoader /></div> : 
     (!products || !!error) ? <ErrorView /> : 
     !!products?.length ? (
       <div className="">
@@ -118,7 +155,7 @@ const ProductProfilesTable = ({ productsCollection }) => {
           data={products}
           defaultSort="date"
           defaultSortOrder="desc"
-          noSearch={true}
+          // noSearch={true}
           maxRows={0}
           filterFn={(product) => product.title + product.date}
           noFilter={true}
