@@ -31,7 +31,7 @@ const ProductProfilesTable = ({ productsCollection }) => {
       displayValue: (product) => (
         <Link 
           to={`/distributor/product-profile-form/${product.id}`}
-          className="hover:text-gold-400"
+          className="hover:text-gold-400 font-medium"
         >
           {product.title}
         </Link>

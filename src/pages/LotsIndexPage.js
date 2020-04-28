@@ -34,16 +34,34 @@ const LotsIndex = ({ lotsCollection, exportPending }) => {
 
   const tableColumns = () => ([
     {
-      name: 'name',
-      displayName: 'Name',
-      displayValue: (lot) => (<strong>{lot.name}</strong>),
-      sortable: (lot) => lot.name
-    },
-    {
       name: 'date',
       displayName: 'Date',
-      displayValue: (lot) => localizeDateFromString(lot.created),
+      displayValue: (lot) => {
+        if (lot.created) {
+          return localizeDateFromString(lot.created)
+        }
+
+        return '--'
+      },
       sortable: (lot) => localizeDateFromString(lot.created)
+    },
+    {
+      name: 'name',
+      displayName: 'Lot Name',
+      displayValue: (lot) => {
+        // const linkSlug = "/" + (!lot.parentLot ? "cultivating" : "processing") + "/" + lot.address
+        let linkSlug = `/${!lot.parentLot ? "cultivating" : "processing"}/${lot.address}`
+        if (lot.address === 'unverified') {
+          linkSlug = `/distributor/lot-form/${lot.id}`
+        } 
+        
+        return (
+          <Link to={linkSlug} className="hover:text-gold-500 font-medium">
+            {lot.name}
+          </Link>
+        );
+      },
+      sortable: (lot) => lot.name
     },
     {
       name: 'type',
@@ -60,7 +78,7 @@ const LotsIndex = ({ lotsCollection, exportPending }) => {
     {
         name: 'verified',
         displayName: 'Verified',
-        displayValue: lot => (lot.address !== 'unverified' ? <i className="icon-check verified-mark" aria-hidden="true" /> : <i className="" aria-hidden="true" />),
+        displayValue: lot => (lot.address !== 'unverified' ? <i className="icon-check verified-mark text-green-400" aria-hidden="true" /> : <i className="" aria-hidden="true" />),
         sortable: lot => (lot.address !== 'unverified' ? 'yes' : 'no'),
     },
     {
