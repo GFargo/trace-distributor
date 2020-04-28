@@ -114,7 +114,10 @@ const App = () => {
 
   const renderProductProfilesPage = () => (
     <UserLayout username={state.username} onLogout={dispatchLogout} showCreateProductButton>
-      <ProductProfilesPage productsCollection={productsCollection} />
+      <ProductProfilesPage 
+        productsCollection={productsCollection}
+        exportPending={(state.type === 'exportingProductProfile')}
+      />
     </UserLayout>
   );
 
