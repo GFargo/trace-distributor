@@ -84,7 +84,10 @@ const App = () => {
 
   const renderLotIndexPage = () => (
     <UserLayout username={state.username} onLogout={dispatchLogout} showCreateLotButton>
-      <LotsIndexPage lotsCollection={lotsCollection} />
+      <LotsIndexPage 
+        lotsCollection={lotsCollection} 
+        exportPending={(state.type === 'exportingLot')}
+      />
     </UserLayout>
   );
 

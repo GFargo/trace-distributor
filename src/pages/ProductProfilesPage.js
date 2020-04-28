@@ -20,7 +20,7 @@ const ProductProfiles = ({ productsCollection, exportPending }) => (
     >
       <div className="p-12">
         <PageLoader />
-        <span className="uppercase text-traceblack">Exporting Product...</span>
+        <span className="uppercase text-traceblack">Saving Product...</span>
       </div>
     </ModalBase>
 

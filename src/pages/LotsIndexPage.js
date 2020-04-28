@@ -1,12 +1,13 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
-import { Button, PageLoader } from '../core/src/components/Elements'
+
+import { Button, PageLoader, ModalBase } from '../core/src/components/Elements'
 import SortableTable from '../core/src/components/SortableTable'
 import { localizeDateFromString } from '../core/src/utils/date-time/utils'
 
 
-const LotsIndex = ({ lotsCollection }) => {
+const LotsIndex = ({ lotsCollection, exportPending }) => {
 
   const [ lots, loading, error ] = lotsCollection;
 
@@ -89,6 +90,19 @@ const LotsIndex = ({ lotsCollection }) => {
         Organization Lots
       </h3>
     </div>
+
+    <ModalBase
+      ariaLabel="Product Export Pending"
+      isOpen={exportPending}
+      setOpen={() => {}}
+      hideClose
+    >
+      <div className="p-12">
+        <PageLoader />
+        <span className="uppercase text-traceblack">Saving Lot...</span>
+      </div>
+    </ModalBase>
+
     {(!lots && loading) ? <PageLoader /> : 
     (!lots || !!error) ? <ErrorView /> : 
     !!lots?.length ? (
@@ -108,12 +122,19 @@ const LotsIndex = ({ lotsCollection }) => {
         pageSize={10}
       />
     ) : false}
+
+
     </>
   )
 }
 
 LotsIndex.propTypes = {
   lotsCollection: PropTypes.array.isRequired,
-}
+  exportPending: PropTypes.bool,
+};
+
+LotsIndex.defaultProps = {
+  exportPending: false,
+};
 
 export default LotsIndex
