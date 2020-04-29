@@ -29,7 +29,12 @@ const DistributorLoginForm = ({onLoginSubmit, loginPending, loginError}) => {
 
         {loginPending ? <Pending /> : ( 
           <div className="">
-            <Login handleSubmit={handleSubmit} loginResponse={loginError || ''} submitBtnColor="green" displayForgotPassword={false}/>
+            <Login
+              handleSubmit={handleSubmit}
+              loginResponse={loginError || ''}
+              submitBtnColor="green"
+              displayForgotPassword={false}
+            />
           </div>
         )}
 

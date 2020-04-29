@@ -84,7 +84,10 @@ const App = () => {
 
   const renderLotIndexPage = () => (
     <UserLayout username={state.username} onLogout={dispatchLogout} showCreateLotButton>
-      <LotsIndexPage lotsCollection={lotsCollection} />
+      <LotsIndexPage 
+        lotsCollection={lotsCollection} 
+        exportPending={(state.type === 'exportingLot')}
+      />
     </UserLayout>
   );
 
@@ -114,7 +117,10 @@ const App = () => {
 
   const renderProductProfilesPage = () => (
     <UserLayout username={state.username} onLogout={dispatchLogout} showCreateProductButton>
-      <ProductProfilesPage productsCollection={productsCollection} />
+      <ProductProfilesPage 
+        productsCollection={productsCollection}
+        exportPending={(state.type === 'exportingProductProfile')}
+      />
     </UserLayout>
   );
 

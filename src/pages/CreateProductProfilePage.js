@@ -2,15 +2,15 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import ProductProfileForm from '../components/ProductProfileForm';
 
-const { REACT_APP_TRACE_DIRECTORY } = process.env;
+const TRACE_DIRECTORY_URL = process.env.REACT_APP_TRACE_DIRECTORY || 'https://develop.trace.directory/lot/';
 
 const CreateProductProfilePage = ({ 
   populateFromProduct, 
   lots, 
   handleSubmitProfile,
 }) => (
-  <div className="mb-24 w-160 text-left">
-    <div className="mb-4">
+  <div className="mb-24 w-full text-left">
+    <div className="mb-4 w-2/3 lg:w-1/2">
       <h3 className="text-xl font-bold text-left mb-4">
         Create Product Profile
       </h3>
@@ -21,7 +21,7 @@ const CreateProductProfilePage = ({
       <a
         className="text-gold-700"
         target="_blank"
-        href={`${REACT_APP_TRACE_DIRECTORY}sample`}
+        href={`${TRACE_DIRECTORY_URL}sample`}
         rel="noopener noreferrer"
       >
         Example Product Profile

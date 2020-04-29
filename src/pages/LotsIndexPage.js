@@ -1,13 +1,13 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
-import Button from '../core/src/components/Elements/Button'
-import Pending from '../core/src/components/Elements/Loader'
+
+import { Button, PageLoader, ModalBase } from '../core/src/components/Elements'
 import SortableTable from '../core/src/components/SortableTable'
 import { localizeDateFromString } from '../core/src/utils/date-time/utils'
 
 
-const LotsIndex = ({ lotsCollection }) => {
+const LotsIndex = ({ lotsCollection, exportPending }) => {
 
   const [ lots, loading, error ] = lotsCollection;
 
@@ -34,16 +34,34 @@ const LotsIndex = ({ lotsCollection }) => {
 
   const tableColumns = () => ([
     {
-      name: 'name',
-      displayName: 'Name',
-      displayValue: (lot) => (<strong>{lot.name}</strong>),
-      sortable: (lot) => lot.name
-    },
-    {
       name: 'date',
       displayName: 'Date',
-      displayValue: (lot) => localizeDateFromString(lot.created),
+      displayValue: (lot) => {
+        if (lot.created) {
+          return localizeDateFromString(lot.created)
+        }
+
+        return '--'
+      },
       sortable: (lot) => localizeDateFromString(lot.created)
+    },
+    {
+      name: 'name',
+      displayName: 'Lot Name',
+      displayValue: (lot) => {
+        // const linkSlug = "/" + (!lot.parentLot ? "cultivating" : "processing") + "/" + lot.address
+        let linkSlug = `/${!lot.parentLot ? "cultivating" : "processing"}/${lot.address}`
+        if (lot.address === 'unverified') {
+          linkSlug = `/distributor/lot-form/${lot.id}`
+        } 
+        
+        return (
+          <Link to={linkSlug} className="hover:text-gold-500 font-medium">
+            {lot.name}
+          </Link>
+        );
+      },
+      sortable: (lot) => lot.name
     },
     {
       name: 'type',
@@ -60,7 +78,7 @@ const LotsIndex = ({ lotsCollection }) => {
     {
         name: 'verified',
         displayName: 'Verified',
-        displayValue: lot => (lot.address !== 'unverified' ? <i className="icon-check verified-mark" aria-hidden="true" /> : <i className="" aria-hidden="true" />),
+        displayValue: lot => (lot.address !== 'unverified' ? <i className="icon-check verified-mark text-green-400" aria-hidden="true" /> : <i className="" aria-hidden="true" />),
         sortable: lot => (lot.address !== 'unverified' ? 'yes' : 'no'),
     },
     {
@@ -84,7 +102,26 @@ const LotsIndex = ({ lotsCollection }) => {
   );
 
   return (
-    (!lots && loading) ? <Pending /> : 
+    <>
+    <div className="row mb-2 -mt-4">
+      <h3 className="text-xl font-bold text-left">
+        Organization Lots
+      </h3>
+    </div>
+
+    <ModalBase
+      ariaLabel="Product Export Pending"
+      isOpen={exportPending}
+      setOpen={() => {}}
+      hideClose
+    >
+      <div className="p-12">
+        <PageLoader />
+        <span className="uppercase text-traceblack">Saving Lot...</span>
+      </div>
+    </ModalBase>
+
+    {(!lots && loading) ? <PageLoader /> : 
     (!lots || !!error) ? <ErrorView /> : 
     !!lots?.length ? (
       <SortableTable
@@ -102,12 +139,20 @@ const LotsIndex = ({ lotsCollection }) => {
         pagination={true}
         pageSize={10}
       />
-    ) : false
+    ) : false}
+
+
+    </>
   )
 }
 
 LotsIndex.propTypes = {
   lotsCollection: PropTypes.array.isRequired,
-}
+  exportPending: PropTypes.bool,
+};
+
+LotsIndex.defaultProps = {
+  exportPending: false,
+};
 
 export default LotsIndex

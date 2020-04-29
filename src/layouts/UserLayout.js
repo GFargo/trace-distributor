@@ -45,53 +45,60 @@ const UserLayout = ({
       type="sidebar"
       headerDisplayLogo={false}
       headerIsFluid
-      headerNavContainerClass="w-full"
+      headerNavContainerClassName="px-8 py-3"
       headerNav={(
-        <React.Fragment>
+        <>
           {!!username && (
-            <div className="mr-64">
-              <p className="">
+            <div className="w-full lg:-ml-8 mr-64">
+              <p className="py-4">
                 Hello, <Link className="text-gold-800" to="/distributor/settings/"><strong>{username}</strong></Link>
               </p>
             </div>
           )}
 
           {!!username && showCreateLotButton && (
-            <div className="ml-32">
+            <div className="ml-32 lg:-mr-8">
               <ul className="flex flex items-center font-body">
                 <Button 
                   type="link"
-                  LinkComponent={Link}
                   color="green"
-                  className=""
+                  className="uppercase"
+                  size="lg"
+                  icon="edit"
+                  iconSize="lg"
                   to="/distributor/lot-form/"
+                  LinkComponent={Link}
                 >
-                  Create New Lot
+                  <span className="whitespace-no-wrap">Create New Lot</span>
                 </Button>
               </ul>
             </div>
           )}
 
           {!!username && showCreateProductButton && (
-            <div className="ml-32">
+            <div className="ml-32 lg:-mr-8">
               <ul className="flex flex items-center font-body">
-                <Button 
+                <Button
                   type="link"
                   color="green"
-                  className=""
+                  className="uppercase"
+                  size="lg"
+                  icon="edit"
+                  iconSize="lg"
                   to="/distributor/product-profile-form/"
+                  LinkComponent={Link}
                 >
-                  Create Product Profile
+                  <span className="whitespace-no-wrap">Create Product Profile</span>
                 </Button>
               </ul>
             </div>
           )}
-        </React.Fragment>
+        </>
       )}
       sidebarContent={(
         <ul className="sidenav-nav text-white font-body font-light list-none">
-          <SidebarLink to="/distributor/lots" icon="processing" title="Lots" />
-          <SidebarLink to="/distributor/product-profiles/" icon="organizations" title="Product Profiles" />
+          <SidebarLink to="/distributor/lots" icon="box" title="Lots" />
+          <SidebarLink to="/distributor/product-profiles/" icon="file-text-o" title="Product Profiles" />
           <SidebarLink to="/distributor/settings/" icon="settings" title="Settings" />
           <li>
             <a onClick={onLogout} className="py-5 px-6 flex flex-row items-center hover:text-gold-400" href="/">
